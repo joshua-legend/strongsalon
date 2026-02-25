@@ -1,0 +1,77 @@
+import type { MemberProfile } from '@/types';
+
+export const member: MemberProfile = {
+  name: '김민준',
+  initial: '김',
+  avatarGradient: 'linear-gradient(135deg, #f5c518, #ff9a3c)',
+  trainerName: '이준호',
+  level: 'INTERMEDIATE',
+  liftTotal: 360,
+  bodyWeight: 73.4,
+  streak: 12,
+  monthAttendRate: 73,
+  avgVolume: '9.2k',
+  avgCondition: 4.2,
+  bodyComp: {
+    weight: 73.4,
+    muscle: 34.2,
+    fatPct: 16.8,
+    bmi: 23.1,
+    measuredAt: '2026-02-10',
+    delta: { weight: -0.8, muscle: 0.4, fatPct: -1.2 },
+  },
+  lifts: [
+    { name: '벤치프레스', weight: 100, grade: 'Intermediate', color: 'var(--blue)', pct: 55 },
+    { name: '스쿼트', weight: 120, grade: 'Intermediate', color: 'var(--green)', pct: 50 },
+    { name: '데드리프트', weight: 140, grade: 'Intermediate', color: 'var(--orange)', pct: 60 },
+  ],
+  cardio: [
+    {
+      type: 'run5k',
+      label: '러닝머신 5km',
+      emoji: '🏃',
+      time: 1600,
+      pr: 1600,
+      prDelta: '지난달 대비 -1:20 개선',
+      date: '2026-02-20',
+      stats: [
+        { label: '거리', value: '5.2km' },
+        { label: '시간', value: '28분' },
+        { label: '페이스', value: '5:23/km' },
+      ],
+    },
+    {
+      type: 'row2k',
+      label: '로잉머신 2km',
+      emoji: '🚣',
+      time: 462,
+      pr: 458,
+      prDelta: '지난달 대비 -0:24 개선',
+      date: '2026-02-18',
+      stats: [
+        { label: '거리', value: '2,000m' },
+        { label: '시간', value: '7:42' },
+        { label: '스플릿', value: '1:55/500m' },
+      ],
+    },
+    {
+      type: 'ski1k',
+      label: '스키에르그 1km',
+      emoji: '⛷️',
+      time: 252,
+      pr: 248,
+      prDelta: '이번이 신기록!',
+      date: '2026-02-22',
+      stats: [
+        { label: '거리', value: '1,000m' },
+        { label: '시간', value: '4:12' },
+        { label: '스플릿', value: '2:06/500m' },
+      ],
+    },
+  ],
+  prMap: {
+    'bench': 100,
+    'squat': 120,
+    'deadlift': 140,
+  },
+};
