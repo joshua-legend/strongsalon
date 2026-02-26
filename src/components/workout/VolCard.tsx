@@ -53,10 +53,10 @@ export default function VolCard({
     >
       <div className="py-3 px-4 border-b" style={{ borderColor: 'var(--border)' }}>
         <div
-          className="text-[8px] font-[family-name:var(--font-space)]"
-          style={{ color: 'var(--muted2)', letterSpacing: '2px' }}
+          className="text-xs font-semibold"
+          style={{ color: 'var(--text)', letterSpacing: '0.5px' }}
         >
-          // 오늘 총 볼륨
+          오늘 총 볼륨
         </div>
       </div>
       <div className="p-4">

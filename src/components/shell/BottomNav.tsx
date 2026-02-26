@@ -11,8 +11,13 @@ const tabs: { id: TabId; icon: string; label: string }[] = [
   { id: 'ranking', icon: '🏅', label: '랭킹' },
 ];
 
+const WORKOUT_NAV_BG = {
+  dark: 'rgba(26,9,0,.97)',
+  light: 'rgba(248,244,240,.97)',
+} as const;
+
 export default function BottomNav() {
-  const { activeTab, theme, setTab, enterWorkout } = useApp();
+  const { activeTab, theme, colorMode, setTab, enterWorkout } = useApp();
   const isWorkoutMode = theme === 'workout';
 
   return (
@@ -20,7 +25,7 @@ export default function BottomNav() {
       className="shrink-0 flex items-end justify-around relative"
       style={{
         height: 72,
-        background: isWorkoutMode ? 'rgba(26,9,0,.97)' : 'var(--nav-bg)',
+        background: isWorkoutMode ? WORKOUT_NAV_BG[colorMode] : 'var(--nav-bg)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderTop: '1px solid var(--border)',

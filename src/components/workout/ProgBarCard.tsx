@@ -15,10 +15,10 @@ export default function ProgBarCard({ doneCount, totalCount }: ProgBarCardProps)
     >
       <div className="flex items-center justify-between mb-2.5">
         <div
-          className="text-[9px] font-[family-name:var(--font-space)]"
-          style={{ color: 'rgba(168,85,247,.7)', letterSpacing: '1.5px' }}
+          className="text-xs font-semibold"
+          style={{ color: 'rgba(168,85,247,.9)', letterSpacing: '0.5px' }}
         >
-          // 오늘 진행도
+          오늘 진행도
         </div>
         <div className="text-[11px] font-[family-name:var(--font-space)]" style={{ color: 'var(--purple)' }}>
           {doneCount} / {totalCount} 종목 완료

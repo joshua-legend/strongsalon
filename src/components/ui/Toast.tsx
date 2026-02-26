@@ -41,10 +41,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               className="px-5 py-2.5 rounded-[40px] text-[12px] font-medium pointer-events-auto"
               style={{
-                background: 'rgba(13,15,22,.9)',
+                background: 'var(--s1)',
                 backdropFilter: 'blur(12px)',
                 border: '1px solid var(--border2)',
                 color: 'var(--text)',
+                boxShadow: '0 4px 20px rgba(0,0,0,.12)',
               }}
             >
               {t.message}

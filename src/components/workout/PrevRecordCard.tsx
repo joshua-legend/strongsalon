@@ -14,10 +14,10 @@ export default function PrevRecordCard({ onCopyPrev }: PrevRecordCardProps) {
     >
       <div className="py-3 px-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
         <div
-          className="text-[8px] font-[family-name:var(--font-space)]"
-          style={{ color: 'var(--muted2)', letterSpacing: '2px' }}
+          className="text-xs font-semibold"
+          style={{ color: 'var(--text)', letterSpacing: '0.5px' }}
         >
-          // {PREV_RECORD.title}
+          {PREV_RECORD.title}
         </div>
         <div className="text-[9px] font-[family-name:var(--font-space)]" style={{ color: 'var(--muted2)' }}>
           {PREV_RECORD.ago}

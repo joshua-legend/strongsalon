@@ -34,13 +34,18 @@ export default function FreeArea({
   const ids = Object.keys(freeExercises);
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <AddExerciseCard
         selectedNames={selectedFavNames}
         onToggleFav={onToggleFav}
         onAddCustom={onAddCustom}
       />
-      <div className="flex flex-col gap-3 mt-3">
+      <div className="flex flex-col gap-3">
+        {ids.length > 0 && (
+          <h3 className="text-xs font-semibold px-0.5" style={{ color: 'var(--text)' }}>
+            내 운동 ({ids.length}종목)
+          </h3>
+        )}
         {ids.map((id, idx) => (
           <FreeExCard
             key={id}

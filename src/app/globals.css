@@ -79,6 +79,7 @@
   --og4: #ffa870;
   --og-dk: #cc3d00;
   --og-bg: #1a0900;
+  --og-nav-bg: rgba(26,9,0,.93);
   --og-s1: #220c00;
   --og-s2: #2e1200;
   --og-s3: #3d1900;
@@ -90,13 +91,19 @@
   --border2: rgba(255,77,0,.3);
 }
 
-/* 라이트 모드 + 운동 페이지 */
-[data-color-mode="light"][data-theme="workout"] {
-  --og-bg: #2d1a0a;
-  --og-s1: #3d2510;
-  --og-s2: #4d3015;
-  --og-s3: #5d3d1a;
-  --og-s4: #6d4a20;
+/* 라이트 모드 + 운동 페이지 (html에 light, workout 루트에 data-theme) */
+[data-color-mode="light"] [data-theme="workout"] {
+  --og-bg: #f8f4f0;
+  --og-nav-bg: rgba(248,244,240,.97);
+  --og-s1: #fff9f5;
+  --og-s2: #f5ebe3;
+  --og-s3: #ebe0d6;
+  --og-s4: #e0d4c9;
+  --text: #1a1510;
+  --text2: rgba(26,21,16,.7);
+  --text3: rgba(26,21,16,.45);
+  --border: rgba(229,77,15,.18);
+  --border2: rgba(229,77,15,.35);
 }
 
 @theme inline {

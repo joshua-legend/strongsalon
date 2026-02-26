@@ -22,10 +22,10 @@ export default function CondBox({ value, onChange }: CondBoxProps) {
       style={{ background: 'var(--s1)', borderColor: 'var(--border)' }}
     >
       <div
-        className="text-[8px] font-[family-name:var(--font-space)] mb-2.5"
-        style={{ color: 'var(--muted2)', letterSpacing: '2px' }}
+        className="text-xs font-semibold mb-2.5"
+        style={{ color: 'var(--text)', letterSpacing: '0.5px' }}
       >
-        // 오늘 컨디션
+        오늘 컨디션
       </div>
       <div className="flex gap-2">
         {OPTIONS.map((opt) => (

@@ -1,12 +1,18 @@
 'use client';
 
+import { useApp } from '@/context/AppContext';
+
+const WORKOUT_NAV_BG = {
+  dark: 'rgba(26,9,0,.93)',
+  light: 'rgba(248,244,240,.97)',
+} as const;
+
 interface WorkoutTopbarProps {
   elapsedSec: number;
-  onClear: () => void;
-  onSave: () => void;
 }
 
-export default function WorkoutTopbar({ elapsedSec, onClear, onSave }: WorkoutTopbarProps) {
+export default function WorkoutTopbar({ elapsedSec }: WorkoutTopbarProps) {
+  const { colorMode } = useApp();
   const m = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
   const s = String(elapsedSec % 60).padStart(2, '0');
 
@@ -14,7 +20,7 @@ export default function WorkoutTopbar({ elapsedSec, onClear, onSave }: WorkoutTo
     <header
       className="sticky top-0 z-40 h-14 flex items-center justify-between px-4 gap-3 border-b"
       style={{
-        background: 'rgba(7,8,16,.93)',
+        background: WORKOUT_NAV_BG[colorMode],
         backdropFilter: 'blur(20px)',
         borderColor: 'var(--border)',
       }}
@@ -43,24 +49,6 @@ export default function WorkoutTopbar({ elapsedSec, onClear, onSave }: WorkoutTo
             WORKOUT TIME
           </div>
         </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onClear}
-          className="h-8 px-3.5 rounded-lg border text-[11px] font-[family-name:var(--font-space)] transition-colors"
-          style={{ borderColor: 'var(--border2)', background: 'var(--s2)', color: 'var(--muted2)' }}
-        >
-          🗑 초기화
-        </button>
-        <button
-          type="button"
-          onClick={onSave}
-          className="h-8 px-3.5 rounded-lg border-0 text-white text-xs font-semibold transition-opacity"
-          style={{ background: 'linear-gradient(135deg,var(--orange),var(--og2))' }}
-        >
-          💾 저장
-        </button>
       </div>
     </header>
   );

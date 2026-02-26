@@ -45,9 +45,16 @@ export default function FreeExCard({
       className="rounded-xl border overflow-hidden transition-[border-color] hover:border-[var(--border2)]"
       style={{ background: 'var(--s1)', borderColor: 'var(--border)' }}
     >
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setOpen((o) => !o)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setOpen((o) => !o);
+          }
+        }}
         className="w-full flex items-center gap-2.5 py-3 px-4 cursor-pointer border-b border-transparent hover:bg-white/[0.02] transition-colors text-left"
         style={open ? { borderBottomColor: 'var(--border)' } : undefined}
       >
@@ -83,6 +90,7 @@ export default function FreeExCard({
           }}
           className="w-7 h-7 rounded-md border border-transparent flex items-center justify-center text-[13px] transition-colors hover:border-red-500 hover:text-red-500 flex-shrink-0"
           style={{ color: 'var(--muted2)' }}
+          aria-label="종목 삭제"
         >
           ✕
         </button>
@@ -92,7 +100,7 @@ export default function FreeExCard({
         >
           ▾
         </div>
-      </button>
+      </div>
       {open && (
         <div className="p-2.5 pt-2 pb-3">
           <div

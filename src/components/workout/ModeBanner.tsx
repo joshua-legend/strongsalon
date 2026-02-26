@@ -1,69 +1,204 @@
-'use client';
+"use client";
 
-import type { WorkoutMode } from '@/types';
+import type { WorkoutMode } from "@/types";
 
 interface ModeBannerProps {
-  mode: WorkoutMode;
-  onSwitch: () => void;
+  mode: WorkoutMode | null;
+  onSelectMode: (m: WorkoutMode) => void;
+  onShowModeChoice: () => void;
 }
 
-export default function ModeBanner({ mode, onSwitch }: ModeBannerProps) {
-  const isTrainer = mode === 'trainer';
-  return (
-    <div
-      className="rounded-xl p-4 flex items-center gap-3.5 relative overflow-hidden border transition-colors"
-      style={
-        isTrainer
-          ? {
-              background: 'linear-gradient(135deg,rgba(168,85,247,.12),rgba(79,142,247,.07))',
-              borderColor: 'rgba(168,85,247,.25)',
-            }
-          : {
-              background: 'linear-gradient(135deg,rgba(255,77,0,.12),rgba(255,122,51,.05))',
-              borderColor: 'rgba(255,77,0,.22)',
-            }
-      }
-    >
-      <div className="text-3xl flex-shrink-0">{isTrainer ? '🤖' : '🏃'}</div>
-      <div className="flex-1 min-w-0">
-        <div
-          className="text-[8px] font-[family-name:var(--font-space)] tracking-wider mb-1"
-          style={{ color: isTrainer ? 'var(--purple)' : 'var(--orange)' }}
-        >
-          {isTrainer ? '// TRAINER PROGRAM' : '// FREE WORKOUT'}
-        </div>
-        <div className="text-[15px] font-black truncate">
-          {isTrainer ? '이준호 트레이너의 오늘 루틴' : '자유 운동 모드'}
-        </div>
-        <div className="text-[11px] mt-0.5" style={{ color: 'var(--muted2)' }}>
-          {isTrainer
-            ? '가슴 + 삼두 집중일 · 주 4일 플랜 Day 1'
-            : '원하는 종목을 자유롭게 추가하세요'}
-        </div>
-        <div
-          className="inline-flex items-center gap-1 text-[9px] font-[family-name:var(--font-space)] px-2 py-0.5 rounded-full mt-1.5"
-          style={{
-            background: isTrainer ? 'rgba(168,85,247,.12)' : 'rgba(255,77,0,.08)',
-            color: isTrainer ? 'var(--purple)' : 'var(--og3)',
-            border: `1px solid ${isTrainer ? 'rgba(168,85,247,.2)' : 'rgba(255,77,0,.15)'}`,
-          }}
-        >
-          {isTrainer ? '✓ 3일 전 배포됨' : '트레이너 처방 없이 진행 중'}
-        </div>
-      </div>
-      <button
-        type="button"
-        onClick={onSwitch}
-        className="flex-shrink-0 py-2 px-4 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition-transform hover:-translate-y-px"
+export default function ModeBanner({
+  mode,
+  onSelectMode,
+  onShowModeChoice,
+}: ModeBannerProps) {
+  if (mode === null) {
+    return (
+      <div
+        className="rounded-xl p-5 sm:p-6 border"
         style={{
-          borderColor: isTrainer ? 'rgba(255,77,0,.28)' : 'rgba(168,85,247,.28)',
-          color: isTrainer ? 'var(--og3)' : 'var(--purple)',
-          background: isTrainer ? 'rgba(255,77,0,.07)' : 'rgba(168,85,247,.07)',
+          background: "var(--s1)",
+          borderColor: "var(--border)",
+          boxShadow: "0 0 0 1px rgba(255,255,255,.04) inset",
         }}
       >
-        <span>{isTrainer ? '🏃' : '🤖'}</span>
-        <span>{isTrainer ? '자유운동' : '트레이너 모드'}</span>
-      </button>
+        <h2
+          className="text-center text-sm font-bold mb-4"
+          style={{ color: "var(--text)" }}
+        >
+          운동 모드 선택
+        </h2>
+        <p
+          className="text-center text-[11px] mb-5"
+          style={{ color: "var(--text2)" }}
+        >
+          오늘은 어떤 방식으로 운동할까요?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => onSelectMode("trainer")}
+            className="rounded-xl p-4 sm:p-5 border-2 text-left transition-all hover:opacity-90 active:scale-[0.98]"
+            style={{
+              background:
+                "linear-gradient(145deg, rgba(168,85,247,.12) 0%, rgba(79,142,247,.06) 100%)",
+              borderColor: "rgba(168,85,247,.35)",
+              boxShadow: "0 0 0 1px rgba(168,85,247,.08) inset",
+            }}
+          >
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--purple), var(--blue))",
+                boxShadow: "0 2px 10px rgba(168,85,247,.28)",
+              }}
+            >
+              🤖
+            </div>
+            <div
+              className="font-bold text-[13px] mb-0.5"
+              style={{ color: "var(--text)" }}
+            >
+              AI 트레이닝
+            </div>
+            <div className="text-[11px]" style={{ color: "var(--text2)" }}>
+              오늘의 프로그램이 자동으로 나와요
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectMode("free")}
+            className="rounded-xl p-4 sm:p-5 border-2 text-left transition-all hover:opacity-90 active:scale-[0.98]"
+            style={{
+              background:
+                "linear-gradient(145deg, rgba(255,77,0,.12) 0%, rgba(255,122,51,.06) 100%)",
+              borderColor: "rgba(255,77,0,.35)",
+              boxShadow: "0 0 0 1px rgba(255,77,0,.08) inset",
+            }}
+          >
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--orange), var(--og2))",
+                boxShadow: "0 2px 10px rgba(255,77,0,.28)",
+              }}
+            >
+              🏃
+            </div>
+            <div
+              className="font-bold text-[13px] mb-0.5"
+              style={{ color: "var(--text)" }}
+            >
+              자유모드 트레이닝
+            </div>
+            <div className="text-[11px]" style={{ color: "var(--text2)" }}>
+              근력 + 유산소 직접 선택해서 진행
+            </div>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === "free") {
+    return (
+      <div
+        className="rounded-xl p-4 relative overflow-hidden border"
+        style={{
+          background:
+            "linear-gradient(145deg, rgba(255,77,0,.14) 0%, rgba(255,122,51,.06) 100%)",
+          borderColor: "rgba(255,77,0,.3)",
+          boxShadow: "0 0 0 1px rgba(255,77,0,.08) inset",
+        }}
+      >
+        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1 sm:flex-initial w-full">
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] shrink-0"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--orange), var(--og2))",
+                boxShadow: "0 2px 10px rgba(255,77,0,.28)",
+              }}
+            >
+              🏃
+            </div>
+            <div className="min-w-0 flex-1">
+              <div
+                className="font-black text-[15px] tracking-tight mb-0.5"
+                style={{ color: "var(--orange)" }}
+              >
+                자유모드 트레이닝
+              </div>
+            </div>
+            <div className="flex-1 flex justify-end">
+              <button
+                type="button"
+                onClick={onShowModeChoice}
+                className="py-2 px-3 rounded-lg border text-[11px] font-medium transition-opacity hover:opacity-80"
+                style={{
+                  borderColor: "var(--border2)",
+                  background: "var(--s2)",
+                  color: "var(--muted2)",
+                }}
+              >
+                모드 변경
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="rounded-xl p-4 relative overflow-hidden border"
+      style={{
+        background:
+          "linear-gradient(145deg, rgba(168,85,247,.14) 0%, rgba(79,142,247,.06) 100%)",
+        borderColor: "rgba(168,85,247,.3)",
+        boxShadow: "0 0 0 1px rgba(168,85,247,.08) inset",
+      }}
+    >
+      <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0 flex-1 sm:flex-initial w-full">
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] shrink-0"
+            style={{
+              background: "linear-gradient(135deg, var(--purple), var(--blue))",
+              boxShadow: "0 2px 10px rgba(168,85,247,.28)",
+            }}
+          >
+            🤖
+          </div>
+          <div className="min-w-0 flex-1">
+            <div
+              className="font-black text-[15px] tracking-tight mb-0.5"
+              style={{ color: "var(--purple)" }}
+            >
+              AI 트레이닝
+            </div>
+          </div>
+          <div className="flex-1 flex justify-end">
+            <button
+              type="button"
+              onClick={onShowModeChoice}
+              className="py-2 px-3 rounded-lg border text-[11px] font-medium transition-opacity hover:opacity-80"
+              style={{
+                borderColor: "var(--border2)",
+                background: "var(--s2)",
+                color: "var(--muted2)",
+              }}
+            >
+              모드 변경
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

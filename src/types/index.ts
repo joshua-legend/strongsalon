@@ -115,3 +115,13 @@ export interface FreeExercise {
 export interface TrainerProg {
   exercises: TrainerExercise[];
 }
+
+// 오늘 운동용 유산소 1건 (km + 시간)
+export type CardioType = 'run' | 'cycle' | 'row';
+
+export interface CardioEntry {
+  id: string;
+  type: CardioType;
+  distanceKm: number;
+  timeMinutes: number;
+}

@@ -65,10 +65,10 @@ export default function RestTimerCard() {
     >
       <div className="py-3 px-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
         <div
-          className="text-[8px] font-[family-name:var(--font-space)]"
-          style={{ color: 'var(--muted2)', letterSpacing: '2px' }}
+          className="text-xs font-semibold"
+          style={{ color: 'var(--text)', letterSpacing: '0.5px' }}
         >
-          // 세트 휴식 타이머
+          세트 휴식 타이머
         </div>
         <div className="text-[9px] font-[family-name:var(--font-space)]" style={{ color: 'var(--muted2)' }}>
           {running ? '카운트다운' : leftSec === 0 ? '완료 ✓' : '대기중'}
