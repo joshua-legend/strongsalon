@@ -1,5 +1,7 @@
 'use client';
 
+import { Check, Circle, CircleDot } from 'lucide-react';
+
 const days = ['월', '화', '수', '목', '금', '토', '일'];
 
 type DotStatus = 'done' | 'today' | 'rest' | 'future';
@@ -22,36 +24,60 @@ export default function WeekDots() {
         {days.map((d, i) => {
           const status = getDayStatus(i);
           return (
-            <div key={d} className="flex-1 flex flex-col items-center gap-1.5">
-              <span className="font-space text-[8px]" style={{ color: 'var(--muted)' }}>{d}</span>
+            <div key={d} className="flex-1 flex flex-col items-center gap-2">
+              <span
+                className="font-space text-[9px] font-medium"
+                style={{ color: 'var(--muted2)' }}
+              >
+                {d}
+              </span>
               <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-medium"
+                className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors"
                 style={{
                   ...(status === 'done' && {
-                    background: 'rgba(34,197,94,.15)',
-                    color: 'var(--green)',
-                    border: '1px solid rgba(34,197,94,.3)',
+                    background: 'rgba(34,197,94,.12)',
+                    border: '1.5px solid rgba(34,197,94,.35)',
                   }),
                   ...(status === 'today' && {
-                    background: 'transparent',
-                    color: 'var(--orange)',
+                    background: 'rgba(255,94,31,.1)',
                     border: '2px solid var(--orange)',
-                    animation: 'pulse 2s ease infinite',
+                    boxShadow: '0 0 0 2px rgba(255,94,31,.15)',
                   }),
                   ...(status === 'rest' && {
                     background: 'var(--s2)',
-                    color: 'var(--muted)',
                     border: '1px solid var(--border)',
                   }),
                   ...(status === 'future' && {
                     background: 'var(--s2)',
-                    color: 'var(--muted)',
                     border: '1px solid var(--border)',
-                    opacity: 0.4,
+                    opacity: 0.5,
                   }),
                 }}
               >
-                {status === 'done' ? '✓' : ''}
+                {status === 'done' && (
+                  <Check
+                    size={18}
+                    strokeWidth={2.5}
+                    className="shrink-0"
+                    style={{ color: 'var(--green)' }}
+                  />
+                )}
+                {status === 'today' && (
+                  <CircleDot
+                    size={20}
+                    strokeWidth={2}
+                    className="shrink-0 animate-pulse"
+                    style={{ color: 'var(--orange)' }}
+                  />
+                )}
+                {(status === 'rest' || status === 'future') && (
+                  <Circle
+                    size={16}
+                    strokeWidth={1.5}
+                    className="shrink-0"
+                    style={{ color: 'var(--muted2)' }}
+                  />
+                )}
               </div>
             </div>
           );

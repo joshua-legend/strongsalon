@@ -65,7 +65,7 @@ export default function RadarChart({ strength, body, cardio }: RadarChartProps) 
             <text
               x={p.x} y={p.y - 6}
               textAnchor="middle" fill="var(--muted2)" fontSize="9"
-              fontFamily="var(--font-noto)"
+              fontFamily="var(--font-pretendard)"
             >
               {l.name}
             </text>

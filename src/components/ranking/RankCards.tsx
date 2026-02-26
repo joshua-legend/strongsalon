@@ -48,7 +48,7 @@ const sections: CardSection[] = [
     details: [
       { label: '5km 런', value: '26:40', pct: 55, color: 'var(--green)' },
       { label: '로잉 2km', value: '7:38', pct: 50, color: 'var(--blue)' },
-      { label: '스키 1km', value: '4:08', pct: 58, color: 'var(--orange)' },
+      { label: '싸이클 10km', value: '21:20', pct: 58, color: 'var(--orange)' },
     ],
   },
 ];

@@ -166,6 +166,13 @@ export function useWorkoutLog() {
 
   const selectMode = useCallback((m: WorkoutMode) => {
     setMode(m);
+    if (m === 'trainer') {
+      setCardioEntries([
+        { id: nextId('cardio'), type: 'run', distanceKm: 0, timeMinutes: 0 },
+        { id: nextId('cardio'), type: 'cycle', distanceKm: 0, timeMinutes: 0 },
+        { id: nextId('cardio'), type: 'row', distanceKm: 0, timeMinutes: 0 },
+      ]);
+    }
     showToast(m === 'trainer' ? '🤖 AI 트레이닝' : '🏃 자유모드 트레이닝');
   }, [showToast]);
 

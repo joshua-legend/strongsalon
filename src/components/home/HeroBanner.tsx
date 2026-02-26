@@ -31,31 +31,58 @@ export default function HeroBanner() {
         🔥 연속 {member.streak}일 출석 중!
       </Badge>
 
-      <div className="grid grid-cols-3 gap-3 mt-2">
-        <StatItem label="이달 출석률" value={`${member.monthAttendRate}%`} />
-        <StatItem label="평균 볼륨" value={member.avgVolume} />
-        <StatItem label="평균 컨디션" value={`${member.avgCondition}/5`} />
+      <div className="grid grid-cols-3 gap-2.5 mt-4">
+        <StatItem
+          label="이달 출석률"
+          value={`${member.monthAttendRate}%`}
+          accent="var(--green)"
+        />
+        <StatItem
+          label="평균 볼륨"
+          value={member.avgVolume}
+          accent="var(--orange)"
+        />
+        <StatItem
+          label="평균 컨디션"
+          value={`${member.avgCondition}/5`}
+          accent="var(--blue)"
+        />
       </div>
     </div>
   );
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function StatItem({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent: string;
+}) {
   return (
-    <div className="text-center">
+    <div
+      className="rounded-xl py-3.5 px-3 text-center border"
+      style={{
+        background: "var(--s1)",
+        borderColor: "var(--border)",
+        boxShadow: "0 0 0 1px rgba(0,0,0,.03) inset",
+      }}
+    >
       <p
-        className="font-space font-medium uppercase tracking-[0.2em] mb-1"
+        className="font-space font-semibold uppercase tracking-wider mb-1.5"
         style={{
-          fontSize: "10px",
+          fontSize: "9px",
           color: "var(--muted2)",
-          letterSpacing: "0.15em",
+          letterSpacing: "0.12em",
         }}
       >
         {label}
       </p>
       <p
-        className="font-bebas text-[22px] leading-none"
-        style={{ color: "var(--orange)" }}
+        className="font-bebas text-[20px] leading-none tracking-wide"
+        style={{ color: accent }}
       >
         {value}
       </p>

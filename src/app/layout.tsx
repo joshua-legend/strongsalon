@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue, Space_Mono, Noto_Sans_KR } from "next/font/google";
+import { Bebas_Neue, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
 
@@ -13,13 +13,6 @@ const bebasNeue = Bebas_Neue({
 const spaceMono = Space_Mono({
   weight: ["400", "700"],
   variable: "--font-space-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const notoSansKR = Noto_Sans_KR({
-  weight: ["400", "500", "700"],
-  variable: "--font-noto-sans-kr",
   subsets: ["latin"],
   display: "swap",
 });
@@ -44,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${bebasNeue.variable} ${spaceMono.variable} ${notoSansKR.variable}`}>
+      <body className={`${bebasNeue.variable} ${spaceMono.variable}`}>
         <AppProvider>
           {children}
         </AppProvider>

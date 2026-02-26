@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "@fontsource/pretendard/400.css";
+@import "@fontsource/pretendard/500.css";
+@import "@fontsource/pretendard/700.css";
 
 :root {
   --bg: #07080b;
@@ -23,7 +26,7 @@
 
   --font-bebas: var(--font-bebas-neue);
   --font-space: var(--font-space-mono);
-  --font-noto: var(--font-noto-sans-kr);
+  --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
 /* 라이트 모드 (기본 탭) */
@@ -127,7 +130,7 @@
   --color-yellow-c: var(--yellow);
   --font-bebas: var(--font-bebas-neue);
   --font-space: var(--font-space-mono);
-  --font-noto: var(--font-noto-sans-kr);
+  --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
 * {
@@ -142,7 +145,7 @@ html, body {
   overflow: hidden;
   background: #050507;
   color: var(--text);
-  font-family: var(--font-noto), 'Noto Sans KR', sans-serif;
+  font-family: var(--font-pretendard);
   overscroll-behavior: contain;
 }
 

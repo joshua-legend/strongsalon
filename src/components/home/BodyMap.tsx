@@ -28,18 +28,19 @@ const musclesBack: MuscleCondition[] = [
 
 const statusToIntensity: Record<MuscleStatus, number> = {
   none: 1,
-  injury: 2,
+  injury: 5,
   worked: 3,
   fatigue: 4,
-  recover: 5,
+  recover: 2,
 };
 
+// none=검은색, 나머지=주황 그라데이션 (가벼움→심함)
 const statusColor: Record<MuscleStatus, string> = {
   none: '#454d62',
-  injury: '#ef4444',
-  worked: '#ff5e1f',
-  fatigue: '#f5c518',
-  recover: '#22c55e',
+  injury: 'rgba(229,55,15,.85)',
+  worked: 'rgba(255,94,31,.55)',
+  fatigue: 'rgba(255,120,50,.7)',
+  recover: 'rgba(255,140,70,.4)',
 };
 
 const statusLabel: Record<MuscleStatus, string> = {
@@ -115,7 +116,13 @@ export default function BodyMap() {
   const bodyData = useMemo(() => musclesToBodyData(muscles), [view]);
 
   const colors = useMemo(
-    () => [statusColor.none, statusColor.injury, statusColor.worked, statusColor.fatigue, statusColor.recover],
+    () => [
+      statusColor.none,
+      statusColor.recover,
+      statusColor.worked,
+      statusColor.fatigue,
+      statusColor.injury,
+    ],
     []
   );
 
@@ -174,7 +181,7 @@ export default function BodyMap() {
       </div>
 
       <div className="flex flex-wrap gap-2 mb-3 justify-center">
-        {(['injury', 'worked', 'fatigue', 'recover'] as MuscleStatus[]).map((s) => (
+        {(['none', 'recover', 'worked', 'fatigue', 'injury'] as MuscleStatus[]).map((s) => (
           <div key={s} className="flex items-center gap-1">
             <div
               className="w-2 h-2 rounded-full"

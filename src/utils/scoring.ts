@@ -16,13 +16,13 @@ export function calcBodyScore(profile: MemberProfile): number {
 export function calcCardioScore(profile: MemberProfile): number {
   const run = profile.cardio.find(c => c.type === 'run5k');
   const row = profile.cardio.find(c => c.type === 'row2k');
-  const ski = profile.cardio.find(c => c.type === 'ski1k');
+  const cycle = profile.cardio.find(c => c.type === 'cycle');
 
   const runPts = run ? Math.max(0, 100 - (run.pr - 1200) / 6) : 0;
   const rowPts = row ? Math.max(0, 100 - (row.pr - 360) / 3) : 0;
-  const skiPts = ski ? Math.max(0, 100 - (ski.pr - 180) / 2) : 0;
+  const cyclePts = cycle ? Math.max(0, 100 - (cycle.pr - 1200) / 4) : 0;
 
-  return Math.round((runPts + rowPts + skiPts) / 3);
+  return Math.round((runPts + rowPts + cyclePts) / 3);
 }
 
 export function calcTotalScore(profile: MemberProfile): number {

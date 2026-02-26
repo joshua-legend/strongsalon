@@ -37,7 +37,7 @@ export default function CardioRecords() {
           >
             <div>
               <p className="font-space text-[8px] uppercase" style={{ color: 'var(--muted)' }}>
-                {c.type === 'run5k' ? '5km' : c.type === 'row2k' ? '2km' : '1km'} PR
+                {c.type === 'run5k' ? '5km' : c.type === 'row2k' ? '2km' : '10km'} PR
               </p>
               <p className="font-bebas text-[22px] leading-none" style={{ color: 'var(--orange)' }}>
                 {formatTimeMmSs(c.pr)}

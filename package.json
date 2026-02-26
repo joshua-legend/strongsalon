@@ -9,8 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@fontsource/pretendard": "^5.2.5",
     "@mjcdev/react-body-highlighter": "^0.0.4",
     "framer-motion": "^12.34.3",
+    "lucide-react": "^0.575.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"
