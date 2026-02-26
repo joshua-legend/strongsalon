@@ -85,3 +85,33 @@ export interface MemberProfile {
   cardio: CardioRecord[];
   prMap: Record<string, number>;
 }
+
+// ── 운동 기록 페이지 (WorkoutPage) 전용 ──
+export type WorkoutMode = 'trainer' | 'free';
+export type WorkoutCondition = '최악' | '나쁨' | '좋음' | '최고' | '불타';
+
+export interface SetRecord {
+  id: string;
+  weight: number;
+  reps: number;
+}
+
+export interface TrainerExercise {
+  id: string;
+  icon: string;
+  name: string;
+  rx: string;
+  tSets: number;
+  prevPR: number | null;
+  sets: SetRecord[];
+}
+
+export interface FreeExercise {
+  icon: string;
+  name: string;
+  sets: SetRecord[];
+}
+
+export interface TrainerProg {
+  exercises: TrainerExercise[];
+}

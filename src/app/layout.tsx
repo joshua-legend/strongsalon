@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Space_Mono, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
-import { WorkoutProvider } from "@/context/WorkoutContext";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -47,9 +46,7 @@ export default function RootLayout({
     <html lang="ko">
       <body className={`${bebasNeue.variable} ${spaceMono.variable} ${notoSansKR.variable}`}>
         <AppProvider>
-          <WorkoutProvider>
-            {children}
-          </WorkoutProvider>
+          {children}
         </AppProvider>
       </body>
     </html>

@@ -1,42 +1,67 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useApp } from '@/context/AppContext';
-import { useWorkout } from '@/context/WorkoutContext';
-import { formatTime } from '@/utils/format';
+interface WorkoutTopbarProps {
+  elapsedSec: number;
+  onClear: () => void;
+  onSave: () => void;
+}
 
-export default function WorkoutTopbar() {
-  const { exitWorkout } = useApp();
-  const { elapsedSec, dispatch } = useWorkout();
-
-  useEffect(() => {
-    const id = setInterval(() => dispatch({ type: 'TICK_ELAPSED' }), 1000);
-    return () => clearInterval(id);
-  }, [dispatch]);
+export default function WorkoutTopbar({ elapsedSec, onClear, onSave }: WorkoutTopbarProps) {
+  const m = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+  const s = String(elapsedSec % 60).padStart(2, '0');
 
   return (
-    <div
-      className="flex items-center justify-between px-4 shrink-0"
+    <header
+      className="sticky top-0 z-40 h-14 flex items-center justify-between px-4 gap-3 border-b"
       style={{
-        height: 56,
-        background: 'var(--og, var(--orange))',
+        background: 'rgba(7,8,16,.93)',
+        backdropFilter: 'blur(20px)',
+        borderColor: 'var(--border)',
       }}
     >
-      <button
-        onClick={exitWorkout}
-        className="text-[16px] text-white/80 hover:text-white"
-      >
-        ‹ 뒤로
-      </button>
-
-      <div className="text-center">
-        <p className="text-[11px] font-medium text-white/90">가슴 + 삼두</p>
-        <p className="font-space text-[8px] text-white/60">{new Date().toLocaleDateString('ko-KR')}</p>
+      <div className="flex items-center gap-3">
+        <div className="font-[family-name:var(--font-bebas)] text-xl tracking-widest" style={{ color: 'var(--orange)' }}>
+          Fit<span style={{ color: 'var(--muted2)' }}>Log</span>
+        </div>
       </div>
-
-      <span className="font-bebas text-[22px] text-white tracking-wide">
-        {formatTime(elapsedSec)}
-      </span>
-    </div>
+      <div
+        className="flex items-center gap-2 rounded-full border px-3.5 py-1.5"
+        style={{ background: 'var(--s2)', borderColor: 'var(--border2)' }}
+      >
+        <div
+          className="w-1.5 h-1.5 rounded-full animate-pulse"
+          style={{ background: 'var(--orange)' }}
+        />
+        <div>
+          <div
+            className="font-[family-name:var(--font-bebas)] text-xl tracking-wider leading-none"
+            style={{ color: 'var(--orange)' }}
+          >
+            {m}:{s}
+          </div>
+          <div className="text-[8px] font-[family-name:var(--font-space)]" style={{ color: 'var(--muted2)' }}>
+            WORKOUT TIME
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onClear}
+          className="h-8 px-3.5 rounded-lg border text-[11px] font-[family-name:var(--font-space)] transition-colors"
+          style={{ borderColor: 'var(--border2)', background: 'var(--s2)', color: 'var(--muted2)' }}
+        >
+          🗑 초기화
+        </button>
+        <button
+          type="button"
+          onClick={onSave}
+          className="h-8 px-3.5 rounded-lg border-0 text-white text-xs font-semibold transition-opacity"
+          style={{ background: 'linear-gradient(135deg,var(--orange),var(--og2))' }}
+        >
+          💾 저장
+        </button>
+      </div>
+    </header>
   );
 }
