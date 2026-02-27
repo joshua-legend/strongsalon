@@ -120,8 +120,7 @@ export default function RestTimerCard() {
         <button
           type="button"
           onClick={handleToggle}
-          className="w-full py-2.5 rounded-lg border-0 text-white text-xs font-bold transition-opacity hover:opacity-85"
-          className="bg-gradient-to-br from-orange-500 to-orange-400"
+          className="w-full py-2.5 rounded-lg border-0 text-white text-xs font-bold transition-opacity hover:opacity-85 bg-gradient-to-br from-orange-500 to-orange-400"
         >
           {running ? '⏸ 정지' : leftSec <= 0 ? '▶ 시작' : '▶ 재개'}
         </button>

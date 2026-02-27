@@ -21,8 +21,7 @@ export default function PrevRecordCard({ onCopyPrev }: PrevRecordCardProps) {
         {PREV_RECORD.rows.map((row) => (
           <div
             key={row.n}
-            className="flex items-center gap-2.5 py-1.5 border-b last:border-b-0"
-            className="border-neutral-800"
+            className="flex items-center gap-2.5 py-1.5 border-b last:border-b-0 border-neutral-800"
           >
             <div
               className="font-bebas text-[9px] w-9 flex-shrink-0 text-neutral-400"
@@ -41,10 +40,7 @@ export default function PrevRecordCard({ onCopyPrev }: PrevRecordCardProps) {
             </div>
           </div>
         ))}
-        <div
-          className="flex justify-between pt-2 mt-1 border-t"
-          className="border-neutral-800"
-        >
+        <div className="flex justify-between pt-2 mt-1 border-t border-neutral-800">
           <span className="font-bebas text-[11px] text-neutral-400">
             총 볼륨
           </span>

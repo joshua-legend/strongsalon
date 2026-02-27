@@ -125,8 +125,7 @@ export default function TrainerExCard({
             <button
               type="button"
               onClick={() => onAddSet(exercise.id)}
-              className="flex items-center gap-1 py-1.5 px-3 rounded-md border border-dashed text-[11px] font-bold transition-colors hover:bg-orange-500/5"
-              className="border-orange-500/25 text-orange-400"
+              className="flex items-center gap-1 py-1.5 px-3 rounded-md border border-dashed text-[11px] font-bold transition-colors hover:bg-orange-500/5 border-orange-500/25 text-orange-400"
             >
               ＋ 세트 추가
             </button>
