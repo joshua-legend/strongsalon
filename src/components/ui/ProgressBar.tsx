@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 interface ProgressBarProps {
   value: number;
@@ -15,21 +15,20 @@ export default function ProgressBar({
   color,
   gradient,
   height = 6,
-  className = '',
+  className = "",
 }: ProgressBarProps) {
   const pct = Math.min(100, (value / max) * 100);
   return (
-    <div
-      className={`progress-track ${className}`}
-      style={{ height }}
-    >
+    <div className={`h-2 rounded-full overflow-hidden bg-neutral-950 ${className}`} style={{ height }}>
       <div
-        className="progress-fill"
+        className="progress-fill relative"
         style={{
           width: `${pct}%`,
-          background: gradient || color || 'var(--orange)',
+          background: gradient || color || "rgb(163,230,53)",
         }}
-      />
+      >
+        <div className="absolute inset-0 bg-stripes opacity-20" />
+      </div>
     </div>
   );
 }

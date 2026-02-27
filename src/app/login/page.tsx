@@ -14,26 +14,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      className="min-h-dvh flex flex-col items-center justify-center px-5"
-      style={{
-        background: 'var(--bg)',
-        color: 'var(--text)',
-      }}
-    >
+    <div className="min-h-dvh flex flex-col items-center justify-center px-5 bg-neutral-950 text-white">
       <div className="w-full max-w-[400px] flex flex-col items-center">
         <Link href="/" className="font-bebas text-[32px] tracking-wide leading-none mb-2">
-          <span style={{ color: 'var(--orange)' }}>Fit</span>
-          <span style={{ color: 'var(--muted2)' }}>Log</span>
+          <span className="text-orange-500">Fit</span>
+          <span className="text-neutral-400">Log</span>
         </Link>
-        <p className="font-space text-[10px] tracking-widest uppercase mb-12" style={{ color: 'var(--muted)' }}>
+        <p className="font-bebas text-[10px] tracking-widest uppercase mb-12 text-neutral-400">
           나의 피트니스 기록
         </p>
 
-        <h1 className="font-bebas text-[28px] tracking-wide mb-2" style={{ color: 'var(--text)' }}>
+        <h1 className="font-bebas text-[28px] tracking-wide mb-2 text-white">
           로그인
         </h1>
-        <p className="text-[13px] mb-10 text-center" style={{ color: 'var(--muted2)' }}>
+        <p className="text-[13px] mb-10 text-center text-neutral-400">
           구글이나 카카오로 간편하게 시작하세요
         </p>
 
@@ -41,12 +35,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full h-12 rounded-xl flex items-center justify-center gap-3 font-medium text-[14px] transition-opacity active:opacity-90"
-            style={{
-              background: 'var(--s1)',
-              border: '1px solid var(--border2)',
-              color: 'var(--text)',
-            }}
+            className="w-full h-12 rounded-xl flex items-center justify-center gap-3 font-medium text-[14px] transition-opacity active:opacity-90 bg-neutral-900 border border-neutral-700 text-white"
           >
             <svg width="20" height="20" viewBox="0 0 24 24">
               <path
@@ -86,7 +75,7 @@ export default function LoginPage() {
           </button>
         </div>
 
-        <p className="mt-8 text-[11px] text-center" style={{ color: 'var(--muted)' }}>
+        <p className="mt-8 text-[11px] text-center text-neutral-400">
           로그인 시 서비스 이용약관 및 개인정보 처리방침에 동의하게 됩니다.
         </p>
       </div>

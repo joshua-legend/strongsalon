@@ -13,8 +13,8 @@ export default function CardioRecords() {
             <div className="flex items-center gap-2">
               <span className="text-[20px]">{c.emoji}</span>
               <div>
-                <p className="text-[13px] font-medium" style={{ color: 'var(--text)' }}>{c.label}</p>
-                <p className="font-space text-[8px]" style={{ color: 'var(--muted)' }}>{c.date}</p>
+                <p className="text-[13px] font-medium text-white">{c.label}</p>
+                <p className="font-bebas text-[8px] text-neutral-400">{c.date}</p>
               </div>
             </div>
             <Badge variant="orange">🏅 PR</Badge>
@@ -23,27 +23,24 @@ export default function CardioRecords() {
           <div className="grid grid-cols-3 gap-3 mb-3">
             {c.stats.map((s, j) => (
               <div key={j} className="text-center">
-                <p className="font-space text-[8px] uppercase mb-1" style={{ color: 'var(--muted)' }}>{s.label}</p>
-                <p className="font-bebas text-[20px] leading-none" style={{ color: 'var(--text)' }}>
+                <p className="font-bebas text-[8px] uppercase mb-1 text-neutral-400">{s.label}</p>
+                <p className="font-bebas text-[20px] leading-none text-white">
                   {s.value}
                 </p>
               </div>
             ))}
           </div>
 
-          <div
-            className="rounded-xl p-3 flex items-center justify-between"
-            style={{ background: 'var(--s2)', border: '1px solid var(--border)' }}
-          >
+          <div className="rounded-xl p-3 flex items-center justify-between bg-neutral-900 border border-neutral-800">
             <div>
-              <p className="font-space text-[8px] uppercase" style={{ color: 'var(--muted)' }}>
+              <p className="font-bebas text-[8px] uppercase text-neutral-400">
                 {c.type === 'run5k' ? '5km' : c.type === 'row2k' ? '2km' : '10km'} PR
               </p>
-              <p className="font-bebas text-[22px] leading-none" style={{ color: 'var(--orange)' }}>
+              <p className="font-bebas text-[22px] leading-none text-orange-500">
                 {formatTimeMmSs(c.pr)}
               </p>
             </div>
-            <p className="text-[10px]" style={{ color: 'var(--green)' }}>
+            <p className="text-[10px] text-lime-400">
               ▲ {c.prDelta}
             </p>
           </div>

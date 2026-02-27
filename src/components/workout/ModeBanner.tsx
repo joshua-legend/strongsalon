@@ -15,24 +15,11 @@ export default function ModeBanner({
 }: ModeBannerProps) {
   if (mode === null) {
     return (
-      <div
-        className="rounded-xl p-5 sm:p-6 border"
-        style={{
-          background: "var(--s1)",
-          borderColor: "var(--border)",
-          boxShadow: "0 0 0 1px rgba(255,255,255,.04) inset",
-        }}
-      >
-        <h2
-          className="text-center text-sm font-bold mb-4"
-          style={{ color: "var(--text)" }}
-        >
+      <div className="rounded-xl p-5 sm:p-6 border border-neutral-800 bg-neutral-900 shadow-[0_0_0_1px_rgba(255,255,255,.04)_inset]">
+        <h2 className="text-center text-sm font-bold mb-4 text-white">
           운동 모드 선택
         </h2>
-        <p
-          className="text-center text-[11px] mb-5"
-          style={{ color: "var(--text2)" }}
-        >
+        <p className="text-center text-[11px] mb-5 text-neutral-400">
           오늘은 어떤 방식으로 운동할까요?
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -48,22 +35,14 @@ export default function ModeBanner({
             }}
           >
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--purple), var(--blue))",
-                boxShadow: "0 2px 10px rgba(168,85,247,.28)",
-              }}
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3 bg-gradient-to-br from-purple-500 to-cyan-400 shadow-[0_2px_10px_rgba(168,85,247,.28)]"
             >
               🤖
             </div>
-            <div
-              className="font-bold text-[13px] mb-0.5"
-              style={{ color: "var(--text)" }}
-            >
+            <div className="font-bold text-[13px] mb-0.5 text-white">
               AI 트레이닝
             </div>
-            <div className="text-[11px]" style={{ color: "var(--text2)" }}>
+            <div className="text-[11px] text-neutral-400">
               오늘의 프로그램이 자동으로 나와요
             </div>
           </button>
@@ -79,22 +58,14 @@ export default function ModeBanner({
             }}
           >
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--orange), var(--og2))",
-                boxShadow: "0 2px 10px rgba(255,77,0,.28)",
-              }}
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3 bg-gradient-to-br from-orange-500 to-orange-400 shadow-[0_2px_10px_rgba(249,115,22,.28)]"
             >
               🏃
             </div>
-            <div
-              className="font-bold text-[13px] mb-0.5"
-              style={{ color: "var(--text)" }}
-            >
+            <div className="font-bold text-[13px] mb-0.5 text-white">
               자유모드 트레이닝
             </div>
-            <div className="text-[11px]" style={{ color: "var(--text2)" }}>
+            <div className="text-[11px] text-neutral-400">
               근력 + 유산소 직접 선택해서 진행
             </div>
           </button>
@@ -117,20 +88,12 @@ export default function ModeBanner({
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0 flex-1 sm:flex-initial w-full">
             <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] shrink-0"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--orange), var(--og2))",
-                boxShadow: "0 2px 10px rgba(255,77,0,.28)",
-              }}
+              className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] shrink-0 bg-gradient-to-br from-orange-500 to-orange-400 shadow-[0_2px_10px_rgba(249,115,22,.28)]"
             >
               🏃
             </div>
             <div className="min-w-0 flex-1">
-              <div
-                className="font-black text-[15px] tracking-tight mb-0.5"
-                style={{ color: "var(--orange)" }}
-              >
+              <div className="font-black text-[15px] tracking-tight mb-0.5 text-orange-500">
                 자유모드 트레이닝
               </div>
             </div>
@@ -138,12 +101,7 @@ export default function ModeBanner({
               <button
                 type="button"
                 onClick={onShowModeChoice}
-                className="py-2 px-3 rounded-lg border text-[11px] font-medium transition-opacity hover:opacity-80"
-                style={{
-                  borderColor: "var(--border2)",
-                  background: "var(--s2)",
-                  color: "var(--muted2)",
-                }}
+                className="py-2 px-3 rounded-lg border border-neutral-700 bg-neutral-900 text-neutral-400 text-[11px] font-medium transition-opacity hover:opacity-80"
               >
                 모드 변경
               </button>
@@ -166,20 +124,13 @@ export default function ModeBanner({
     >
       <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0 flex-1 sm:flex-initial w-full">
-          <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] shrink-0"
-            style={{
-              background: "linear-gradient(135deg, var(--purple), var(--blue))",
-              boxShadow: "0 2px 10px rgba(168,85,247,.28)",
-            }}
-          >
-            🤖
-          </div>
-          <div className="min-w-0 flex-1">
             <div
-              className="font-black text-[15px] tracking-tight mb-0.5"
-              style={{ color: "var(--purple)" }}
+              className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] shrink-0 bg-gradient-to-br from-purple-500 to-cyan-400 shadow-[0_2px_10px_rgba(168,85,247,.28)]"
             >
+              🤖
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-black text-[15px] tracking-tight mb-0.5 text-purple-500">
               AI 트레이닝
             </div>
           </div>
@@ -187,12 +138,7 @@ export default function ModeBanner({
             <button
               type="button"
               onClick={onShowModeChoice}
-              className="py-2 px-3 rounded-lg border text-[11px] font-medium transition-opacity hover:opacity-80"
-              style={{
-                borderColor: "var(--border2)",
-                background: "var(--s2)",
-                color: "var(--muted2)",
-              }}
+              className="py-2 px-3 rounded-lg border border-neutral-700 bg-neutral-900 text-neutral-400 text-[11px] font-medium transition-opacity hover:opacity-80"
             >
               모드 변경
             </button>

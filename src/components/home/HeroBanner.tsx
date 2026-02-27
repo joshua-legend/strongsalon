@@ -1,91 +1,88 @@
 "use client";
 
 import { member } from "@/data/member";
-import { getGreeting, getDailyHeroMessage } from "@/utils/format";
-import Badge from "@/components/ui/Badge";
+import { attendance } from "@/data/attendance";
+import { getGreeting } from "@/utils/format";
 
-export default function HeroBanner() {
-  const greeting = getGreeting();
-  const heroMessage = getDailyHeroMessage();
-
-  return (
-    <div
-      className="rounded-2xl p-5 relative overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(255,94,31,.13), rgba(255,154,60,.06))",
-        border: "1px solid rgba(255,94,31,.2)",
-      }}
-    >
-      <p className="text-[12px] mb-1" style={{ color: "var(--muted2)" }}>
-        {greeting}, {member.name}님
-      </p>
-      <h1
-        className="font-bebas text-[30px] leading-tight tracking-wide mb-3"
-        style={{ color: "var(--text)" }}
-      >
-        {heroMessage}
-      </h1>
-
-      <Badge variant="orange" className="mb-4">
-        🔥 연속 {member.streak}일 출석 중!
-      </Badge>
-
-      <div className="grid grid-cols-3 gap-2.5 mt-4">
-        <StatItem
-          label="이달 출석률"
-          value={`${member.monthAttendRate}%`}
-          accent="var(--green)"
-        />
-        <StatItem
-          label="평균 볼륨"
-          value={member.avgVolume}
-          accent="var(--orange)"
-        />
-        <StatItem
-          label="평균 컨디션"
-          value={`${member.avgCondition}/5`}
-          accent="var(--blue)"
-        />
-      </div>
-    </div>
-  );
+function todayKey(): string {
+  const n = new Date();
+  return `${n.getFullYear()}-${n.getMonth() + 1}-${n.getDate()}`;
 }
 
-function StatItem({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent: string;
-}) {
+function isCheckedIn(): boolean {
+  const key = todayKey();
+  return attendance.some((a) => a.date === key);
+}
+
+function ptAlert(): "today" | "tomorrow" | null {
+  if (!member.nextPtDate) return null;
+  const [y, m, d] = member.nextPtDate.split("-").map(Number);
+  const target = new Date(y, m - 1, d);
+  const today  = new Date();
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const diff = Math.ceil((target.getTime() - todayMidnight.getTime()) / 86400000);
+  if (diff === 0) return "today";
+  if (diff === 1) return "tomorrow";
+  return null;
+}
+
+export default function HeroBanner() {
+  const greeting  = getGreeting();
+  const checkedIn = isCheckedIn();
+  const ptStatus  = ptAlert();
+
   return (
-    <div
-      className="rounded-xl py-3.5 px-3 text-center border"
-      style={{
-        background: "var(--s1)",
-        borderColor: "var(--border)",
-        boxShadow: "0 0 0 1px rgba(0,0,0,.03) inset",
-      }}
-    >
-      <p
-        className="font-space font-semibold uppercase tracking-wider mb-1.5"
-        style={{
-          fontSize: "9px",
-          color: "var(--muted2)",
-          letterSpacing: "0.12em",
-        }}
-      >
-        {label}
-      </p>
-      <p
-        className="font-bebas text-[20px] leading-none tracking-wide"
-        style={{ color: accent }}
-      >
-        {value}
-      </p>
+    <div className="rounded-2xl px-5 py-4 relative overflow-hidden bg-neutral-900 border border-neutral-800">
+      <div className="absolute -top-8 -right-8 w-32 h-32 bg-lime-500 opacity-10 blur-3xl rounded-full" />
+
+      <div className="relative z-10">
+        {/* 인사말 */}
+        <p className="font-bebas text-[11px] text-neutral-400 mb-3">
+          {greeting}, <span className="text-white">{member.name}</span>님
+        </p>
+
+        {/* 스트릭 + 오늘 출석 */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div>
+              <p className="font-bebas text-[52px] leading-none text-white">
+                {member.streak}
+              </p>
+              <p className="font-bebas text-[9px] text-neutral-500 uppercase tracking-wider -mt-1">
+                연속 출석 일
+              </p>
+            </div>
+            <span className="text-[32px] select-none">🔥</span>
+          </div>
+
+          {/* 오늘 출석 상태 */}
+          <div className={`flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl border transition-colors ${
+            checkedIn
+              ? "bg-lime-400/10 border-lime-400/30"
+              : "bg-neutral-800 border-neutral-700"
+          }`}>
+            <span className="text-[20px]">{checkedIn ? "✅" : "⬜"}</span>
+            <p className={`font-bebas text-[8px] uppercase tracking-wider ${
+              checkedIn ? "text-lime-400" : "text-neutral-500"
+            }`}>
+              {checkedIn ? "출석 완료" : "미출석"}
+            </p>
+          </div>
+        </div>
+
+        {/* PT 알림 */}
+        {ptStatus && (
+          <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/25">
+            <span className="text-[14px]">📋</span>
+            <p className="font-bebas text-[10px] text-orange-400">
+              {ptStatus === "today"
+                ? `오늘 PT 예정 — ${member.trainerName} 트레이너`
+                : `내일 PT 예정 — ${member.trainerName} 트레이너`
+              }
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

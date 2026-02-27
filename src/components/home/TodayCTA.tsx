@@ -10,7 +10,7 @@ export default function TodayCTA() {
       onClick={enterWorkout}
       className="w-full rounded-2xl p-5 relative overflow-hidden text-left group"
       style={{
-        background: 'linear-gradient(135deg, var(--orange), #ff8c4a)',
+        background: 'linear-gradient(135deg, #f97316, #fb923c)',
       }}
     >
       <div className="flex items-center gap-4">

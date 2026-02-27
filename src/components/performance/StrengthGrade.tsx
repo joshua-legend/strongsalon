@@ -26,23 +26,23 @@ export default function StrengthGrade() {
         <div className="flex items-center gap-3 mb-3">
           <span className="text-[28px]">🥇</span>
           <div>
-            <p className="font-bebas text-[30px] leading-none" style={{ color: 'var(--yellow)' }}>
+            <p className="font-bebas text-[30px] leading-none text-yellow-500">
               {member.level}
             </p>
-            <p className="text-[11px]" style={{ color: 'var(--muted2)' }}>
+            <p className="text-[11px] text-neutral-400">
               3대 합계 {member.liftTotal}kg
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 mb-2">
-          <span className="font-space text-[8px]" style={{ color: 'var(--muted)' }}>NOVICE</span>
+          <span className="font-bebas text-[8px] text-neutral-400">NOVICE</span>
           <div className="flex-1">
-            <ProgressBar value={360} max={405} gradient="linear-gradient(90deg, var(--yellow), var(--orange))" height={8} />
+            <ProgressBar value={360} max={405} gradient="linear-gradient(90deg, #eab308, #f97316)" height={8} />
           </div>
-          <span className="font-space text-[8px]" style={{ color: 'var(--muted)' }}>ADVANCED</span>
+          <span className="font-bebas text-[8px] text-neutral-400">ADVANCED</span>
         </div>
-        <p className="text-[10px] text-center" style={{ color: 'var(--muted2)' }}>
+        <p className="text-[10px] text-center text-neutral-400">
           ADVANCED까지 합계 +45kg 필요
         </p>
       </div>
@@ -53,12 +53,12 @@ export default function StrengthGrade() {
           {member.lifts.map((lift, i) => (
             <div key={i}>
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[12px] font-medium" style={{ color: 'var(--text)' }}>
+                <span className="text-[12px] font-medium text-white">
                   {lift.name}
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="font-bebas text-[18px]" style={{ color: lift.color }}>
-                    {lift.weight}<span className="text-[11px]" style={{ color: 'var(--muted2)' }}>kg</span>
+                    {lift.weight}<span className="text-[11px] text-neutral-400">kg</span>
                   </span>
                   <Badge variant={lift.grade === 'Intermediate' ? 'yellow' : 'orange'}>
                     {lift.grade}
@@ -75,8 +75,8 @@ export default function StrengthGrade() {
                 />
               </div>
               <div className="flex justify-between mt-1">
-                <span className="font-space text-[7px]" style={{ color: 'var(--muted)' }}>0kg</span>
-                <span className="font-space text-[7px]" style={{ color: 'var(--muted)' }}>상위 {100 - lift.pct}%</span>
+                <span className="font-bebas text-[7px] text-neutral-400">0kg</span>
+                <span className="font-bebas text-[7px] text-neutral-400">상위 {100 - lift.pct}%</span>
               </div>
             </div>
           ))}
@@ -88,13 +88,13 @@ export default function StrengthGrade() {
         <StrengthLineChart data={trendData} />
         <div className="flex gap-4 mt-3 justify-center">
           {[
-            { label: '벤치', color: 'var(--blue)' },
-            { label: '스쿼트', color: 'var(--green)' },
-            { label: '데드', color: 'var(--orange)' },
+            { label: '벤치', color: '#22d3ee' },
+            { label: '스쿼트', color: '#a3e635' },
+            { label: '데드', color: '#f97316' },
           ].map(l => (
             <div key={l.label} className="flex items-center gap-1">
               <div className="w-3 h-[2px] rounded-full" style={{ background: l.color }} />
-              <span className="font-space text-[8px]" style={{ color: 'var(--muted)' }}>{l.label}</span>
+              <span className="font-bebas text-[8px] text-neutral-400">{l.label}</span>
             </div>
           ))}
         </div>
@@ -122,18 +122,18 @@ function StrengthLineChart({ data }: { data: typeof trendData }) {
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${H}`}>
       {data.map((d, i) => (
-        <text key={i} x={getX(i)} y={H - 5} textAnchor="middle" fill="var(--muted)" fontSize="8" fontFamily="var(--font-space)">
+        <text key={i} x={getX(i)} y={H - 5} textAnchor="middle" fill="#a3a3a3" fontSize="8" fontFamily='"Bebas Neue", cursive'>
           {d.month}
         </text>
       ))}
-      <path d={makePath('bench')} fill="none" stroke="var(--blue)" strokeWidth="1.5" strokeLinecap="round" />
-      <path d={makePath('squat')} fill="none" stroke="var(--green)" strokeWidth="1.5" strokeLinecap="round" />
-      <path d={makePath('dead')} fill="none" stroke="var(--orange)" strokeWidth="1.5" strokeLinecap="round" />
+      <path d={makePath('bench')} fill="none" stroke="#22d3ee" strokeWidth="1.5" strokeLinecap="round" />
+      <path d={makePath('squat')} fill="none" stroke="#a3e635" strokeWidth="1.5" strokeLinecap="round" />
+      <path d={makePath('dead')} fill="none" stroke="#f97316" strokeWidth="1.5" strokeLinecap="round" />
       {data.map((d, i) => (
         <g key={i}>
-          <circle cx={getX(i)} cy={getY(d.bench)} r="2.5" fill="var(--blue)" />
-          <circle cx={getX(i)} cy={getY(d.squat)} r="2.5" fill="var(--green)" />
-          <circle cx={getX(i)} cy={getY(d.dead)} r="2.5" fill="var(--orange)" />
+          <circle cx={getX(i)} cy={getY(d.bench)} r="2.5" fill="#22d3ee" />
+          <circle cx={getX(i)} cy={getY(d.squat)} r="2.5" fill="#a3e635" />
+          <circle cx={getX(i)} cy={getY(d.dead)} r="2.5" fill="#f97316" />
         </g>
       ))}
     </svg>

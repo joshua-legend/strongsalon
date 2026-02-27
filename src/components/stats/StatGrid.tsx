@@ -34,48 +34,12 @@ export default function StatGrid({ year, month }: StatGridProps) {
   const monthLabel = `${Number.isFinite(Number(month)) ? Number(month) + 1 : 1}월`;
 
   const cards = [
-    {
-      label: `${monthLabel} 총 PT 출석일`,
-      value: safeDisplay(stats.ptDays),
-      unit: "일",
-      color: "var(--orange)",
-      icon: "🏋️",
-    },
-    {
-      label: `${monthLabel} 개인운동 출석률`,
-      value: safeDisplay(stats.selfRate),
-      unit: "%",
-      color: "var(--green)",
-      icon: "📊",
-    },
-    {
-      label: `${monthLabel} 총 볼륨`,
-      value: formatVolume(stats.totalVolume),
-      unit: "kg",
-      color: "var(--orange)",
-      icon: "🔥",
-    },
-    {
-      label: `${monthLabel} 운동 횟수`,
-      value: safeDisplay(stats.workoutCount),
-      unit: "회",
-      color: "var(--purple)",
-      icon: "🔄",
-    },
-    {
-      label: `${monthLabel} 평균 운동시간`,
-      value: safeDisplay(stats.avgMinutes),
-      unit: "분",
-      color: "var(--blue)",
-      icon: "⏱️",
-    },
-    {
-      label: `${monthLabel} 연속 출석`,
-      value: safeDisplay(stats.streak),
-      unit: "일",
-      color: "var(--yellow)",
-      icon: "🔥",
-    },
+    { label: `${monthLabel} 총 PT 출석일`, value: safeDisplay(stats.ptDays), unit: "일", color: "rgb(249,115,22)", icon: "🏋️" },
+    { label: `${monthLabel} 개인운동 출석률`, value: safeDisplay(stats.selfRate), unit: "%", color: "rgb(163,230,53)", icon: "📊" },
+    { label: `${monthLabel} 총 볼륨`, value: formatVolume(stats.totalVolume), unit: "kg", color: "rgb(249,115,22)", icon: "🔥" },
+    { label: `${monthLabel} 운동 횟수`, value: safeDisplay(stats.workoutCount), unit: "회", color: "rgb(168,85,247)", icon: "🔄" },
+    { label: `${monthLabel} 평균 운동시간`, value: safeDisplay(stats.avgMinutes), unit: "분", color: "rgb(34,211,238)", icon: "⏱️" },
+    { label: `${monthLabel} 연속 출석`, value: safeDisplay(stats.streak), unit: "일", color: "rgb(234,179,8)", icon: "🔥" },
   ];
 
   return (
@@ -93,7 +57,7 @@ export default function StatGrid({ year, month }: StatGridProps) {
             style={{ color: s.color }}
           >
             {s.value}
-            <span className="text-[16px]" style={{ color: "var(--muted2)" }}>
+            <span className="text-[16px] text-neutral-400">
               {s.unit}
             </span>
           </p>

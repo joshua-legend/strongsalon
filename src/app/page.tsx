@@ -6,7 +6,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import HomeTab from "@/components/home/HomeTab";
 import StatsTab from "@/components/stats/StatsTab";
 import PerformanceTab from "@/components/performance/PerformanceTab";
-import RankingTab from "@/components/ranking/RankingTab";
+import ExerciseInfoTab from "@/components/exercise-info/ExerciseInfoTab";
 import WorkoutPage from "@/components/workout/WorkoutPage";
 
 export default function Page() {
@@ -37,8 +37,8 @@ function TabContent() {
       <div style={{ display: activeTab === "stats" ? "block" : "none" }}>
         <StatsTab />
       </div>
-      <div style={{ display: activeTab === "ranking" ? "block" : "none" }}>
-        <RankingTab />
+      <div style={{ display: activeTab === "exercise-info" ? "block" : "none" }}>
+        <ExerciseInfoTab />
       </div>
     </>
   );

@@ -26,8 +26,8 @@ export default function VolumeChart() {
           const y = chartH - (tick / maxVal) * chartH;
           return (
             <g key={i}>
-              <line x1="0" y1={y} x2={chartW} y2={y} stroke="var(--border)" strokeWidth="1" />
-              <text x="-4" y={y + 3} textAnchor="end" fill="var(--muted)" fontSize="8" fontFamily="var(--font-space)">
+              <line x1="0" y1={y} x2={chartW} y2={y} stroke="#262626" strokeWidth="1" />
+              <text x="-4" y={y + 3} textAnchor="end" fill="#a3a3a3" fontSize="8" fontFamily='"Bebas Neue", cursive'>
                 {tick === 0 ? '0' : `${tick / 1000}k`}
               </text>
             </g>
@@ -45,8 +45,8 @@ export default function VolumeChart() {
               <defs>
                 {isCurrent && (
                   <linearGradient id={`barGrad${i}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--orange)" />
-                    <stop offset="100%" stopColor="#ff8c4a" />
+                    <stop offset="0%" stopColor="#f97316" />
+                    <stop offset="100%" stopColor="#fb923c" />
                   </linearGradient>
                 )}
               </defs>
@@ -56,7 +56,7 @@ export default function VolumeChart() {
                 width={barW}
                 height={h}
                 rx="4"
-                fill={isCurrent ? `url(#barGrad${i})` : 'var(--blue)'}
+                fill={isCurrent ? `url(#barGrad${i})` : '#22d3ee'}
                 opacity={isCurrent ? 1 : 0.6}
               >
                 <animate attributeName="height" from="0" to={h} dur="0.8s" fill="freeze"
@@ -66,18 +66,18 @@ export default function VolumeChart() {
               </rect>
               {isCurrent && (
                 <rect x={x - 2} y={y - 2} width={barW + 4} height={h + 4} rx="5"
-                  fill="none" stroke="var(--orange)" strokeOpacity="0.3" strokeWidth="1" />
+                  fill="none" stroke="#f97316" strokeOpacity="0.3" strokeWidth="1" />
               )}
               <text
                 x={x + barW / 2} y={y - 6}
-                textAnchor="middle" fill={isCurrent ? 'var(--orange)' : 'var(--muted2)'}
-                fontSize="8" fontFamily="var(--font-space)"
+                textAnchor="middle" fill={isCurrent ? '#f97316' : '#737373'}
+                fontSize="8" fontFamily='"Bebas Neue", cursive'
               >
                 {(w.value / 1000).toFixed(1)}k
               </text>
               <text
                 x={x + barW / 2} y={chartH + 16}
-                textAnchor="middle" fill="var(--muted)" fontSize="8" fontFamily="var(--font-space)"
+                textAnchor="middle" fill="#a3a3a3" fontSize="8" fontFamily='"Bebas Neue", cursive'
               >
                 {w.label}
               </text>

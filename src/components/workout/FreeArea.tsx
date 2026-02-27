@@ -42,7 +42,7 @@ export default function FreeArea({
       />
       <div className="flex flex-col gap-3">
         {ids.length > 0 && (
-          <h3 className="text-xs font-semibold px-0.5" style={{ color: 'var(--text)' }}>
+          <h3 className="text-xs font-semibold px-0.5 text-white">
             내 운동 ({ids.length}종목)
           </h3>
         )}

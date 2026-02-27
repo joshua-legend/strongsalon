@@ -43,39 +43,31 @@ export default function VolCard({
   const maxVol = items.length ? Math.max(...items.map((i) => i.vol)) : 0;
   const grad =
     mode === 'trainer'
-      ? 'linear-gradient(90deg,var(--purple),var(--blue))'
-      : 'linear-gradient(90deg,var(--orange),var(--og2))';
+      ? 'linear-gradient(90deg,#a855f7,#22d3ee)'
+      : 'linear-gradient(90deg,#f97316,#fb923c)';
 
   return (
-    <div
-      className="rounded-xl border overflow-hidden"
-      style={{ background: 'var(--s1)', borderColor: 'var(--border)' }}
-    >
-      <div className="py-3 px-4 border-b" style={{ borderColor: 'var(--border)' }}>
-        <div
-          className="text-xs font-semibold"
-          style={{ color: 'var(--text)', letterSpacing: '0.5px' }}
-        >
+    <div className="rounded-xl border border-neutral-800 overflow-hidden bg-neutral-900">
+      <div className="py-3 px-4 border-b border-neutral-800">
+        <div className="text-xs font-semibold text-white tracking-wide">
           오늘 총 볼륨
         </div>
       </div>
       <div className="p-4">
         <div className="flex items-baseline gap-1.5 mb-3.5">
           <div
-            className="font-[family-name:var(--font-bebas)] text-[56px] leading-none transition-colors"
-            style={{ color: mode === 'trainer' ? 'var(--purple)' : 'var(--orange)' }}
+            className={`font-bebas text-[56px] leading-none transition-colors ${mode === 'trainer' ? 'text-purple-500' : 'text-orange-500'}`}
           >
             {total.toLocaleString()}
           </div>
-          <div className="text-[13px] font-[family-name:var(--font-space)]" style={{ color: 'var(--muted2)' }}>
+          <div className="text-[13px] font-bebas text-neutral-400">
             kg
           </div>
         </div>
         <div className="flex flex-col gap-2">
           {items.length === 0 ? (
             <div
-              className="text-[10px] font-[family-name:var(--font-space)] text-center py-2.5 leading-relaxed"
-              style={{ color: 'var(--muted2)' }}
+              className="text-[10px] font-bebas text-center py-2.5 leading-relaxed text-neutral-400"
             >
               세트를 입력하면
               <br />
@@ -84,13 +76,10 @@ export default function VolCard({
           ) : (
             items.map((i) => (
               <div key={i.name} className="flex items-center gap-2">
-                <div
-                  className="text-[10px] w-16 overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0"
-                  style={{ color: 'var(--muted2)' }}
-                >
+                <div className="text-[10px] w-16 overflow-hidden text-ellipsis whitespace-nowrap flex-shrink-0 text-neutral-400">
                   {i.name}
                 </div>
-                <div className="flex-1 h-1.5 bg-[var(--s3)] rounded overflow-hidden">
+                <div className="flex-1 h-1.5 bg-neutral-950/50 rounded overflow-hidden">
                   <div
                     className="h-full rounded transition-[width] duration-300"
                     style={{
@@ -100,8 +89,7 @@ export default function VolCard({
                   />
                 </div>
                 <div
-                  className="text-[9px] font-[family-name:var(--font-space)] w-12 text-right flex-shrink-0"
-                  style={{ color: 'var(--muted2)' }}
+                  className="text-[9px] font-bebas w-12 text-right flex-shrink-0 text-neutral-400"
                 >
                   {i.vol.toLocaleString()}kg
                 </div>
@@ -119,10 +107,10 @@ export default function VolCard({
           >
             <span className="text-[22px]">🏅</span>
             <div>
-              <div className="text-xs font-bold" style={{ color: 'var(--green)' }}>
+              <div className="text-xs font-bold text-lime-400">
                 신기록 달성!
               </div>
-              <div className="text-[9px] font-[family-name:var(--font-space)] mt-0.5" style={{ color: 'var(--muted2)' }}>
+              <div className="text-[9px] font-bebas mt-0.5 text-neutral-400">
                 {prBadge.name} +{prBadge.diff.toFixed(1)}kg 🎉
               </div>
             </div>

@@ -34,24 +34,17 @@ export default function SetRow({
       style={{ gridTemplateColumns: '28px 1fr 1fr 52px 28px' }}
     >
       <div
-        className="flex items-center justify-center rounded-md border flex-shrink-0 w-7 h-7 font-[family-name:var(--font-space)] text-[10px] transition-colors"
-        style={{
-          background: done ? 'rgba(34,197,94,.1)' : 'var(--s3)',
-          borderColor: done ? 'rgba(34,197,94,.25)' : 'var(--border)',
-          color: done ? 'var(--green)' : 'var(--muted2)',
-        }}
+        className={`flex items-center justify-center rounded-md border flex-shrink-0 w-7 h-7 font-bebas text-[10px] transition-colors ${
+          done ? 'bg-lime-500/10 border-lime-500/25 text-lime-400' : 'bg-neutral-950/50 border-neutral-800 text-neutral-400'
+        }`}
       >
         {setNumber}
       </div>
-      <div
-        className="flex items-center rounded-lg border overflow-hidden transition-[border-color] focus-within:border-[length:1px] focus-within:border-solid"
-        style={{ background: 'var(--s3)', borderColor: 'var(--border)' }}
-      >
+      <div className="flex items-center rounded-lg border border-neutral-800 overflow-hidden transition-[border-color] focus-within:border-orange-500/40 bg-neutral-950/50">
         <button
           type="button"
           onClick={() => onAdjWeight(-2.5)}
-          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5"
-          style={{ color: 'var(--muted2)' }}
+          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-400"
         >
           −
         </button>
@@ -62,27 +55,21 @@ export default function SetRow({
           placeholder="kg"
           min={0}
           step={2.5}
-          className="flex-1 text-center bg-transparent border-none outline-none min-w-0 py-0 font-[family-name:var(--font-space)] text-xs"
-          style={{ color: 'var(--text)' }}
+          className="flex-1 text-center bg-transparent border-none outline-none min-w-0 py-0 font-bebas text-xs text-white"
         />
         <button
           type="button"
           onClick={() => onAdjWeight(2.5)}
-          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5"
-          style={{ color: 'var(--muted2)' }}
+          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-400"
         >
           ＋
         </button>
       </div>
-      <div
-        className="flex items-center rounded-lg border overflow-hidden transition-[border-color] focus-within:border-[length:1px] focus-within:border-solid"
-        style={{ background: 'var(--s3)', borderColor: 'var(--border)' }}
-      >
+      <div className="flex items-center rounded-lg border border-neutral-800 overflow-hidden transition-[border-color] focus-within:border-orange-500/40 bg-neutral-950/50">
         <button
           type="button"
           onClick={() => onAdjReps(-1)}
-          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5"
-          style={{ color: 'var(--muted2)' }}
+          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-400"
         >
           −
         </button>
@@ -93,29 +80,25 @@ export default function SetRow({
           placeholder="회"
           min={0}
           step={1}
-          className="flex-1 text-center bg-transparent border-none outline-none min-w-0 py-0 font-[family-name:var(--font-space)] text-xs"
-          style={{ color: 'var(--text)' }}
+          className="flex-1 text-center bg-transparent border-none outline-none min-w-0 py-0 font-bebas text-xs text-white"
         />
         <button
           type="button"
           onClick={() => onAdjReps(1)}
-          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5"
-          style={{ color: 'var(--muted2)' }}
+          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-400"
         >
           ＋
         </button>
       </div>
       <div
-        className="text-center font-[family-name:var(--font-space)] text-[10px] transition-colors"
-        style={{ color: volume > 0 ? 'var(--og3)' : 'var(--muted2)', fontWeight: volume > 0 ? 700 : undefined }}
+        className={`text-center font-bebas text-[10px] transition-colors ${volume > 0 ? 'text-orange-400 font-bold' : 'text-neutral-400'}`}
       >
         {volume > 0 ? `${volume.toLocaleString()}kg` : '—'}
       </div>
       <button
         type="button"
         onClick={onDelete}
-        className="w-7 h-7 rounded-md flex items-center justify-center text-xs transition-colors hover:bg-red-500/10 hover:text-red-500 flex-shrink-0"
-        style={{ color: 'var(--muted2)' }}
+        className="w-7 h-7 rounded-md flex items-center justify-center text-xs transition-colors hover:bg-red-500/10 hover:text-red-500 flex-shrink-0 text-neutral-400"
       >
         ✕
       </button>

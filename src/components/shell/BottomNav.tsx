@@ -5,32 +5,19 @@ import type { TabId } from "@/types";
 
 const tabs: { id: TabId; icon: string; label: string }[] = [
   { id: "home", icon: "🏠", label: "홈" },
-  { id: "performance", icon: "🏃", label: "수행능력" },
-  { id: "workout", icon: "💪", label: "" },
   { id: "stats", icon: "📊", label: "통계" },
-  { id: "ranking", icon: "🏅", label: "랭킹" },
+  { id: "workout", icon: "💪", label: "" },
+  { id: "performance", icon: "🏃", label: "내 실력" },
+  { id: "exercise-info", icon: "📋", label: "운동사전" },
 ];
 
-const WORKOUT_NAV_BG = {
-  dark: "rgba(26,9,0,.97)",
-  light: "rgba(248,244,240,.97)",
-} as const;
-
 export default function BottomNav() {
-  const { activeTab, theme, colorMode, setTab, enterWorkout } = useApp();
-  const isWorkoutMode = theme === "workout";
+  const { activeTab, theme, setTab, enterWorkout } = useApp();
 
   return (
     <nav
-      className="shrink-0 flex items-end justify-around relative"
-      style={{
-        height: 72,
-        background: isWorkoutMode ? WORKOUT_NAV_BG[colorMode] : "var(--nav-bg)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderTop: "1px solid var(--border)",
-        paddingBottom: "max(8px, env(safe-area-inset-bottom))",
-      }}
+      className="shrink-0 flex items-end justify-around relative h-[72px] bg-neutral-950/97 backdrop-blur-xl border-t border-neutral-800"
+      style={{ paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
     >
       {tabs.map((tab) => {
         const isCenter = tab.id === "workout";
@@ -45,10 +32,9 @@ export default function BottomNav() {
               style={{ marginTop: -10 }}
             >
               <div
-                className="w-[52px] h-[52px] rounded-full flex items-center justify-center text-[24px]"
+                className="w-[52px] h-[52px] rounded-full flex items-center justify-center text-[24px] bg-gradient-to-br from-lime-400 to-lime-500"
                 style={{
-                  background: "linear-gradient(135deg, var(--orange), #ff8c4a)",
-                  boxShadow: "0 4px 20px rgba(255,94,31,.45)",
+                  boxShadow: "0 4px 20px rgba(163,230,53,.45)",
                   transform: "translateY(-10px)",
                 }}
               >
@@ -71,11 +57,9 @@ export default function BottomNav() {
               {tab.icon}
             </span>
             <span
-              className="text-[10px] font-medium transition-colors duration-200"
-              style={{
-                fontFamily: "var(--font-pretendard)",
-                color: isActive ? "var(--orange)" : "var(--muted)",
-              }}
+              className={`text-[10px] font-medium transition-colors duration-200 font-sans ${
+                isActive ? "text-lime-400" : "text-neutral-400"
+              }`}
             >
               {tab.label}
             </span>

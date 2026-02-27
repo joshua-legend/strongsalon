@@ -25,31 +25,20 @@ export default function AddExerciseCard({
   };
 
   return (
-    <div
-      className="rounded-xl overflow-hidden border"
-      style={{
-        background: 'var(--s1)',
-        borderColor: 'rgba(255,77,0,.22)',
-        boxShadow: '0 0 0 1px rgba(255,77,0,.06) inset',
-      }}
-    >
-      <div
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 px-4 border-b"
-        style={{ borderColor: 'rgba(255,77,0,.15)' }}
-      >
+    <div className="rounded-xl overflow-hidden border border-orange-500/25 bg-neutral-900 shadow-[0_0_0_1px_rgba(249,115,22,.06)_inset]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-3 px-4 border-b border-orange-500/15">
         <div>
-          <h3 className="text-[13px] font-bold" style={{ color: 'var(--text)' }}>
+          <h3 className="text-[13px] font-bold text-white">
             ＋ 운동 종목 추가
           </h3>
-          <p className="text-[10px] mt-0.5" style={{ color: 'var(--text2)' }}>
+          <p className="text-[10px] mt-0.5 text-neutral-400">
             즐겨찾기에서 고르거나 직접 입력
           </p>
         </div>
         <button
           type="button"
           onClick={() => setFavOpen((o) => !o)}
-          className="text-[10px] font-bold cursor-pointer transition-opacity hover:opacity-80 flex items-center gap-1 self-start sm:self-center"
-          style={{ color: 'var(--orange)' }}
+          className="text-[10px] font-bold cursor-pointer transition-opacity hover:opacity-80 flex items-center gap-1 self-start sm:self-center text-orange-500"
         >
           {favOpen ? '접기 ▲' : '펼치기 ▾'}
         </button>
@@ -63,17 +52,9 @@ export default function AddExerciseCard({
               onClick={() => onToggleFav(icon, name)}
               className={`flex items-center gap-1 py-1.5 px-3 rounded-lg border text-[11px] font-medium transition-all whitespace-nowrap ${
                 selectedNames.has(name)
-                  ? 'border-[var(--orange)]'
-                  : 'border-[var(--border)] bg-[var(--s2)] text-[var(--muted2)] hover:border-[var(--border2)] hover:text-[var(--text)]'
+                  ? 'border-orange-500 bg-orange-500/12 text-orange-500'
+                  : 'border-neutral-800 bg-neutral-900 text-neutral-400 hover:border-neutral-700 hover:text-white'
               }`}
-              style={
-                selectedNames.has(name)
-                  ? {
-                      background: 'rgba(255,77,0,.12)',
-                      color: 'var(--orange)',
-                    }
-                  : undefined
-              }
             >
               <span className="text-xs">{icon}</span>
               <span>{name}</span>
@@ -87,18 +68,12 @@ export default function AddExerciseCard({
             onChange={(e) => setCustomInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAddCustom()}
             placeholder="직접 입력..."
-            className="flex-1 rounded-lg border py-2 px-3 text-[12px] outline-none transition-[border-color] placeholder:opacity-50 focus:border-[var(--orange)]"
-            style={{
-              background: 'var(--s2)',
-              borderColor: 'var(--border)',
-              color: 'var(--text)',
-            }}
+            className="flex-1 rounded-lg border border-neutral-800 py-2 px-3 text-[12px] outline-none transition-[border-color] placeholder:opacity-50 focus:border-orange-500 bg-neutral-900 text-white"
           />
           <button
             type="button"
             onClick={handleAddCustom}
-            className="h-9 px-4 rounded-lg border-0 text-white text-[12px] font-bold transition-all hover:opacity-90 active:scale-[0.98] shrink-0"
-            style={{ background: 'linear-gradient(135deg,var(--orange),var(--og2))', boxShadow: '0 2px 10px rgba(255,77,0,.25)' }}
+            className="h-9 px-4 rounded-lg border-0 text-white text-[12px] font-bold transition-all hover:opacity-90 active:scale-[0.98] shrink-0 bg-gradient-to-br from-orange-500 to-orange-400 shadow-[0_2px_10px_rgba(249,115,22,.25)]"
           >
             ＋ 추가
           </button>

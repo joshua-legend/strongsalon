@@ -1,7 +1,7 @@
 'use client';
 
 import { member } from '@/data/member';
-import { calcTotalScore, calcStrengthScore, calcBodyScore, calcCardioScore, getGrade, getGradeColor } from '@/utils/scoring';
+import { calcTotalScore, calcStrengthScore, calcBodyScore, calcCardioScore, getGrade } from '@/utils/scoring';
 import Badge from '@/components/ui/Badge';
 import RadarChart from './RadarChart';
 
@@ -11,7 +11,6 @@ export default function RankHero() {
   const body = calcBodyScore(member);
   const cardio = calcCardioScore(member);
   const grade = getGrade(total);
-  const gradeColor = getGradeColor(grade);
 
   return (
     <div
@@ -27,21 +26,16 @@ export default function RankHero() {
         </Badge>
 
         <p
-          className="font-bebas text-[72px] leading-none"
-          style={{
-            background: 'linear-gradient(135deg, var(--purple), var(--orange))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
+          className="font-bebas text-[72px] leading-none bg-gradient-to-r from-purple-500 to-orange-500 bg-clip-text text-transparent"
         >
           {total}
         </p>
-        <p className="font-space text-[9px] mt-1" style={{ color: 'var(--muted2)' }}>
+        <p className="font-bebas text-[9px] mt-1 text-neutral-400">
           / 100
         </p>
 
-        <p className="text-[11px] mt-2" style={{ color: 'var(--muted2)' }}>
-          전국 일반인 기준 <span style={{ color: 'var(--orange)' }}>상위 37%</span>
+        <p className="text-[11px] mt-2 text-neutral-400">
+          전국 일반인 기준 <span className="text-orange-500">상위 37%</span>
         </p>
       </div>
 

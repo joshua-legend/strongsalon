@@ -22,16 +22,14 @@ export default function GradeLegend() {
           return (
             <div
               key={g.grade}
-              className="flex-1 rounded-lg py-2 text-center relative"
-              style={{
-                background: isActive ? `${color}20` : 'var(--s2)',
-                border: `1px solid ${isActive ? `${color}50` : 'var(--border)'}`,
-              }}
+              className={`flex-1 rounded-lg py-2 text-center relative ${
+                isActive ? 'bg-yellow-500/20 border border-yellow-500/50' : 'bg-neutral-900 border border-neutral-800'
+              }`}
             >
-              <p className="font-space text-[7px] font-bold mb-0.5" style={{ color: isActive ? color : 'var(--muted2)' }}>
+              <p className={`font-bebas text-[7px] font-bold mb-0.5 ${isActive ? '' : 'text-neutral-400'}`} style={isActive ? { color } : undefined}>
                 {g.grade}
               </p>
-              <p className="font-space text-[7px]" style={{ color: 'var(--muted)' }}>{g.range}</p>
+              <p className="font-bebas text-[7px] text-neutral-400">{g.range}</p>
               {isActive && (
                 <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full" style={{ background: color }} />
               )}

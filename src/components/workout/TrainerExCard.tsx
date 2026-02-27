@@ -38,20 +38,13 @@ export default function TrainerExCard({
   };
 
   return (
-    <div
-      className="rounded-xl border overflow-hidden transition-[border-color] hover:border-[rgba(168,85,247,.2)]"
-      style={{ background: 'var(--s1)', borderColor: 'var(--border)' }}
-    >
+    <div className="rounded-xl border border-neutral-800 overflow-hidden transition-[border-color] hover:border-purple-500/30 bg-neutral-900">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-2.5 py-3 px-4 cursor-pointer border-b border-transparent hover:bg-white/[0.015] transition-colors text-left"
-        style={open ? { borderBottomColor: 'var(--border)' } : undefined}
+        className={`w-full flex items-center gap-2.5 py-3 px-4 cursor-pointer border-b border-transparent hover:bg-white/[0.015] transition-colors text-left ${open ? 'border-neutral-800' : ''}`}
       >
-        <div
-          className="font-[family-name:var(--font-bebas)] text-[22px] leading-none w-6 flex-shrink-0"
-          style={{ color: 'var(--purple)' }}
-        >
+        <div className="font-bebas text-[22px] leading-none w-6 flex-shrink-0 text-purple-500">
           {index + 1}
         </div>
         <div className="flex-1 min-w-0">
@@ -60,7 +53,7 @@ export default function TrainerExCard({
           </div>
         </div>
         <div
-          className={`text-[9px] font-[family-name:var(--font-space)] px-2.5 py-0.5 rounded-full border flex-shrink-0 ${
+          className={`text-[9px] font-bebas px-2.5 py-0.5 rounded-full border flex-shrink-0 ${
             isAllDone ? 'bg-green-500/10 text-green-500 border-green-500/25' : 'bg-purple-500/10 text-purple-500 border-purple-500/20'
           }`}
         >
@@ -69,10 +62,7 @@ export default function TrainerExCard({
         <div className="w-[18px] text-center flex-shrink-0 text-sm">
           {isAllDone ? '✅' : doneSets > 0 ? '⏳' : ''}
         </div>
-        <div
-          className={`text-[12px] flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
-          style={{ color: 'var(--muted2)' }}
-        >
+        <div className={`text-[12px] flex-shrink-0 transition-transform text-neutral-400 ${open ? 'rotate-180' : ''}`}>
           ▾
         </div>
       </button>
@@ -86,15 +76,15 @@ export default function TrainerExCard({
             }}
           >
             <span className="text-sm">📋</span>
-            <span className="text-[10px] flex-1" style={{ color: 'var(--muted2)' }}>
+            <span className="text-[10px] flex-1 text-neutral-400">
               트레이너 처방
             </span>
-            <span className="text-[11px] font-[family-name:var(--font-space)] font-bold whitespace-nowrap" style={{ color: 'var(--purple)' }}>
+            <span className="text-[11px] font-bebas font-bold whitespace-nowrap text-purple-500">
               {exercise.rx}
             </span>
           </div>
           {exercise.prevPR != null && (
-            <div className="flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-space)] text-green-500 mb-2 px-1">
+            <div className="flex items-center gap-1.5 text-[10px] font-bebas text-lime-400 mb-2 px-1">
               🏅 현재 PR · {exercise.prevPR}kg — 이걸 넘어봐요!
             </div>
           )}
@@ -102,16 +92,16 @@ export default function TrainerExCard({
             className="grid gap-2 mb-1 px-1"
             style={{ gridTemplateColumns: '28px 1fr 1fr 52px 28px' }}
           >
-            <span className="text-[8px] font-[family-name:var(--font-space)] text-center" style={{ color: 'var(--muted2)' }}>
+            <span className="text-[8px] font-bebas text-center text-neutral-400">
               SET
             </span>
-            <span className="text-[8px] font-[family-name:var(--font-space)] text-center" style={{ color: 'var(--muted2)' }}>
+            <span className="text-[8px] font-bebas text-center text-neutral-400">
               무게 kg
             </span>
-            <span className="text-[8px] font-[family-name:var(--font-space)] text-center" style={{ color: 'var(--muted2)' }}>
+            <span className="text-[8px] font-bebas text-center text-neutral-400">
               횟수 회
             </span>
-            <span className="text-[8px] font-[family-name:var(--font-space)] text-center" style={{ color: 'var(--muted2)' }}>
+            <span className="text-[8px] font-bebas text-center text-neutral-400">
               볼륨
             </span>
             <span />
@@ -136,15 +126,14 @@ export default function TrainerExCard({
               type="button"
               onClick={() => onAddSet(exercise.id)}
               className="flex items-center gap-1 py-1.5 px-3 rounded-md border border-dashed text-[11px] font-bold transition-colors hover:bg-orange-500/5"
-              style={{ borderColor: 'rgba(255,77,0,.22)', color: 'var(--og3)' }}
+              className="border-orange-500/25 text-orange-400"
             >
               ＋ 세트 추가
             </button>
             <button
               type="button"
               onClick={() => onCopyLastSet(exercise.id)}
-              className="py-1.5 px-2.5 rounded-md border text-[10px] font-[family-name:var(--font-space)] transition-colors hover:border-[var(--border2)]"
-              style={{ borderColor: 'var(--border)', color: 'var(--muted2)' }}
+              className="py-1.5 px-2.5 rounded-md border border-neutral-800 text-neutral-400 text-[10px] font-bebas transition-colors hover:border-neutral-700"
             >
               ↕ 이전 복사
             </button>

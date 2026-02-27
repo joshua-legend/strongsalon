@@ -19,12 +19,11 @@ export default function PeriodChips({ value, onChange }: PeriodChipsProps) {
         <button
           key={p.id}
           onClick={() => onChange(p.id)}
-          className="px-3.5 py-1.5 rounded-[20px] text-[11px] font-medium transition-all duration-200"
-          style={{
-            background: value === p.id ? 'rgba(255,94,31,.12)' : 'var(--s2)',
-            border: `1px solid ${value === p.id ? 'rgba(255,94,31,.3)' : 'var(--border)'}`,
-            color: value === p.id ? 'var(--orange)' : 'var(--muted2)',
-          }}
+          className={`px-3.5 py-1.5 rounded-[20px] text-[11px] font-medium transition-all duration-200 ${
+            value === p.id
+              ? 'bg-orange-500/12 border border-orange-500/30 text-orange-500'
+              : 'bg-neutral-900 border border-neutral-800 text-neutral-400'
+          }`}
         >
           {p.label}
         </button>

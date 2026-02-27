@@ -59,18 +59,12 @@ export default function RestTimerCard() {
   const display = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
   return (
-    <div
-      className="rounded-xl border overflow-hidden"
-      style={{ background: 'var(--s1)', borderColor: 'var(--border)' }}
-    >
-      <div className="py-3 px-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
-        <div
-          className="text-xs font-semibold"
-          style={{ color: 'var(--text)', letterSpacing: '0.5px' }}
-        >
+    <div className="rounded-xl border border-neutral-800 overflow-hidden bg-neutral-900">
+      <div className="py-3 px-4 border-b border-neutral-800 flex items-center justify-between">
+        <div className="text-xs font-semibold text-white tracking-wide">
           세트 휴식 타이머
         </div>
-        <div className="text-[9px] font-[family-name:var(--font-space)]" style={{ color: 'var(--muted2)' }}>
+        <div className="text-[9px] font-bebas text-neutral-400">
           {running ? '카운트다운' : leftSec === 0 ? '완료 ✓' : '대기중'}
         </div>
       </div>
@@ -82,7 +76,7 @@ export default function RestTimerCard() {
               cy="50"
               r="45"
               fill="none"
-              stroke="var(--s3)"
+              stroke="#262626"
               strokeWidth={5}
             />
             <circle
@@ -90,7 +84,7 @@ export default function RestTimerCard() {
               cy="50"
               r="45"
               fill="none"
-              stroke={leftSec === 0 ? 'var(--green)' : 'var(--orange)'}
+              stroke={leftSec === 0 ? '#22c55e' : '#f97316'}
               strokeWidth={5}
               strokeLinecap="round"
               strokeDasharray={RING_CIRC}
@@ -100,12 +94,11 @@ export default function RestTimerCard() {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div
-              className="font-[family-name:var(--font-bebas)] text-4xl tracking-wider leading-none"
-              style={{ color: 'var(--text)' }}
+              className="font-bebas text-4xl tracking-wider leading-none text-white"
             >
               {display}
             </div>
-            <div className="text-[8px] font-[family-name:var(--font-space)]" style={{ color: 'var(--muted2)' }}>
+            <div className="text-[8px] font-bebas text-neutral-400">
               REST
             </div>
           </div>
@@ -116,12 +109,9 @@ export default function RestTimerCard() {
               key={sec}
               type="button"
               onClick={() => handleSetPreset(sec, idx)}
-              className={`flex-1 py-1.5 px-1 rounded-md border text-[10px] font-[family-name:var(--font-space)] text-center transition-all ${
-                presetIdx === idx ? 'border-[rgba(255,77,0,.3)] bg-[rgba(255,77,0,.1)]' : 'border-[var(--border)] bg-[var(--s2)]'
+              className={`flex-1 py-1.5 px-1 rounded-md border text-[10px] font-bebas text-center transition-all ${
+                presetIdx === idx ? 'border-orange-500/30 bg-orange-500/10 text-orange-500' : 'border-neutral-800 bg-neutral-900 text-neutral-400'
               }`}
-              style={{
-                color: presetIdx === idx ? 'var(--orange)' : 'var(--muted2)',
-              }}
             >
               {sec === 60 ? '1분' : sec === 90 ? '90초' : sec === 120 ? '2분' : '3분'}
             </button>
@@ -131,7 +121,7 @@ export default function RestTimerCard() {
           type="button"
           onClick={handleToggle}
           className="w-full py-2.5 rounded-lg border-0 text-white text-xs font-bold transition-opacity hover:opacity-85"
-          style={{ background: 'linear-gradient(135deg,var(--orange),var(--og2))' }}
+          className="bg-gradient-to-br from-orange-500 to-orange-400"
         >
           {running ? '⏸ 정지' : leftSec <= 0 ? '▶ 시작' : '▶ 재개'}
         </button>

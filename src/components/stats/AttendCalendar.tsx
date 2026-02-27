@@ -6,9 +6,9 @@ import { workoutHistory } from "@/data/workoutHistory";
 import { getMonthGrid, getWeekDays, isToday } from "@/utils/calendar";
 
 const typeColor: Record<string, string> = {
-  pt: "var(--orange)",
-  self: "var(--green)",
-  both: "var(--purple)",
+  pt: "rgb(249,115,22)",
+  self: "rgb(163,230,53)",
+  both: "rgb(168,85,247)",
 };
 
 const typeLabel: Record<string, string> = {
@@ -43,23 +43,16 @@ function DayWorkoutDetail({
 }) {
   if (!record && !attendType) {
     return (
-      <div
-        className="mt-4 pt-3 flex flex-col gap-2"
-        style={{ borderTop: "1px solid var(--border)" }}
-      >
+      <div className="mt-4 pt-3 flex flex-col gap-2 border-t border-neutral-800">
         <div className="flex items-center justify-between">
-          <span className="font-space text-[10px]" style={{ color: "var(--muted2)" }}>
+          <span className="font-bebas text-[10px] text-neutral-400">
             {formatDisplayDate(dateKey)}
           </span>
-          <button
-            onClick={onClose}
-            className="text-[12px] px-2 py-1 rounded"
-            style={{ color: "var(--muted2)", background: "var(--s3)" }}
-          >
+          <button onClick={onClose} className="text-[12px] px-2 py-1 rounded text-neutral-400 bg-neutral-950">
             닫기
           </button>
         </div>
-        <p className="font-space text-[10px] py-4 text-center" style={{ color: "var(--muted2)" }}>
+        <p className="font-bebas text-[10px] py-4 text-center text-neutral-400">
           해당 날짜에 운동 기록이 없습니다
         </p>
       </div>
@@ -67,18 +60,15 @@ function DayWorkoutDetail({
   }
 
   return (
-    <div
-      className="mt-4 pt-3 flex flex-col gap-3"
-      style={{ borderTop: "1px solid var(--border)" }}
-    >
+    <div className="mt-4 pt-3 flex flex-col gap-3 border-t border-neutral-800">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="font-space text-[10px]" style={{ color: "var(--muted2)" }}>
+          <span className="font-bebas text-[10px] text-neutral-400">
             {formatDisplayDate(dateKey)}
           </span>
           {attendType && (
             <span
-              className="font-space text-[8px] px-1.5 py-0.5 rounded"
+              className="font-bebas text-[8px] px-1.5 py-0.5 rounded"
               style={{
                 background: `${typeColor[attendType]}25`,
                 color: typeColor[attendType],
@@ -88,29 +78,21 @@ function DayWorkoutDetail({
             </span>
           )}
         </div>
-        <button
-          onClick={onClose}
-          className="text-[12px] px-2 py-1 rounded"
-          style={{ color: "var(--muted2)", background: "var(--s3)" }}
-        >
+        <button onClick={onClose} className="text-[12px] px-2 py-1 rounded text-neutral-400 bg-neutral-950">
           닫기
         </button>
       </div>
 
       {record?.exercises && record.exercises.length > 0 && (
         <div className="flex flex-col gap-3">
-          <p className="font-space text-[9px]" style={{ color: "var(--muted)" }}>
+          <p className="font-bebas text-[9px] text-neutral-500">
             운동 기록
           </p>
           {record.exercises.map((ex, idx) => (
-            <div
-              key={idx}
-              className="rounded-lg p-2.5"
-              style={{ background: "var(--s2)", border: "1px solid var(--border)" }}
-            >
+            <div key={idx} className="rounded-lg p-2.5 bg-neutral-900 border border-neutral-800">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-[14px]">{ex.icon}</span>
-                <span className="font-space text-[11px]" style={{ color: "var(--text)" }}>
+                <span className="font-bebas text-[11px] text-white">
                   {ex.name}
                 </span>
               </div>
@@ -118,10 +100,10 @@ function DayWorkoutDetail({
                 {ex.sets.map((s, si) => (
                   <span
                     key={si}
-                    className="font-space text-[9px] px-2 py-1 rounded"
+                    className="font-bebas text-[9px] px-2 py-1 rounded"
                     style={{
-                      background: "var(--s3)",
-                      color: "var(--muted2)",
+                      background: "rgb(23,23,23)",
+                      color: "rgb(163,163,163)",
                     }}
                   >
                     {s.weight > 0 ? `${s.weight}kg × ${s.reps}회` : `${s.reps}회`}
@@ -134,21 +116,19 @@ function DayWorkoutDetail({
       )}
 
       {record?.cardio && (
-        <div
-          className="rounded-lg p-2.5 flex items-center justify-between"
-          style={{ background: "var(--s2)", border: "1px solid var(--border)" }}
+        <div className="rounded-lg p-2.5 flex items-center justify-between bg-neutral-900 border border-neutral-800"
         >
-          <span className="font-space text-[11px]" style={{ color: "var(--text)" }}>
+          <span className="font-bebas text-[11px] text-white">
             🏃 {record.cardio.label}
           </span>
-          <span className="font-space text-[10px]" style={{ color: "var(--muted2)" }}>
+          <span className="font-bebas text-[10px] text-neutral-400">
             {record.cardio.value}
           </span>
         </div>
       )}
 
       {attendType && !record?.exercises?.length && (
-        <p className="font-space text-[10px] py-2" style={{ color: "var(--muted2)" }}>
+        <p className="font-bebas text-[10px] py-2 text-neutral-400">
           상세 운동 기록이 없습니다
         </p>
       )}
@@ -191,10 +171,7 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
               className="w-2 h-2 rounded-full"
               style={{ background: l.color }}
             />
-            <span
-              className="font-space text-[8px]"
-              style={{ color: "var(--muted2)" }}
-            >
+            <span className="font-bebas text-[8px] text-neutral-400">
               {l.label}
             </span>
           </div>
@@ -202,35 +179,20 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
       </div>
 
       <div className="flex items-center justify-between mb-3">
-        <button
-          onClick={onPrevMonth}
-          className="text-[16px] px-2"
-          style={{ color: "var(--muted2)" }}
-        >
+        <button onClick={onPrevMonth} className="text-[16px] px-2 text-neutral-400">
           ‹
         </button>
-        <span
-          className="font-bebas text-[18px]"
-          style={{ color: "var(--text)" }}
-        >
+        <span className="font-bebas text-[18px] text-white">
           {year}년 {month + 1}월
         </span>
-        <button
-          onClick={onNextMonth}
-          className="text-[16px] px-2"
-          style={{ color: "var(--muted2)" }}
-        >
+        <button onClick={onNextMonth} className="text-[16px] px-2 text-neutral-400">
           ›
         </button>
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-1">
         {dayNames.map((d) => (
-          <div
-            key={d}
-            className="text-center font-space text-[8px] py-1"
-            style={{ color: "var(--muted)" }}
-          >
+          <div key={d} className="text-center font-bebas text-[8px] py-1 text-neutral-500">
             {d}
           </div>
         ))}
@@ -253,18 +215,18 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
               style={{
                 background: type ? `${typeColor[type]}15` : "transparent",
                 border: isSelected
-                  ? "2px solid var(--orange)"
+                  ? "2px solid rgb(249,115,22)"
                   : today
-                    ? "1.5px solid var(--orange)"
+                    ? "1.5px solid rgb(249,115,22)"
                     : type
                       ? `1px solid ${typeColor[type]}30`
                       : "1px solid transparent",
-                color: type ? typeColor[type] : "var(--muted2)",
+                color: type ? typeColor[type] : "rgb(163,163,163)",
               }}
             >
               <span className="leading-none">{day}</span>
               {type && (
-                <span className="font-space text-[6px] leading-none opacity-80">
+                <span className="font-bebas text-[6px] leading-none opacity-80">
                   {typeLabel[type]}
                 </span>
               )}

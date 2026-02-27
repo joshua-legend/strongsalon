@@ -139,29 +139,27 @@ export default function BodyMap() {
         <div className="flex gap-1">
           <button
             onClick={() => {
-              setView('front');
+              setView("front");
               setSelected(null);
             }}
-            className="px-3 py-1 rounded-full text-[10px] font-medium transition-colors"
-            style={{
-              background: view === 'front' ? 'rgba(255,94,31,.12)' : 'var(--s2)',
-              color: view === 'front' ? 'var(--orange)' : 'var(--muted)',
-              border: `1px solid ${view === 'front' ? 'rgba(255,94,31,.3)' : 'var(--border)'}`,
-            }}
+            className={`px-3 py-1 rounded-full text-[10px] font-medium transition-colors ${
+              view === "front"
+                ? "bg-lime-400/15 text-lime-400 border border-lime-400/30"
+                : "bg-neutral-900 text-neutral-400 border border-neutral-800"
+            }`}
           >
             앞면
           </button>
           <button
             onClick={() => {
-              setView('back');
+              setView("back");
               setSelected(null);
             }}
-            className="px-3 py-1 rounded-full text-[10px] font-medium transition-colors"
-            style={{
-              background: view === 'back' ? 'rgba(255,94,31,.12)' : 'var(--s2)',
-              color: view === 'back' ? 'var(--orange)' : 'var(--muted)',
-              border: `1px solid ${view === 'back' ? 'rgba(255,94,31,.3)' : 'var(--border)'}`,
-            }}
+            className={`px-3 py-1 rounded-full text-[10px] font-medium transition-colors ${
+              view === "back"
+                ? "bg-lime-400/15 text-lime-400 border border-lime-400/30"
+                : "bg-neutral-900 text-neutral-400 border border-neutral-800"
+            }`}
           >
             뒷면
           </button>
@@ -187,7 +185,7 @@ export default function BodyMap() {
               className="w-2 h-2 rounded-full"
               style={{ background: statusColor[s] }}
             />
-            <span className="font-space text-[8px]" style={{ color: 'var(--muted2)' }}>
+            <span className="font-bebas text-[8px] text-neutral-400">
               {statusLabel[s]}
             </span>
           </div>
@@ -196,19 +194,14 @@ export default function BodyMap() {
 
       {selected && (
         <div
-          className="rounded-xl p-3 mt-2 transition-all duration-200"
-          style={{
-            background: 'var(--s2)',
-            border: `1px solid ${statusColor[selected.status]}33`,
-          }}
+          className="rounded-xl p-3 mt-2 transition-all duration-200 bg-neutral-900"
+          style={{ border: `1px solid ${statusColor[selected.status]}33` }}
         >
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[13px] font-medium" style={{ color: 'var(--text)' }}>
-              {selected.name}
-            </span>
+            <span className="text-[13px] font-medium text-white">{selected.name}</span>
             <Badge variant={statusBadge[selected.status]}>{statusLabel[selected.status]}</Badge>
           </div>
-          <p className="text-[11px]" style={{ color: 'var(--muted2)' }}>
+          <p className="text-[11px] text-neutral-400">
             {selected.detail}
           </p>
         </div>

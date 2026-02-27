@@ -28,10 +28,10 @@ export default function CardioArea({
     <div className="flex flex-col gap-3">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-0.5">
         <div>
-          <h3 className="text-xs font-semibold" style={{ color: 'var(--text)' }}>
+          <h3 className="text-xs font-semibold text-white">
             유산소
           </h3>
-          <p className="text-[10px] mt-0.5" style={{ color: 'var(--text2)' }}>
+          <p className="text-[10px] mt-0.5 text-neutral-400">
             거리(km) · 시간(분) 입력
           </p>
         </div>
@@ -41,12 +41,7 @@ export default function CardioArea({
               key={type}
               type="button"
               onClick={() => onAdd(type)}
-              className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg border text-[11px] font-medium transition-all"
-              style={{
-                borderColor: 'var(--border)',
-                background: 'var(--s2)',
-                color: 'var(--text)',
-              }}
+              className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg border text-[11px] font-medium transition-all border-neutral-800 bg-neutral-900 text-white"
             >
               <span>{CARDIO_META[type].emoji}</span>
               <span>+ {CARDIO_META[type].label}</span>
@@ -62,19 +57,16 @@ export default function CardioArea({
               key={e.id}
               className="flex flex-wrap items-center gap-2 py-2.5 px-3 rounded-xl border"
               style={{
-                background: 'var(--s1)',
-                borderColor: 'var(--border)',
+                background: 'rgb(23,23,23)',
+                borderColor: 'rgb(38,38,38)',
               }}
             >
-              <div
-                className="flex items-center gap-1.5 text-[12px] font-medium shrink-0"
-                style={{ color: 'var(--text)' }}
-              >
+              <div className="flex items-center gap-1.5 text-[12px] font-medium shrink-0 text-white">
                 <span>{CARDIO_META[e.type].emoji}</span>
                 <span>{CARDIO_META[e.type].label}</span>
               </div>
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <label className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--text2)' }}>
+                <label className="flex items-center gap-1.5 text-[11px] text-neutral-400">
                   <span>km</span>
                   <input
                     type="number"
@@ -86,15 +78,10 @@ export default function CardioArea({
                         distanceKm: parseFloat(ev.target.value) || 0,
                       })
                     }
-                    className="w-16 rounded border py-1.5 px-2 text-[12px] outline-none focus:border-[var(--blue)]"
-                    style={{
-                      background: 'var(--s2)',
-                      borderColor: 'var(--border)',
-                      color: 'var(--text)',
-                    }}
+                    className="w-16 rounded border border-neutral-800 py-1.5 px-2 text-[12px] outline-none focus:border-cyan-400 bg-neutral-900 text-white"
                   />
                 </label>
-                <label className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--text2)' }}>
+                <label className="flex items-center gap-1.5 text-[11px] text-neutral-400">
                   <span>분</span>
                   <input
                     type="number"
@@ -106,20 +93,14 @@ export default function CardioArea({
                         timeMinutes: parseInt(ev.target.value, 10) || 0,
                       })
                     }
-                    className="w-14 rounded border py-1.5 px-2 text-[12px] outline-none focus:border-[var(--blue)]"
-                    style={{
-                      background: 'var(--s2)',
-                      borderColor: 'var(--border)',
-                      color: 'var(--text)',
-                    }}
+                    className="w-14 rounded border border-neutral-800 py-1.5 px-2 text-[12px] outline-none focus:border-cyan-400 bg-neutral-900 text-white"
                   />
                 </label>
               </div>
               <button
                 type="button"
                 onClick={() => onRemove(e.id)}
-                className="shrink-0 p-1.5 rounded-lg transition-opacity hover:opacity-80"
-                style={{ background: 'var(--s2)', color: 'var(--muted2)' }}
+                className="shrink-0 p-1.5 rounded-lg transition-opacity hover:opacity-80 bg-neutral-900 text-neutral-400"
                 aria-label="삭제"
               >
                 🗑

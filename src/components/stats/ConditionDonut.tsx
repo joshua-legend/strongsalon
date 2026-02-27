@@ -1,10 +1,10 @@
 'use client';
 
 const data = [
-  { label: '🔥 최고', pct: 28, color: 'var(--orange)' },
-  { label: '😊 좋음', pct: 45, color: 'var(--green)' },
-  { label: '😐 보통', pct: 20, color: 'var(--yellow)' },
-  { label: '😩 피로', pct: 7, color: 'var(--red)' },
+  { label: '🔥 최고', pct: 28, color: '#f97316' },
+  { label: '😊 좋음', pct: 45, color: '#a3e635' },
+  { label: '😐 보통', pct: 20, color: '#eab308' },
+  { label: '😩 피로', pct: 7, color: '#ef4444' },
 ];
 
 const R = 52;
@@ -41,8 +41,8 @@ export default function ConditionDonut() {
             })}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="font-bebas text-[28px] leading-none" style={{ color: 'var(--orange)' }}>4.2</span>
-            <span className="font-space text-[8px]" style={{ color: 'var(--muted)' }}>평균</span>
+            <span className="font-bebas text-[28px] leading-none text-orange-500">4.2</span>
+            <span className="font-bebas text-[8px] text-neutral-400">평균</span>
           </div>
         </div>
 
@@ -50,13 +50,13 @@ export default function ConditionDonut() {
           {data.map((d, i) => (
             <div key={i} className="flex items-center gap-2">
               <span className="text-[11px] w-16 shrink-0">{d.label}</span>
-              <div className="flex-1 h-[5px] rounded-full overflow-hidden" style={{ background: 'var(--s3)' }}>
+              <div className="flex-1 h-[5px] rounded-full overflow-hidden bg-neutral-950/50">
                 <div
                   className="h-full rounded-full transition-all duration-1000"
                   style={{ width: `${d.pct}%`, background: d.color }}
                 />
               </div>
-              <span className="font-space text-[9px] w-8 text-right" style={{ color: 'var(--muted2)' }}>
+              <span className="font-bebas text-[9px] w-8 text-right text-neutral-500">
                 {d.pct}%
               </span>
             </div>

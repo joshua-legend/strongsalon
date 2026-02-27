@@ -35,8 +35,8 @@ const sections: CardSection[] = [
     score: calcBodyScore(member),
     source: '동연령·성별 표준',
     details: [
-      { label: '골격근량', value: `${member.bodyComp.muscle}kg`, pct: 68, color: 'var(--blue)' },
-      { label: '체지방률', value: `${member.bodyComp.fatPct}%`, pct: 62, color: 'var(--orange)' },
+      { label: '골격근량', value: `${member.bodyComp.muscle}kg`, pct: 68, color: '#22d3ee' },
+      { label: '체지방률', value: `${member.bodyComp.fatPct}%`, pct: 62, color: '#f97316' },
     ],
   },
   {
@@ -46,9 +46,9 @@ const sections: CardSection[] = [
     score: calcCardioScore(member),
     source: 'Cooper test · Concept2',
     details: [
-      { label: '5km 런', value: '26:40', pct: 55, color: 'var(--green)' },
-      { label: '로잉 2km', value: '7:38', pct: 50, color: 'var(--blue)' },
-      { label: '싸이클 10km', value: '21:20', pct: 58, color: 'var(--orange)' },
+      { label: '5km 런', value: '26:40', pct: 55, color: '#a3e635' },
+      { label: '로잉 2km', value: '7:38', pct: 50, color: '#22d3ee' },
+      { label: '싸이클 10km', value: '21:20', pct: 58, color: '#f97316' },
     ],
   },
 ];
@@ -67,18 +67,14 @@ export default function RankCards() {
             <div className="flex items-center gap-3">
               <span className="text-[20px]">{s.icon}</span>
               <div className="text-left">
-                <p className="text-[13px] font-medium" style={{ color: 'var(--text)' }}>{s.title}</p>
-                <p className="font-space text-[8px]" style={{ color: 'var(--muted)' }}>{s.weight}</p>
+                <p className="text-[13px] font-medium text-white">{s.title}</p>
+                <p className="font-bebas text-[8px] text-neutral-400">{s.weight}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-bebas text-[28px]" style={{ color: 'var(--purple)' }}>{s.score}</span>
+              <span className="font-bebas text-[28px] text-purple-500">{s.score}</span>
               <span
-                className="text-[14px] transition-transform duration-200"
-                style={{
-                  color: 'var(--muted)',
-                  transform: openIdx === i ? 'rotate(180deg)' : 'rotate(0)',
-                }}
+                className={`text-[14px] transition-transform duration-200 text-neutral-400 ${openIdx === i ? 'rotate-180' : ''}`}
               >
                 ▾
               </span>
@@ -94,16 +90,16 @@ export default function RankCards() {
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden"
               >
-                <div className="pt-3 mt-3" style={{ borderTop: '1px solid var(--border)' }}>
-                  <p className="font-space text-[8px] mb-3" style={{ color: 'var(--muted)' }}>
+                <div className="pt-3 mt-3 border-t border-neutral-800">
+                  <p className="font-bebas text-[8px] mb-3 text-neutral-400">
                     기준: {s.source}
                   </p>
                   <div className="flex flex-col gap-3">
                     {s.details.map((d, j) => (
                       <div key={j}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-[11px]" style={{ color: 'var(--text)' }}>{d.label}</span>
-                          <span className="font-space text-[10px] font-bold" style={{ color: d.color }}>{d.value}</span>
+                          <span className="text-[11px] text-white">{d.label}</span>
+                          <span className="font-bebas text-[10px] font-bold" style={{ color: d.color }}>{d.value}</span>
                         </div>
                         <div className="progress-track" style={{ height: 5 }}>
                           <div
@@ -111,7 +107,7 @@ export default function RankCards() {
                             style={{ width: `${d.pct}%`, background: d.color }}
                           />
                         </div>
-                        <p className="font-space text-[7px] text-right mt-0.5" style={{ color: 'var(--muted)' }}>
+                        <p className="font-bebas text-[7px] text-right mt-0.5 text-neutral-400">
                           상위 {100 - d.pct}%
                         </p>
                       </div>

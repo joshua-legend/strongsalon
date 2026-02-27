@@ -34,13 +34,13 @@ export default function RadarChart({ strength, body, cardio }: RadarChartProps) 
         const pts = angles.map(a => getPoint(a, level));
         const path = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
         return (
-          <path key={level} d={path} fill="none" stroke="var(--border2)" strokeWidth="0.5" />
+          <path key={level} d={path} fill="none" stroke="#404040" strokeWidth="0.5" />
         );
       })}
 
       {angles.map((a, i) => {
         const end = getPoint(a, 100);
-        return <line key={i} x1={cx} y1={cy} x2={end.x} y2={end.y} stroke="var(--border2)" strokeWidth="0.5" />;
+        return <line key={i} x1={cx} y1={cy} x2={end.x} y2={end.y} stroke="#404040" strokeWidth="0.5" />;
       })}
 
       {(() => {
@@ -49,9 +49,9 @@ export default function RadarChart({ strength, body, cardio }: RadarChartProps) 
         const path = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
         return (
           <>
-            <path d={path} fill="var(--purple)" fillOpacity="0.18" stroke="var(--purple)" strokeWidth="2" />
+            <path d={path} fill="#a855f7" fillOpacity="0.18" stroke="#a855f7" strokeWidth="2" />
             {pts.map((p, i) => (
-              <circle key={i} cx={p.x} cy={p.y} r="4" fill="var(--purple)" stroke="white" strokeWidth="1.5" />
+              <circle key={i} cx={p.x} cy={p.y} r="4" fill="#a855f7" stroke="white" strokeWidth="1.5" />
             ))}
           </>
         );
@@ -64,15 +64,15 @@ export default function RadarChart({ strength, body, cardio }: RadarChartProps) 
           <g key={i}>
             <text
               x={p.x} y={p.y - 6}
-              textAnchor="middle" fill="var(--muted2)" fontSize="9"
-              fontFamily="var(--font-pretendard)"
+              textAnchor="middle" fill="#737373" fontSize="9"
+              fontFamily='"Bebas Neue", cursive'
             >
               {l.name}
             </text>
             <text
               x={p.x} y={p.y + 8}
-              textAnchor="middle" fill="var(--purple)" fontSize="10"
-              fontWeight="bold" fontFamily="var(--font-space)"
+              textAnchor="middle" fill="#a855f7" fontSize="10"
+              fontWeight="bold" fontFamily='"Bebas Neue", cursive'
             >
               {l.value}
             </text>

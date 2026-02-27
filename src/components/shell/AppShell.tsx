@@ -8,10 +8,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { theme, scrollBodyRef } = useApp();
 
   return (
-    <div
-      className="app-container"
-      data-theme={theme === 'workout' ? 'workout' : undefined}
-    >
+    <div className="app-container">
       <Topbar />
       <div ref={scrollBodyRef} className="scroll-body">
         {children}

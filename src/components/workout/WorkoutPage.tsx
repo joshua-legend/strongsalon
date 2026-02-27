@@ -20,11 +20,7 @@ export default function WorkoutPage() {
   };
 
   return (
-    <div
-      className="min-h-full flex flex-col"
-      data-theme="workout"
-      style={{ background: "var(--og-bg, #1a0900)" }}
-    >
+    <div className="min-h-full flex flex-col bg-neutral-950">
       <WorkoutTopbar elapsedSec={log.elapsedSec} />
       <div className="flex-1 overflow-auto p-4">
         <div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
@@ -38,10 +34,7 @@ export default function WorkoutPage() {
             />
 
             {log.mode === null && (
-              <p
-                className="text-center text-xs py-6"
-                style={{ color: "var(--text2)" }}
-              >
+              <p className="text-center text-xs py-6 text-neutral-400">
                 위에서 운동 모드를 선택하세요
               </p>
             )}
@@ -68,10 +61,7 @@ export default function WorkoutPage() {
             {log.mode === "free" && (
               <>
                 <div className="flex flex-col gap-2">
-                  <h3
-                    className="text-xs font-semibold px-0.5"
-                    style={{ color: "var(--text)" }}
-                  >
+                  <h3 className="text-xs font-semibold px-0.5 text-white">
                     근력
                   </h3>
                   <FreeArea
@@ -104,11 +94,7 @@ export default function WorkoutPage() {
               <button
                 type="button"
                 onClick={handleComplete}
-                className="w-full py-5 rounded-2xl border-0 text-white text-lg font-black tracking-wide transition-all active:scale-[0.98] mt-2 flex items-center justify-center gap-2"
-                style={{
-                  background: "linear-gradient(135deg, var(--orange), var(--og2))",
-                  boxShadow: "0 4px 20px rgba(255,77,0,.35)",
-                }}
+                className="w-full py-5 rounded-2xl border-0 text-white text-lg font-black tracking-wide transition-all active:scale-[0.98] mt-2 flex items-center justify-center gap-2 bg-gradient-to-br from-orange-500 to-orange-500/80 shadow-[0_4px_20px_rgba(249,115,22,.35)]"
               >
                 <span>✅</span>
                 <span>오운완</span>

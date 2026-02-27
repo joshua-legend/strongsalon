@@ -18,12 +18,11 @@ export default function SubTabs() {
         <button
           key={t.id}
           onClick={() => setSubTab(t.id)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-200"
-          style={{
-            background: subTab === t.id ? 'rgba(255,94,31,.12)' : 'var(--s1)',
-            border: `1px solid ${subTab === t.id ? 'rgba(255,94,31,.3)' : 'var(--border)'}`,
-            color: subTab === t.id ? 'var(--orange)' : 'var(--muted2)',
-          }}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-200 ${
+            subTab === t.id
+              ? 'bg-orange-500/12 border border-orange-500/30 text-orange-500'
+              : 'bg-neutral-900 border border-neutral-800 text-neutral-400'
+          }`}
         >
           <span>{t.icon}</span>
           {t.label}

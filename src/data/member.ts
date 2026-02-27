@@ -21,9 +21,9 @@ export const member: MemberProfile = {
     delta: { weight: -0.8, muscle: 0.4, fatPct: -1.2 },
   },
   lifts: [
-    { name: '벤치프레스', weight: 100, grade: 'Intermediate', color: 'var(--blue)', pct: 55 },
-    { name: '스쿼트', weight: 120, grade: 'Intermediate', color: 'var(--green)', pct: 50 },
-    { name: '데드리프트', weight: 140, grade: 'Intermediate', color: 'var(--orange)', pct: 60 },
+    { name: '벤치프레스', weight: 100, grade: 'Intermediate', color: '#22d3ee', pct: 55 },
+    { name: '스쿼트', weight: 120, grade: 'Intermediate', color: '#a3e635', pct: 50 },
+    { name: '데드리프트', weight: 140, grade: 'Intermediate', color: '#f97316', pct: 60 },
   ],
   cardio: [
     {
@@ -74,4 +74,9 @@ export const member: MemberProfile = {
     'squat': 120,
     'deadlift': 140,
   },
+  remainingSessions: 8,
+  totalSessions: 20,
+  nextPtDate: '2026-03-01',
+  membershipExpiry: '2026-04-10',
+  membershipStart: '2026-01-10',
 };

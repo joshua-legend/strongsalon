@@ -1,136 +1,8 @@
 @import "tailwindcss";
-@import "@fontsource/pretendard/400.css";
-@import "@fontsource/pretendard/500.css";
-@import "@fontsource/pretendard/700.css";
-
-:root {
-  --bg: #07080b;
-  --s1: #0d0f16;
-  --s2: #13161f;
-  --s3: #191d29;
-  --s4: #1f2333;
-  --nav-bg: rgba(7,8,11,.97);
-  --border: rgba(255,255,255,.06);
-  --border2: rgba(255,255,255,.13);
-  --text: #e0e4f0;
-  --muted: #454d62;
-  --muted2: #7a849a;
-  --orange: #ff5e1f;
-  --og2: #ff9a3c;
-  --og3: #ffba6b;
-  --green: #22c55e;
-  --red: #ef4444;
-  --blue: #3b82f6;
-  --purple: #a855f7;
-  --yellow: #f5c518;
-
-  --font-bebas: var(--font-bebas-neue);
-  --font-space: var(--font-space-mono);
-  --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-}
-
-/* 라이트 모드 (기본 탭) */
-[data-color-mode="light"] {
-  --bg: #f0f2f5;
-  --s1: #ffffff;
-  --s2: #f5f6f8;
-  --s3: #e8eaef;
-  --s4: #dce0e6;
-  --nav-bg: rgba(255,255,255,.97);
-  --border: rgba(0,0,0,.08);
-  --border2: rgba(0,0,0,.14);
-  --text: #1a1d24;
-  --muted: #5c6370;
-  --muted2: #7a8294;
-  --orange: #e54d0f;
-  --og2: #f07a2e;
-  --og3: #f5a352;
-  --green: #16a34a;
-  --red: #dc2626;
-  --blue: #2563eb;
-  --purple: #9333ea;
-  --yellow: #ca8a04;
-}
-
-[data-color-mode="light"] body {
-  background: #e8eaef;
-}
-
-@media (min-width: 540px) {
-  [data-color-mode="light"] body {
-    background: #e0e2e8;
-    background-image: radial-gradient(ellipse at center, rgba(229,77,15,.06) 0%, transparent 70%);
-  }
-}
-
-[data-color-mode="light"] .app-container {
-  background: var(--bg);
-}
-
-@media (min-width: 540px) {
-  [data-color-mode="light"] .app-container {
-    border-left-color: rgba(0,0,0,.06);
-    border-right-color: rgba(0,0,0,.06);
-  }
-}
-
-/* 운동 모드 (주황 베이스) */
-[data-theme="workout"] {
-  --og: #ff4d00;
-  --og2: #ff6a1f;
-  --og3: #ff8c4a;
-  --og4: #ffa870;
-  --og-dk: #cc3d00;
-  --og-bg: #1a0900;
-  --og-nav-bg: rgba(26,9,0,.93);
-  --og-s1: #220c00;
-  --og-s2: #2e1200;
-  --og-s3: #3d1900;
-  --og-s4: #4d2200;
-  --text: #fff5f0;
-  --text2: rgba(255,245,240,.65);
-  --text3: rgba(255,245,240,.35);
-  --border: rgba(255,77,0,.15);
-  --border2: rgba(255,77,0,.3);
-}
-
-/* 라이트 모드 + 운동 페이지 (html에 light, workout 루트에 data-theme) */
-[data-color-mode="light"] [data-theme="workout"] {
-  --og-bg: #f8f4f0;
-  --og-nav-bg: rgba(248,244,240,.97);
-  --og-s1: #fff9f5;
-  --og-s2: #f5ebe3;
-  --og-s3: #ebe0d6;
-  --og-s4: #e0d4c9;
-  --text: #1a1510;
-  --text2: rgba(26,21,16,.7);
-  --text3: rgba(26,21,16,.45);
-  --border: rgba(229,77,15,.18);
-  --border2: rgba(229,77,15,.35);
-}
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-s1: var(--s1);
-  --color-s2: var(--s2);
-  --color-s3: var(--s3);
-  --color-s4: var(--s4);
-  --color-border-c: var(--border);
-  --color-border2: var(--border2);
-  --color-text-c: var(--text);
-  --color-muted: var(--muted);
-  --color-muted2: var(--muted2);
-  --color-orange: var(--orange);
-  --color-og2: var(--og2);
-  --color-og3: var(--og3);
-  --color-green-c: var(--green);
-  --color-red-c: var(--red);
-  --color-blue-c: var(--blue);
-  --color-purple-c: var(--purple);
-  --color-yellow-c: var(--yellow);
   --font-bebas: var(--font-bebas-neue);
-  --font-space: var(--font-space-mono);
-  --font-pretendard: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 * {
@@ -138,57 +10,109 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100dvh;
   overflow: hidden;
-  background: #050507;
-  color: var(--text);
-  font-family: var(--font-pretendard);
   overscroll-behavior: contain;
 }
 
-::-webkit-scrollbar { display: none; }
-* { scrollbar-width: none; }
+body {
+  background: #0a0a0a;
+  color: white;
+  font-family: var(--font-bebas), "Bebas Neue", cursive;
+}
 
-button, a, input {
+@media (min-width: 540px) {
+  body {
+    background: #0a0a0a;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  scrollbar-width: none;
+}
+
+button,
+a,
+input {
   touch-action: manipulation;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255,94,31,.45); }
-  50%      { box-shadow: 0 0 0 8px rgba(255,94,31,0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(163, 230, 53, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(163, 230, 53, 0);
+  }
+}
+
+@keyframes arc-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.15);
+  }
 }
 
 @keyframes shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .fade-up {
   animation: fadeUp 0.4s ease both;
 }
 
-.fade-in-1 { animation-delay: 0.05s; }
-.fade-in-2 { animation-delay: 0.10s; }
-.fade-in-3 { animation-delay: 0.15s; }
-.fade-in-4 { animation-delay: 0.20s; }
-.fade-in-5 { animation-delay: 0.25s; }
-.fade-in-6 { animation-delay: 0.30s; }
-.fade-in-7 { animation-delay: 0.35s; }
-.fade-in-8 { animation-delay: 0.40s; }
-
-@media (min-width: 540px) {
-  body {
-    background: #030305;
-    background-image: radial-gradient(ellipse at center, rgba(255,94,31,.04) 0%, transparent 70%);
-  }
+.fade-in-1 {
+  animation-delay: 0.05s;
+}
+.fade-in-2 {
+  animation-delay: 0.1s;
+}
+.fade-in-3 {
+  animation-delay: 0.15s;
+}
+.fade-in-4 {
+  animation-delay: 0.2s;
+}
+.fade-in-5 {
+  animation-delay: 0.25s;
+}
+.fade-in-6 {
+  animation-delay: 0.3s;
+}
+.fade-in-7 {
+  animation-delay: 0.35s;
+}
+.fade-in-8 {
+  animation-delay: 0.4s;
 }
 
 .app-container {
@@ -196,7 +120,7 @@ button, a, input {
   margin: 0 auto;
   height: 100dvh;
   position: relative;
-  background: var(--bg);
+  background: #0a0a0a;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -204,8 +128,8 @@ button, a, input {
 
 @media (min-width: 540px) {
   .app-container {
-    border-left: 1px solid rgba(255,255,255,.04);
-    border-right: 1px solid rgba(255,255,255,.04);
+    border-left: 1px solid rgb(38 38 38);
+    border-right: 1px solid rgb(38 38 38);
   }
 }
 
@@ -218,36 +142,37 @@ button, a, input {
 }
 
 .card {
-  background: var(--s1);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
+  background: #171717;
+  border: 1px solid rgb(38 38 38);
+  border-radius: 1rem;
+  padding: 1.125rem;
 }
 
 .card-label {
-  font-family: var(--font-space), 'Space Mono', monospace;
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--muted2);
+  color: rgb(163 163 163);
 }
 
-.num-big {
-  font-family: var(--font-bebas), 'Bebas Neue', cursive;
+.font-sans {
+  font-family: var(--font-sans);
 }
 
-.font-space {
-  font-family: var(--font-space), 'Space Mono', monospace;
-}
-
-.font-bebas {
-  font-family: var(--font-bebas), 'Bebas Neue', cursive;
+.bg-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(0, 0, 0, 0.2),
+    rgba(0, 0, 0, 0.2) 10px,
+    transparent 10px,
+    transparent 20px
+  );
 }
 
 .progress-track {
   height: 6px;
-  background: var(--s3);
+  background: rgb(23 23 23);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -255,5 +180,9 @@ button, a, input {
 .progress-fill {
   height: 100%;
   border-radius: 3px;
-  transition: width 1.3s cubic-bezier(.4,0,.2,1);
+  transition: width 1.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.preset-card:hover {
+  border-color: rgb(163 230 53);
 }

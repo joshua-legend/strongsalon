@@ -1,5 +1,71 @@
-export type TabId = 'home' | 'stats' | 'workout' | 'performance' | 'ranking';
+export type TabId = 'home' | 'stats' | 'workout' | 'performance' | 'exercise-info';
 export type SubTabId = 'body' | 'strength' | 'cardio';
+
+export type GoalCategory = 'strength' | 'body' | 'cardio' | 'attendance' | 'weight';
+
+export interface WeeklyGoal {
+  id: string;
+  label: string;
+  category: GoalCategory;
+  exerciseKey?: string;
+  targetValue: number;
+  currentValue: number;
+  unit: string;
+  icon: string;
+}
+
+export interface Goal {
+  id: string;
+  category: GoalCategory;
+  exerciseKey?: string;
+  targetValue: number;
+  currentValue: number;
+  unit: string;
+  deadline?: string;
+  achieved: boolean;
+  isPrimary: boolean;
+  label?: string;
+}
+
+export type CarrotReason =
+  | 'weekly_attend'
+  | 'pr_achieved'
+  | 'goal_achieved'
+  | 'streak_bonus'
+  | 'whip_no_attend'
+  | 'whip_2week'
+  | 'whip_deadline'
+  | 'shop_purchase';
+
+export interface CarrotCredit {
+  id: string;
+  amount: number;
+  reason: CarrotReason;
+  relatedId?: string;
+  createdAt: string;
+}
+
+export interface ShopItem {
+  id: string;
+  name: string;
+  cost: number;
+  emoji: string;
+  description?: string;
+}
+
+export type ExerciseCategory = '가슴' | '등' | '어깨' | '팔' | '하체' | '코어' | '유산소';
+
+export interface ExerciseInfoItem {
+  id: string;
+  name: string;
+  category: ExerciseCategory;
+  icon: string;
+  targetMuscles: { primary: string[]; secondary: string[] };
+  description: string;
+  tips: string;
+  levelGuide: { novice: string; inter: string; adv: string };
+  svgIllust?: string;
+}
 export type Condition = '최고' | '좋음' | '보통' | '피로' | '최악';
 
 export interface WorkoutSet {
@@ -84,6 +150,11 @@ export interface MemberProfile {
   lifts: LiftData[];
   cardio: CardioRecord[];
   prMap: Record<string, number>;
+  remainingSessions?: number;
+  totalSessions?: number;
+  nextPtDate?: string | null;
+  membershipExpiry?: string | null;
+  membershipStart?: string | null;
 }
 
 // ── 운동 기록 페이지 (WorkoutPage) 전용 ──

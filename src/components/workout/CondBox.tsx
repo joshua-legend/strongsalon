@@ -17,14 +17,8 @@ interface CondBoxProps {
 
 export default function CondBox({ value, onChange }: CondBoxProps) {
   return (
-    <div
-      className="flex-1 rounded-xl border p-3.5"
-      style={{ background: 'var(--s1)', borderColor: 'var(--border)' }}
-    >
-      <div
-        className="text-xs font-semibold mb-2.5"
-        style={{ color: 'var(--text)', letterSpacing: '0.5px' }}
-      >
+    <div className="flex-1 rounded-xl border border-neutral-800 p-3.5 bg-neutral-900">
+      <div className="text-xs font-semibold mb-2.5 text-white tracking-wide">
         오늘 컨디션
       </div>
       <div className="flex gap-2">
@@ -33,17 +27,15 @@ export default function CondBox({ value, onChange }: CondBoxProps) {
             key={opt.value}
             type="button"
             onClick={() => onChange(opt.value)}
-            className="flex-1 flex flex-col items-center gap-0.5 py-2 px-1.5 rounded-[10px] border transition-all"
-            style={{
-              borderColor: value === opt.value ? 'rgba(255,77,0,.4)' : 'var(--border)',
-              background: value === opt.value ? 'rgba(255,77,0,.1)' : 'var(--s2)',
-              boxShadow: value === opt.value ? '0 0 14px rgba(255,77,0,.12)' : undefined,
-            }}
+            className={`flex-1 flex flex-col items-center gap-0.5 py-2 px-1.5 rounded-[10px] border transition-all ${
+              value === opt.value
+                ? 'border-orange-500/40 bg-orange-500/10 shadow-[0_0_14px_rgba(249,115,22,.12)]'
+                : 'border-neutral-800 bg-neutral-900'
+            }`}
           >
             <span className="text-xl leading-none">{opt.emoji}</span>
             <span
-              className="text-[8px] font-[family-name:var(--font-space)]"
-              style={{ color: value === opt.value ? 'var(--og3)' : 'var(--muted2)' }}
+              className={`text-[8px] font-bebas ${value === opt.value ? 'text-orange-400' : 'text-neutral-400'}`}
             >
               {opt.label}
             </span>
