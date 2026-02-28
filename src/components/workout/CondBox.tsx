@@ -17,30 +17,57 @@ interface CondBoxProps {
 
 export default function CondBox({ value, onChange }: CondBoxProps) {
   return (
-    <div className="flex-1 rounded-xl border border-neutral-800 p-3.5 bg-neutral-900">
-      <div className="text-xs font-semibold mb-2.5 text-white tracking-wide">
-        오늘 컨디션
+    <div
+      className="rounded-2xl border p-5"
+      style={{
+        background: '#050505',
+        borderColor: 'rgba(163,230,53,.35)',
+        boxShadow: '0 0 12px rgba(163,230,53,.2)',
+      }}
+    >
+      <div
+        className="font-bebas text-[11px] mb-3 tracking-widest uppercase"
+        style={{ color: 'rgba(163,230,53,.6)', textShadow: '0 0 10px rgba(163,230,53,.3)' }}
+      >
+        CONDITION
       </div>
+
       <div className="flex gap-2">
-        {OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onChange(opt.value)}
-            className={`flex-1 flex flex-col items-center gap-0.5 py-2 px-1.5 rounded-[10px] border transition-all ${
-              value === opt.value
-                ? 'border-orange-500/40 bg-orange-500/10 shadow-[0_0_14px_rgba(249,115,22,.12)]'
-                : 'border-neutral-800 bg-neutral-900'
-            }`}
-          >
-            <span className="text-xl leading-none">{opt.emoji}</span>
-            <span
-              className={`text-[8px] font-bebas ${value === opt.value ? 'text-orange-400' : 'text-neutral-400'}`}
+        {OPTIONS.map((opt) => {
+          const active = value === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange(opt.value)}
+              className="flex-1 flex flex-col items-center gap-0.5 py-2.5 px-1.5 rounded-xl border transition-all"
+              style={
+                active
+                  ? {
+                      borderColor: 'rgb(163, 230, 53)',
+                      background: 'rgba(163,230,53,.1)',
+                      boxShadow: '0 0 10px rgba(163,230,53,.25)',
+                    }
+                  : {
+                      borderColor: 'rgba(255,255,255,.08)',
+                      background: '#0a0a0a',
+                    }
+              }
             >
-              {opt.label}
-            </span>
-          </button>
-        ))}
+              <span className="text-xl leading-none">{opt.emoji}</span>
+              <span
+                className="text-[8px] font-bebas"
+                style={
+                  active
+                    ? { color: 'rgb(163, 230, 53)', textShadow: '0 0 8px rgba(163,230,53,.8)' }
+                    : { color: '#fff' }
+                }
+              >
+                {opt.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -26,25 +26,48 @@ export default function SetRow({
   accentColor = 'orange',
 }: SetRowProps) {
   const done = weight > 0 && reps > 0;
-  const focusBorder = accentColor === 'orange' ? 'rgba(255,77,0,.4)' : 'rgba(168,85,247,.4)';
+  const isOrange = accentColor === 'orange';
+
+  const inputCellClass = isOrange
+    ? 'focus-within:border-lime-400/70 focus-within:shadow-[0_0_18px_rgba(163,230,53,.3)]'
+    : 'focus-within:border-purple-500/70 focus-within:shadow-[0_0_18px_rgba(192,132,252,.3)]';
 
   return (
     <div
-      className="grid grid-cols-[28px_1fr_1fr_52px_28px] gap-2 items-center p-1 rounded-lg hover:bg-white/[0.02] transition-colors"
-      style={{ gridTemplateColumns: '28px 1fr 1fr 52px 28px' }}
+      className="grid items-center p-1 rounded-lg transition-colors hover:bg-white/[0.015]"
+      style={{ gridTemplateColumns: '28px 1fr 1fr 52px 28px', gap: '8px' }}
     >
+      {/* Set number */}
       <div
-        className={`flex items-center justify-center rounded-md border flex-shrink-0 w-7 h-7 font-bebas text-[10px] transition-colors ${
-          done ? 'bg-lime-500/10 border-lime-500/25 text-lime-400' : 'bg-neutral-950/50 border-neutral-800 text-neutral-400'
-        }`}
+        className="flex items-center justify-center rounded-md border flex-shrink-0 w-7 h-7 font-bebas text-[10px] transition-all"
+        style={
+          done
+            ? {
+                background: 'rgba(163,230,53,.12)',
+                borderColor: '#a3e635',
+                color: '#a3e635',
+                boxShadow: '0 0 10px rgba(163,230,53,.4)',
+                textShadow: '0 0 10px #a3e635, 0 0 22px rgba(163,230,53,.6)',
+              }
+            : {
+                background: '#0a0a0a',
+                borderColor: 'rgba(255,255,255,.08)',
+                color: '#fff',
+              }
+        }
       >
         {setNumber}
       </div>
-      <div className="flex items-center rounded-lg border border-neutral-800 overflow-hidden transition-[border-color] focus-within:border-orange-500/40 bg-neutral-950/50">
+
+      {/* Weight input */}
+      <div
+        className={`flex items-center rounded-lg border overflow-hidden transition-all ${inputCellClass}`}
+        style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,.07)' }}
+      >
         <button
           type="button"
           onClick={() => onAdjWeight(-2.5)}
-          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-400"
+          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-600"
         >
           −
         </button>
@@ -60,16 +83,21 @@ export default function SetRow({
         <button
           type="button"
           onClick={() => onAdjWeight(2.5)}
-          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-400"
+          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-600"
         >
           ＋
         </button>
       </div>
-      <div className="flex items-center rounded-lg border border-neutral-800 overflow-hidden transition-[border-color] focus-within:border-orange-500/40 bg-neutral-950/50">
+
+      {/* Reps input */}
+      <div
+        className={`flex items-center rounded-lg border overflow-hidden transition-all ${inputCellClass}`}
+        style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,.07)' }}
+      >
         <button
           type="button"
           onClick={() => onAdjReps(-1)}
-          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-400"
+          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-600"
         >
           −
         </button>
@@ -85,20 +113,31 @@ export default function SetRow({
         <button
           type="button"
           onClick={() => onAdjReps(1)}
-          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-400"
+          className="w-7 h-8 flex items-center justify-center flex-shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-600"
         >
           ＋
         </button>
       </div>
+
+      {/* Volume */}
       <div
-        className={`text-center font-bebas text-[10px] transition-colors ${volume > 0 ? 'text-orange-400 font-bold' : 'text-neutral-400'}`}
+        className="text-center font-bebas text-[10px] transition-all"
+        style={
+          volume > 0
+            ? isOrange
+              ? { color: 'rgb(163, 230, 53)', textShadow: '0 0 8px rgba(163,230,53,.8)' }
+              : { color: '#c084fc', textShadow: '0 0 8px rgba(192,132,252,.8)' }
+            : { color: '#fff' }
+        }
       >
-        {volume > 0 ? `${volume.toLocaleString()}kg` : '—'}
+        {volume > 0 ? `${volume.toLocaleString()}` : '—'}
       </div>
+
+      {/* Delete */}
       <button
         type="button"
         onClick={onDelete}
-        className="w-7 h-7 rounded-md flex items-center justify-center text-xs transition-colors hover:bg-red-500/10 hover:text-red-500 flex-shrink-0 text-neutral-400"
+        className="w-7 h-7 rounded-md flex items-center justify-center text-xs transition-all hover:bg-red-500/10 hover:text-red-500 flex-shrink-0 text-neutral-700"
       >
         ✕
       </button>

@@ -65,6 +65,8 @@ export interface ExerciseInfoItem {
   tips: string;
   levelGuide: { novice: string; inter: string; adv: string };
   svgIllust?: string;
+  /** YouTube embed URL (autoplay+mute 권장). 예: https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID&playsinline=1 */
+  embedUrl?: string | null;
 }
 export type Condition = '최고' | '좋음' | '보통' | '피로' | '최악';
 

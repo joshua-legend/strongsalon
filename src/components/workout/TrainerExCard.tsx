@@ -38,23 +38,23 @@ export default function TrainerExCard({
   };
 
   return (
-    <div className="rounded-xl border border-neutral-800 overflow-hidden transition-[border-color] hover:border-purple-500/30 bg-neutral-900">
+    <div className="rounded-2xl border border-purple-500/20 overflow-hidden transition-all hover:border-purple-500/50 hover:shadow-[0_0_25px_rgba(168,85,247,.15)] bg-neutral-900">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={`w-full flex items-center gap-2.5 py-3 px-4 cursor-pointer border-b border-transparent hover:bg-white/[0.015] transition-colors text-left ${open ? 'border-neutral-800' : ''}`}
       >
-        <div className="font-bebas text-[22px] leading-none w-6 flex-shrink-0 text-purple-500">
+        <div className="font-bebas text-[22px] leading-none w-6 flex-shrink-0 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,.5)]">
           {index + 1}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-bold truncate">
+          <div className="font-bebas text-[15px] leading-none truncate tracking-wider drop-shadow-[0_0_4px_rgba(255,255,255,.2)]">
             {exercise.icon} {exercise.name}
           </div>
         </div>
         <div
           className={`text-[9px] font-bebas px-2.5 py-0.5 rounded-full border flex-shrink-0 ${
-            isAllDone ? 'bg-green-500/10 text-green-500 border-green-500/25' : 'bg-purple-500/10 text-purple-500 border-purple-500/20'
+            isAllDone ? 'bg-green-500/10 text-green-500 border-green-500/25 shadow-[0_0_10px_rgba(34,197,94,.3)]' : 'bg-purple-500/10 text-purple-500 border-purple-500/20 shadow-[0_0_10px_rgba(168,85,247,.2)]'
           }`}
         >
           {doneSets} / {exercise.tSets} SET
@@ -69,22 +69,22 @@ export default function TrainerExCard({
       {open && (
         <div className="p-2.5 pt-2 pb-3.5">
           <div
-            className="flex items-center gap-2 py-2 px-3 rounded-lg mb-2.5"
+            className="flex items-center gap-2 py-2 px-3 rounded-lg mb-2.5 shadow-[0_0_15px_rgba(168,85,247,.12)]"
             style={{
               background: 'rgba(168,85,247,.06)',
-              border: '1px solid rgba(168,85,247,.14)',
+              border: '1px solid rgba(168,85,247,.25)',
             }}
           >
             <span className="text-sm">📋</span>
             <span className="text-[10px] flex-1 text-neutral-400">
               트레이너 처방
             </span>
-            <span className="text-[11px] font-bebas font-bold whitespace-nowrap text-purple-500">
+            <span className="text-[11px] font-bebas font-bold whitespace-nowrap text-purple-500 drop-shadow-[0_0_6px_rgba(168,85,247,.5)]">
               {exercise.rx}
             </span>
           </div>
           {exercise.prevPR != null && (
-            <div className="flex items-center gap-1.5 text-[10px] font-bebas text-lime-400 mb-2 px-1">
+            <div className="flex items-center gap-1.5 text-[10px] font-bebas text-lime-400 mb-2 px-1 drop-shadow-[0_0_6px_rgba(163,230,53,.4)]">
               🏅 현재 PR · {exercise.prevPR}kg — 이걸 넘어봐요!
             </div>
           )}
@@ -125,7 +125,7 @@ export default function TrainerExCard({
             <button
               type="button"
               onClick={() => onAddSet(exercise.id)}
-              className="flex items-center gap-1 py-1.5 px-3 rounded-md border border-dashed text-[11px] font-bold transition-colors hover:bg-orange-500/5 border-orange-500/25 text-orange-400"
+              className="flex items-center gap-1 py-1.5 px-3 rounded-md border border-dashed text-[11px] font-bold transition-all hover:bg-orange-500/5 border-orange-500/25 text-orange-400 hover:shadow-[0_0_12px_rgba(249,115,22,.2)]"
             >
               ＋ 세트 추가
             </button>

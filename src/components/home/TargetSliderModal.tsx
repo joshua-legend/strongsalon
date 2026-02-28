@@ -54,37 +54,78 @@ export default function TargetSliderModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/90 backdrop-blur-sm">
       <div className="absolute inset-0" onClick={onClose} />
-      <div className="relative w-full max-w-[480px] bg-neutral-950 border-t border-neutral-800 rounded-t-3xl p-5 pt-7 animate-slide-up shadow-[0_-10px_40px_rgba(0,0,0,0.8)] flex flex-col max-h-[90vh]">
+      <div
+        className="relative w-full max-w-[480px] rounded-t-3xl p-5 pt-7 animate-slide-up flex flex-col max-h-[90vh]"
+        style={{
+          background: "#030303",
+          borderTop: "1px solid rgba(163,230,53,.3)",
+          boxShadow: "0 -20px 60px rgba(0,0,0,.95), 0 -1px 0 rgba(163,230,53,.2)",
+        }}
+      >
+        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-neutral-500 hover:text-white transition-colors"
+          className="absolute top-5 right-5 transition-all text-neutral-700 hover:text-white"
         >
           <X className="w-6 h-6" />
         </button>
 
+        {/* Title */}
         <div className="mb-5 shrink-0">
-          <h2 className="text-4xl font-bebas text-white tracking-wider flex items-center gap-2">
-            <Sliders className="w-7 h-7 text-lime-400" /> SET PARAMETERS
+          <h2 className="text-4xl font-bebas tracking-wider flex items-center gap-2 text-white">
+            <Sliders
+              className="w-7 h-7"
+              style={{
+                color: "#a3e635",
+                filter: "drop-shadow(0 0 8px rgba(163,230,53,.6))",
+              }}
+            />
+            <span style={{ textShadow: "0 0 15px rgba(163,230,53,.25)" }}>
+              SET PARAMETERS
+            </span>
           </h2>
         </div>
 
-        <div className="flex border-b border-neutral-800 mb-5 shrink-0">
+        {/* Tabs */}
+        <div
+          className="flex border-b mb-5 shrink-0"
+          style={{ borderColor: "rgba(255,255,255,.06)" }}
+        >
           <button
             onClick={() => setActiveTab("STRENGTH")}
-            className={`flex-1 pb-3 text-sm font-bold font-mono tracking-widest flex items-center justify-center gap-2 transition-colors ${activeTab === "STRENGTH" ? "text-lime-400 border-b-2 border-lime-400" : "text-neutral-600 hover:text-neutral-400"}`}
+            className={`flex-1 pb-3 text-sm font-bold font-mono tracking-widest flex items-center justify-center gap-2 transition-all ${
+              activeTab === "STRENGTH"
+                ? "border-b-2 border-lime-400"
+                : "text-neutral-700 hover:text-neutral-500"
+            }`}
+            style={
+              activeTab === "STRENGTH"
+                ? { color: "#a3e635", textShadow: "0 0 8px rgba(163,230,53,.5)" }
+                : {}
+            }
           >
             <Dumbbell className="w-4 h-4" /> 근력
           </button>
           <button
             onClick={() => setActiveTab("CARDIO")}
-            className={`flex-1 pb-3 text-sm font-bold font-mono tracking-widest flex items-center justify-center gap-2 transition-colors ${activeTab === "CARDIO" ? "text-cyan-400 border-b-2 border-cyan-400" : "text-neutral-600 hover:text-neutral-400"}`}
+            className={`flex-1 pb-3 text-sm font-bold font-mono tracking-widest flex items-center justify-center gap-2 transition-all ${
+              activeTab === "CARDIO"
+                ? "text-cyan-400 border-b-2 border-cyan-400"
+                : "text-neutral-700 hover:text-neutral-500"
+            }`}
+            style={
+              activeTab === "CARDIO"
+                ? { textShadow: "0 0 8px rgba(0,229,255,.5)" }
+                : {}
+            }
           >
             <Activity className="w-4 h-4" /> 유산소
           </button>
         </div>
 
+        {/* Slider content */}
         <div className="overflow-y-auto pl-5 pr-3 mb-6 flex-1 space-y-6 min-h-[30vh]">
           {activeTab === "STRENGTH" &&
             strengthConfigs.map((conf) => {
@@ -99,11 +140,13 @@ export default function TargetSliderModal({
                     </span>
                     <div className="flex items-baseline gap-1">
                       <span
-                        className={`text-3xl font-bebas leading-none transition-all ${val > 0 ? `${conf.text} ${conf.shadow}` : "text-neutral-500"}`}
+                        className={`text-3xl font-bebas leading-none transition-all ${
+                          val > 0 ? `${conf.text} ${conf.shadow}` : "text-neutral-700"
+                        }`}
                       >
                         {val}
                       </span>
-                      <span className="text-xs font-mono text-neutral-600">REPS</span>
+                      <span className="text-xs font-mono text-neutral-700">REPS</span>
                     </div>
                   </div>
                   <input
@@ -112,7 +155,9 @@ export default function TargetSliderModal({
                     max={conf.max}
                     step={conf.step}
                     value={val}
-                    onChange={(e) => setTargets({ ...targets, [conf.id]: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setTargets({ ...targets, [conf.id]: Number(e.target.value) })
+                    }
                     className={`tactical-slider ${conf.slider}`}
                   />
                 </div>
@@ -132,11 +177,13 @@ export default function TargetSliderModal({
                     </span>
                     <div className="flex items-baseline gap-1">
                       <span
-                        className={`text-3xl font-bebas leading-none transition-all ${val > 0 ? `${conf.text} ${conf.shadow}` : "text-neutral-500"}`}
+                        className={`text-3xl font-bebas leading-none transition-all ${
+                          val > 0 ? `${conf.text} ${conf.shadow}` : "text-neutral-700"
+                        }`}
                       >
                         {val}
                       </span>
-                      <span className="text-xs font-mono text-neutral-600">KM</span>
+                      <span className="text-xs font-mono text-neutral-700">KM</span>
                     </div>
                   </div>
                   <input
@@ -145,7 +192,9 @@ export default function TargetSliderModal({
                     max={conf.max}
                     step={conf.step}
                     value={val}
-                    onChange={(e) => setTargets({ ...targets, [conf.id]: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setTargets({ ...targets, [conf.id]: Number(e.target.value) })
+                    }
                     className={`tactical-slider ${conf.slider}`}
                   />
                 </div>
@@ -153,13 +202,18 @@ export default function TargetSliderModal({
             })}
         </div>
 
+        {/* Confirm button */}
         <div className="shrink-0 mt-auto pb-4">
           <button
             onClick={handleConfirm}
-            className="w-full relative bg-white text-black py-4 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(255,255,255,0.4)] transition-all active:scale-[0.98]"
+            className="w-full relative py-4 rounded-xl overflow-hidden transition-all active:scale-[0.98] text-black font-bebas text-2xl tracking-widest flex items-center justify-center gap-2 hover:brightness-110"
+            style={{
+              background: "#a3e635",
+              boxShadow: "0 0 25px rgba(163,230,53,.55), 0 0 50px rgba(163,230,53,.2)",
+            }}
           >
             <div className="absolute inset-0 bg-stripes opacity-10" />
-            <span className="relative z-10 font-bebas text-2xl tracking-widest flex items-center justify-center gap-2">
+            <span className="relative z-10 flex items-center gap-2">
               <Zap className="w-5 h-5" fill="currentColor" /> AUTHORIZE DIRECTIVE
             </span>
           </button>

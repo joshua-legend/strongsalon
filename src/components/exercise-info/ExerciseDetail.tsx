@@ -6,14 +6,11 @@ import type { ExerciseInfoItem } from "@/types";
 
 interface ExerciseDetailProps {
   item: ExerciseInfoItem | null;
+  embedUrl?: string | null;
   onClose: () => void;
 }
 
-// 테스트용 YouTube Shorts 영상 ID (autoplay는 mute 필수)
-const TEST_SHORTS_ID = "NIh2jqw0ASE";
-const EMBED_URL = `https://www.youtube.com/embed/${TEST_SHORTS_ID}?autoplay=1&mute=1&loop=1&playlist=${TEST_SHORTS_ID}&playsinline=1`;
-
-export default function ExerciseDetail({ item, onClose }: ExerciseDetailProps) {
+export default function ExerciseDetail({ item, embedUrl, onClose }: ExerciseDetailProps) {
   if (!item) return null;
 
   // 테스트용 더미 진행 데이터 (실제로는 workout state에서 가져옴)
@@ -34,14 +31,20 @@ export default function ExerciseDetail({ item, onClose }: ExerciseDetailProps) {
         className="relative w-full max-w-sm aspect-[9/16] bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl border border-neutral-800"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 1. YouTube Shorts (autoplay + mute 필수) */}
-        <iframe
-          src={EMBED_URL}
-          title="Exercise Shorts"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="absolute inset-0 w-full h-full"
-        />
+        {/* 1. YouTube Shorts (embedUrl prop, autoplay+mute 권장) */}
+        {embedUrl ? (
+          <iframe
+            src={embedUrl}
+            title="Exercise Shorts"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-neutral-900 text-neutral-500 text-sm">
+            영상 없음
+          </div>
+        )}
 
         {/* 2. 하단 그라데이션 오버레이 */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/40 pointer-events-none" />

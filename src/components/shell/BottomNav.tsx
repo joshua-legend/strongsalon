@@ -16,8 +16,11 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="shrink-0 flex items-end justify-around relative h-[72px] bg-neutral-950/97 backdrop-blur-xl border-t border-neutral-800"
-      style={{ paddingBottom: "max(8px, env(safe-area-inset-bottom))" }}
+      className="shrink-0 flex items-end justify-around relative h-[72px] bg-black border-t border-lime-500/20"
+      style={{
+        paddingBottom: "max(8px, env(safe-area-inset-bottom))",
+        boxShadow: "0 -1px 0 rgba(163,230,53,.15), 0 -15px 40px rgba(0,0,0,.9)",
+      }}
     >
       {tabs.map((tab) => {
         const isCenter = tab.id === "workout";
@@ -32,9 +35,11 @@ export default function BottomNav() {
               style={{ marginTop: -10 }}
             >
               <div
-                className="w-[52px] h-[52px] rounded-full flex items-center justify-center text-[24px] bg-gradient-to-br from-lime-400 to-lime-500"
+                className="w-[52px] h-[52px] rounded-full flex items-center justify-center text-[24px]"
                 style={{
-                  boxShadow: "0 4px 20px rgba(163,230,53,.45)",
+                  background: "linear-gradient(135deg, #a3e635 0%, #65a30d 100%)",
+                  boxShadow:
+                    "0 0 20px rgba(163,230,53,.65), 0 0 40px rgba(163,230,53,.25), 0 4px 20px rgba(0,0,0,.5)",
                   transform: "translateY(-10px)",
                 }}
               >
@@ -57,9 +62,12 @@ export default function BottomNav() {
               {tab.icon}
             </span>
             <span
-              className={`text-[10px] font-medium transition-colors duration-200 font-sans ${
-                isActive ? "text-lime-400" : "text-neutral-400"
-              }`}
+              className="text-[10px] font-medium transition-all duration-200 font-sans"
+              style={
+                isActive
+                  ? { color: "#a3e635", textShadow: "0 0 8px rgba(163,230,53,.6)" }
+                  : { color: "#2a2a2a" }
+              }
             >
               {tab.label}
             </span>

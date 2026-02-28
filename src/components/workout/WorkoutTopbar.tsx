@@ -10,21 +10,69 @@ export default function WorkoutTopbar({ elapsedSec }: WorkoutTopbarProps) {
 
   return (
     <header
-      className="sticky top-0 z-40 h-14 flex items-center justify-between px-4 gap-3 border-b border-neutral-800 bg-neutral-950/97 backdrop-blur-[20px]"
+      className="sticky top-0 z-40 h-14 flex items-center justify-between px-4 gap-3"
+      style={{
+        background: '#000',
+        borderBottom: '1px solid rgba(163,230,53,.4)',
+        boxShadow: '0 0 12px rgba(163,230,53,.25)',
+      }}
     >
+      {/* Logo + live dot */}
       <div className="flex items-center gap-3">
-        <div className="font-bebas text-xl tracking-widest text-orange-500">
-          Fit<span className="text-neutral-400">Log</span>
+        <div
+          className="font-bebas text-xl tracking-widest"
+          style={{
+            color: 'rgb(163, 230, 53)',
+            textShadow: '0 0 8px rgba(163,230,53,.5)',
+          }}
+        >
+          Fit<span style={{ color: 'rgba(163,230,53,.35)', textShadow: '0 0 8px rgba(163,230,53,.2)' }}>Log</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div
+            className="w-1.5 h-1.5 rounded-full animate-pulse"
+            style={{
+              background: 'rgb(163, 230, 53)',
+              boxShadow: '0 0 6px rgba(163,230,53,.5)',
+            }}
+          />
+          <span
+            className="font-bebas text-[9px] tracking-widest"
+            style={{ color: 'rgba(163,230,53,.45)' }}
+          >
+            LIVE
+          </span>
         </div>
       </div>
-      <div className="flex items-center gap-2 rounded-full border border-neutral-700 px-3.5 py-1.5 bg-neutral-900">
-        <div className="w-1.5 h-1.5 rounded-full animate-pulse bg-orange-500" />
+
+      {/* Elapsed timer */}
+      <div
+        className="flex items-center gap-2.5 rounded-xl px-4 py-2 border"
+        style={{
+          background: 'rgba(0,0,0,.8)',
+          borderColor: 'rgba(163,230,53,.5)',
+          boxShadow: '0 0 12px rgba(163,230,53,.3)',
+        }}
+      >
+        <div
+          className="w-2 h-2 rounded-full animate-pulse shrink-0"
+          style={{ background: 'rgb(163, 230, 53)', boxShadow: '0 0 6px rgba(163,230,53,.5)' }}
+        />
         <div>
-          <div className="font-bebas text-xl tracking-wider leading-none text-orange-500">
+          <div
+            className="font-bebas text-2xl tracking-wider leading-none"
+            style={{
+              color: 'rgb(163, 230, 53)',
+              textShadow: '0 0 8px rgba(163,230,53,.5)',
+            }}
+          >
             {m}:{s}
           </div>
-          <div className="text-[8px] font-bebas text-neutral-400">
-            WORKOUT TIME
+          <div
+            className="text-[8px] font-bebas tracking-widest text-center"
+            style={{ color: 'rgba(163,230,53,.5)', textShadow: '0 0 6px rgba(163,230,53,.3)' }}
+          >
+            ELAPSED
           </div>
         </div>
       </div>

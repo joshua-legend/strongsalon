@@ -42,7 +42,13 @@ export default function FreeArea({
       />
       <div className="flex flex-col gap-3">
         {ids.length > 0 && (
-          <h3 className="text-xs font-semibold px-0.5 text-white">
+          <h3
+            className="font-bebas text-[14px] tracking-wider uppercase px-0.5"
+            style={{
+              color: 'rgba(163,230,53,.8)',
+              textShadow: '0 0 6px rgba(163,230,53,.4)',
+            }}
+          >
             내 운동 ({ids.length}종목)
           </h3>
         )}

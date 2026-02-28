@@ -27,7 +27,7 @@ export default function ExerciseInfoTab() {
       <ExerciseSearch value={search} onChange={setSearch} />
       <CategoryChips value={category} onChange={setCategory} />
       <ExerciseList items={filtered} onSelect={setSelected} />
-      <ExerciseDetail item={selected} onClose={() => setSelected(null)} />
+      <ExerciseDetail item={selected} embedUrl={selected?.embedUrl} onClose={() => setSelected(null)} />
       <div className="h-4" />
     </div>
   );

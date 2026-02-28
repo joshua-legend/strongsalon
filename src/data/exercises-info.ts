@@ -14,6 +14,7 @@ export const exercisesInfo: ExerciseInfoItem[] = [
       inter: '70~100kg 4×6',
       adv: '100~140kg 5×3',
     },
+    embedUrl: 'https://www.youtube.com/embed/NIh2jqw0ASE?autoplay=1&mute=1&loop=1&playlist=NIh2jqw0ASE&playsinline=1',
   },
   {
     id: 'ex2',
@@ -28,6 +29,7 @@ export const exercisesInfo: ExerciseInfoItem[] = [
       inter: '80~120kg 4×8',
       adv: '120~180kg 5×5',
     },
+    embedUrl: 'https://www.youtube.com/embed/NNInPoM88Ko?autoplay=1&mute=1&loop=1&playlist=NNInPoM88Ko&playsinline=1',
   },
   {
     id: 'ex3',
@@ -114,6 +116,21 @@ export const exercisesInfo: ExerciseInfoItem[] = [
     },
   },
   {
+    id: 'ex8b',
+    name: '체스트 프레스',
+    category: '가슴',
+    icon: '🏋️',
+    targetMuscles: { primary: ['대흉근'], secondary: ['전면 삼각근', '삼두'] },
+    description: '체스트 프레스 기구에 앉아 핸들을 가슴 앞에서 밀어냅니다. 어깨블레이드를 모아 가슴을 펴세요.',
+    tips: '어깨가 과도하게 앞으로 나오지 않게. 등은 벤치에 밀착.',
+    levelGuide: {
+      novice: '30~50kg 3×10',
+      inter: '55~80kg 4×8',
+      adv: '85~120kg 5×6',
+    },
+    embedUrl: 'https://www.youtube.com/embed/NNInPoM88Ko?autoplay=1&mute=1&loop=1&playlist=NNInPoM88Ko&playsinline=1',
+  },
+  {
     id: 'ex9',
     name: '레그 프레스',
     category: '하체',
@@ -140,6 +157,7 @@ export const exercisesInfo: ExerciseInfoItem[] = [
       inter: '40~55kg 4×10',
       adv: '60~80kg 5×8',
     },
+    embedUrl: 'https://www.youtube.com/embed/fJtfxLTyml0?autoplay=1&mute=1&loop=1&playlist=fJtfxLTyml0&playsinline=1',
   },
   {
     id: 'ex11',
@@ -154,6 +172,7 @@ export const exercisesInfo: ExerciseInfoItem[] = [
       inter: '45~65kg 4×10',
       adv: '70~90kg 5×8',
     },
+    embedUrl: 'https://www.youtube.com/embed/XnnzPScNTYk?autoplay=1&mute=1&loop=1&playlist=XnnzPScNTYk&playsinline=1',
   },
   {
     id: 'ex12',
@@ -168,6 +187,7 @@ export const exercisesInfo: ExerciseInfoItem[] = [
       inter: '55~75kg 4×8',
       adv: '80~100kg 5×6',
     },
+    embedUrl: 'https://www.youtube.com/embed/uucD6XSsL-k?autoplay=1&mute=1&loop=1&playlist=uucD6XSsL-k&playsinline=1',
   },
   {
     id: 'ex13',
@@ -182,6 +202,7 @@ export const exercisesInfo: ExerciseInfoItem[] = [
       inter: '50~70kg 4×8',
       adv: '75~95kg 5×6',
     },
+    embedUrl: 'https://www.youtube.com/embed/6WqAar0ICuE?autoplay=1&mute=1&loop=1&playlist=6WqAar0ICuE&playsinline=1',
   },
   {
     id: 'ex14',

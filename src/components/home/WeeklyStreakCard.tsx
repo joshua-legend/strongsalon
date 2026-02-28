@@ -10,27 +10,61 @@ interface WeeklyStreakCardProps {
 
 export default function WeeklyStreakCard({ weekStreak, todayIdx }: WeeklyStreakCardProps) {
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+    <div
+      className="rounded-2xl p-5 border"
+      style={{ background: "#050505", borderColor: "rgba(255,255,255,.06)" }}
+    >
       <div className="flex items-center gap-2 mb-4">
-        <Flame className="w-4 h-4 text-orange-500" fill="currentColor" />
-        <span className="font-bebas text-[14px] text-neutral-400 tracking-wider uppercase">이번 주 출석</span>
+        <Flame
+          className="w-4 h-4"
+          fill="currentColor"
+          style={{
+            color: "#ff5500",
+            filter: "drop-shadow(0 0 6px rgba(255,85,0,.7))",
+          }}
+        />
+        <span
+          className="font-bebas text-[14px] tracking-wider uppercase text-white"
+        >
+          이번 주 출석
+        </span>
       </div>
+
       <div className="flex justify-between gap-1">
         {WEEK_DAYS.map((day, idx) => {
           const checked = weekStreak[idx];
           const isToday = idx === todayIdx;
+
           return (
             <div key={idx} className="flex flex-col items-center gap-2">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                style={
                   checked
-                    ? "bg-lime-400 text-black shadow-[0_0_12px_rgba(204,255,0,0.4)]"
+                    ? {
+                        background: "#a3e635",
+                        color: "#000",
+                        boxShadow:
+                          "0 0 14px rgba(163,230,53,.55), 0 0 28px rgba(163,230,53,.2)",
+                      }
                     : isToday
-                    ? "bg-neutral-800 border-2 border-dashed border-lime-400/50 text-neutral-400"
-                    : "bg-neutral-950 border border-neutral-800 text-neutral-600"
-                }`}
+                    ? {
+                        background: "#0a0a0a",
+                        border: "2px dashed rgba(163,230,53,.4)",
+                        color: "#fff",
+                      }
+                    : {
+                        background: "#0a0a0a",
+                        border: "1px solid rgba(255,255,255,.06)",
+                        color: "#fff",
+                      }
+                }
               >
-                {checked ? <CheckCircle2 className="w-5 h-5" /> : <span className="font-bebas text-lg">{day}</span>}
+                {checked ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <span className="font-bebas text-lg">{day}</span>
+                )}
               </div>
             </div>
           );
