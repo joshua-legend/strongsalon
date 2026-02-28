@@ -7,8 +7,8 @@ const tabs: { id: TabId; icon: string; label: string }[] = [
   { id: "home", icon: "🏠", label: "홈" },
   { id: "stats", icon: "📊", label: "통계" },
   { id: "workout", icon: "💪", label: "" },
-  { id: "performance", icon: "🏃", label: "내 실력" },
-  { id: "exercise-info", icon: "📋", label: "운동사전" },
+  { id: "performance", icon: "🏆", label: "레코드" },
+  { id: "exercise-info", icon: "📚", label: "라이브러리" },
 ];
 
 export default function BottomNav() {
