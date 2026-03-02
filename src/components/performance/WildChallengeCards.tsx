@@ -3,7 +3,7 @@
 const CHALLENGES = [
   {
     id: "wolf-chase",
-    name: "늑대의 추적",
+    name: "🐺 늑대의 추적",
     image: "/run1.jpg",
     level: "Normal",
     description: "러닝 4km + 사이클 6km (유산소)",
@@ -12,8 +12,8 @@ const CHALLENGES = [
   },
   {
     id: "grizzly-iron-dominance",
-    name: "🐻 아이언 도미넌스",
-    image: "/deadlift.jpg",
+    name: "🐹 작은 철의 심장",
+    image: "/lift.jpg",
     level: "Hard",
     description: "100kg × 50 데드리프트 (Fully Dressed Version)",
     myBest: "도전 전",
@@ -21,8 +21,8 @@ const CHALLENGES = [
   },
   {
     id: "tiger-row",
-    name: "호랑이의 연격",
-    image: "/burpee.jpg",
+    name: "🐯 호랑이의 연격",
+    image: "/burp.jpg",
     level: "Expert",
     description: "버피 50회 + 턱걸이 30회 + 점프스쿼트 50회",
     myBest: "14:22",
