@@ -1,16 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { member } from "@/data/member";
 import { attendance } from "@/data/attendance";
 import { useApp } from "@/context/AppContext";
 import { getWeekStreak, getDaysLeft, formatExpiry, getTodayWeekIndex } from "@/utils/homeUtils";
-import DirectiveCard from "./DirectiveCard";
+import GoalTracker from "./GoalTracker";
 import TodayRoutineButton from "./TodayRoutineButton";
 import WeeklyStreakCard from "./WeeklyStreakCard";
 import PtTicketCard from "./PtTicketCard";
 import GymTicketCard from "./GymTicketCard";
-import TargetSliderModal from "./TargetSliderModal";
 
 export default function HomeTab() {
   const { enterWorkout } = useApp();
@@ -23,11 +21,9 @@ export default function HomeTab() {
   const membershipExpiryFmt = membershipExpiry ? formatExpiry(membershipExpiry) : null;
   const todayIdx = getTodayWeekIndex();
 
-  const [showSliderModal, setShowSliderModal] = useState(false);
-
   return (
     <div className="px-4 py-4 space-y-4">
-      <DirectiveCard onOpenSlider={() => setShowSliderModal(true)} />
+      <GoalTracker />
 
       <TodayRoutineButton onClick={enterWorkout} />
 
@@ -42,12 +38,6 @@ export default function HomeTab() {
         />
         <GymTicketCard daysLeft={membershipDaysLeft} expiryFormatted={membershipExpiryFmt} />
       </div>
-
-      <TargetSliderModal
-        open={showSliderModal}
-        onClose={() => setShowSliderModal(false)}
-        onConfirm={() => setShowSliderModal(false)}
-      />
     </div>
   );
 }

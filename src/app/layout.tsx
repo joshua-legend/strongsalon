@@ -1,11 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Bebas_Neue } from "next/font/google";
+import { Bebas_Neue, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
   variable: "--font-bebas-neue",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const spaceMono = Space_Mono({
+  weight: ["400", "700"],
+  variable: "--font-space-mono",
   subsets: ["latin"],
   display: "swap",
 });
@@ -30,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={bebasNeue.variable}>
+      <body className={`${bebasNeue.variable} ${spaceMono.variable}`}>
         <AppProvider>
           {children}
         </AppProvider>

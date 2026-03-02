@@ -18,9 +18,9 @@ export default function TodayRoutineButton({
       onClick={onClick}
       className="w-full group relative text-black rounded-2xl overflow-hidden transition-all duration-300 active:scale-[0.98] hover:brightness-105"
       style={{
-        background: "#a3e635",
+        background: "#f97316",
         boxShadow:
-          "0 0 30px rgba(163,230,53,.55), 0 0 60px rgba(163,230,53,.2), 0 0 100px rgba(163,230,53,.08)",
+          "0 0 30px rgba(249,115,22,.55), 0 0 60px rgba(249,115,22,.2), 0 0 100px rgba(249,115,22,.08)",
       }}
     >
       <div className="absolute inset-0 bg-stripes opacity-10" />
@@ -30,7 +30,7 @@ export default function TodayRoutineButton({
         <div className="text-left flex flex-col items-start">
           <span
             className="inline-block px-2 py-0.5 bg-black font-bold text-[10px] uppercase italic -skew-x-12 mb-2"
-            style={{ color: "#a3e635", textShadow: "0 0 8px rgba(163,230,53,.6)" }}
+            style={{ color: "#f97316", textShadow: "0 0 8px rgba(249,115,22,.6)" }}
           >
             <span className="skew-x-12 block">{subtitle}</span>
           </span>
@@ -41,15 +41,15 @@ export default function TodayRoutineButton({
           className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"
           style={{
             background: "#000",
-            boxShadow: "0 0 20px rgba(0,0,0,.6), inset 0 0 15px rgba(163,230,53,.08)",
+            boxShadow: "0 0 20px rgba(0,0,0,.6), inset 0 0 15px rgba(249,115,22,.08)",
           }}
         >
           <Play
             className="w-6 h-6 ml-1"
             style={{
-              color: "#a3e635",
-              fill: "#a3e635",
-              filter: "drop-shadow(0 0 6px rgba(163,230,53,.7))",
+              color: "#f97316",
+              fill: "#f97316",
+              filter: "drop-shadow(0 0 6px rgba(249,115,22,.7))",
             }}
           />
         </div>

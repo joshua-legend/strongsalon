@@ -21,17 +21,17 @@ interface CategoryChipsProps {
 
 export default function CategoryChips({ value, onChange }: CategoryChipsProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 -mx-1">
+    <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-1 -mx-1">
       {categories.map((c) => {
         const isActive = value === c;
         return (
           <button
             key={c}
             onClick={() => onChange(c)}
-            className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium ${
+            className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
               isActive
-                ? "bg-orange-500/20 border border-orange-500/50 text-orange-500"
-                : "bg-neutral-950/50 border border-transparent text-neutral-400"
+                ? "bg-lime-400 text-black border border-lime-400 shadow-[0_0_10px_rgba(163,230,53,0.3)]"
+                : "bg-neutral-900 text-neutral-500 border border-neutral-800 hover:text-neutral-300"
             }`}
           >
             {c}

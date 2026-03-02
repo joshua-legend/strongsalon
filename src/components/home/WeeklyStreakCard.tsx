@@ -42,15 +42,15 @@ export default function WeeklyStreakCard({ weekStreak, todayIdx }: WeeklyStreakC
                 style={
                   checked
                     ? {
-                        background: "#a3e635",
+                        background: "#f97316",
                         color: "#000",
                         boxShadow:
-                          "0 0 14px rgba(163,230,53,.55), 0 0 28px rgba(163,230,53,.2)",
+                          "0 0 14px rgba(249,115,22,.55), 0 0 28px rgba(249,115,22,.2)",
                       }
                     : isToday
                     ? {
                         background: "#0a0a0a",
-                        border: "2px dashed rgba(163,230,53,.4)",
+                        border: "2px dashed rgba(249,115,22,.4)",
                         color: "#fff",
                       }
                     : {

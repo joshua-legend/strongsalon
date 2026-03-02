@@ -1,7 +1,69 @@
 export type TabId = 'home' | 'stats' | 'workout' | 'performance' | 'exercise-info';
 export type SubTabId = 'body' | 'strength' | 'cardio';
 
+/** 동물 티어 (와일드 피트니스) */
+export type AnimalTier = 'sloth' | 'meerkat' | 'gazelle' | 'tiger' | 'grizzly';
+
+/** 5대 능력치 (레이더 차트) */
+export interface AbilityStats {
+  strength: number;      // 근력
+  endurance: number;    // 근지구력
+  explosiveness: number; // 순발력
+  cardio: number;       // 심폐지구력
+  stability: number;   // 안정성
+}
+
 export type GoalCategory = 'strength' | 'body' | 'cardio' | 'attendance' | 'weight';
+
+// ── Goal Tracker & Setup Wizard ──
+export type GoalPurpose = '다이어트' | '벌크업' | '스트렝스' | '바디프로필';
+
+export type GoalInputs =
+  | { purpose: '다이어트'; current: number; target: number; unit: 'kg' }
+  | {
+      purpose: '벌크업';
+      weightCurrent: number;
+      weightTarget: number;
+      muscleCurrent: number;
+      muscleTarget: number;
+    }
+  | {
+      purpose: '스트렝스';
+      squat: number;
+      bench: number;
+      deadlift: number;
+      targetSquat: number;
+      targetBench: number;
+      targetDeadlift: number;
+    }
+  | {
+      purpose: '바디프로필';
+      fatPctCurrent: number;
+      fatPctTarget: number;
+      weightCurrent: number;
+      weightTarget: number;
+    };
+
+export type GoalDuration = 4 | 8 | 12;
+
+/** 주차별 평가 상태: null=미평가, success=성공, fail=실패 */
+export type WeekStatus = "success" | "fail" | null;
+
+/** 지표별 주차 달성 여부 (성공/실패 버튼) */
+export type WeeklyAchievements = Record<string, WeekStatus[]>;
+
+export interface ActiveGoal {
+  purpose: GoalPurpose;
+  inputs: GoalInputs;
+  /** 확정 시점의 원본 목표 (지연 계산용) */
+  originalInputs?: GoalInputs;
+  /** 4|8|12 또는 실패 이월로 연장된 값 (9, 10, ...) */
+  duration: number;
+  title: string;
+  subtitle: string;
+  startDate: string;
+  weeklyAchievements?: WeeklyAchievements;
+}
 
 export interface WeeklyGoal {
   id: string;
@@ -65,6 +127,10 @@ export interface ExerciseInfoItem {
   tips: string;
   levelGuide: { novice: string; inter: string; adv: string };
   svgIllust?: string;
+  /** 3D GIF/이미지 URL (썸네일용). 없으면 fallback 사용 */
+  modelUrl?: string | null;
+  /** 장비 (Barbell, Dumbbell, Cable, Machine, Bar, Bodyweight 등) */
+  equipment?: string | null;
   /** YouTube embed URL (autoplay+mute 권장). 예: https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID&playsinline=1 */
   embedUrl?: string | null;
 }
