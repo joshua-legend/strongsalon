@@ -25,16 +25,11 @@ export default function PerformanceTab() {
       />
 
       <div className="fade-up fade-in-1">
-        <div className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-2">
-          5대 능력치 밸런스
-        </div>
-        <AbilityRadarChart stats={abilityStats} />
-        <button
-          onClick={() => setShowAbilityModal(true)}
-          className="w-full mt-3 py-3 rounded-xl text-sm font-bold bg-orange-500/20 text-orange-500 border border-orange-500/40 hover:bg-orange-500/30 transition-colors"
-        >
-          능력치 밸런스 측정하기
-        </button>
+        <AbilityRadarChart
+          stats={abilityStats}
+          growthDelta={{ target: "하체 근력", val: "+3.2%" }}
+          onMeasureClick={() => setShowAbilityModal(true)}
+        />
       </div>
 
       <AbilityMeasureModal

@@ -210,6 +210,8 @@ export interface MemberProfile {
   level: 'NOVICE' | 'INTERMEDIATE' | 'ADVANCED';
   liftTotal: number;
   bodyWeight: number;
+  /** 연령대 세그먼트 (예: "30대 초반") */
+  ageSegment?: string;
   streak: number;
   monthAttendRate: number;
   avgVolume: string;

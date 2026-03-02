@@ -8,6 +8,7 @@ export const member: MemberProfile = {
   level: 'INTERMEDIATE',
   liftTotal: 360,
   bodyWeight: 73.4,
+  ageSegment: '30대 초반',
   streak: 12,
   monthAttendRate: 73,
   avgVolume: '9.2k',
