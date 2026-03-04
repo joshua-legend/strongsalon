@@ -45,7 +45,7 @@ export default function CheckInCard() {
       className={`rounded-2xl p-5 bg-neutral-900 border transition-colors ${cardBorder}`}
     >
       {/* 헤더 */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-3">
         <span className="text-xs font-bold text-neutral-400">
           W{currentWeek} 체크인
         </span>
@@ -59,44 +59,31 @@ export default function CheckInCard() {
         </div>
       </div>
 
-      {/* 안내 */}
-      <div className="text-xs text-neutral-500 text-center mb-4">
-        이번 주 측정 결과를 입력하세요
-      </div>
-
-      {/* 거대 입력 - 밑줄 스타일 */}
-      <div className="flex items-center justify-center gap-2 mb-4">
-        <span className={`font-mono text-lg ${inputState === "idle" ? "text-neutral-600" : inputState === "pass" ? "text-lime-400" : "text-orange-400"}`}>
-          {purpose.unit}
-        </span>
+      {/* 입력 - 단위 한쪽만 */}
+      <div className="flex items-center justify-center gap-2 mb-3">
         <input
           type="number"
           inputMode="decimal"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="0.0"
-          className={`flex-1 max-w-[180px] text-center font-bebas text-6xl bg-transparent border-b-2 focus:outline-none transition-colors ${inputColor}`}
+          className={`flex-1 max-w-[160px] text-center font-bebas text-5xl bg-transparent border-b-2 focus:outline-none transition-colors ${inputColor}`}
         />
-        <span className={`font-mono text-lg ${inputState === "idle" ? "text-neutral-600" : inputState === "pass" ? "text-lime-400" : "text-orange-400"}`}>
+        <span className={`font-mono text-base ${inputState === "idle" ? "text-neutral-600" : inputState === "pass" ? "text-lime-400" : "text-orange-400"}`}>
           {purpose.unit}
         </span>
       </div>
 
-      {/* 피드백 pill (h-8) */}
-      <div className="h-8 flex items-center justify-center mb-4">
-        {inputState === "idle" && (
-          <span className="text-[11px] text-neutral-600">
-            숫자를 입력하면 달성 여부가 바로 표시됩니다
-          </span>
-        )}
+      {/* 피드백 pill */}
+      <div className="h-7 flex items-center justify-center mb-4">
         {inputState === "pass" && (
-          <span className="px-3 py-1.5 rounded-full bg-lime-400/10 text-lime-400 text-xs font-bold fade-slide-up">
-            ✓ 목표 달성! 다음 주로 전진합니다
+          <span className="px-3 py-1 rounded-full bg-lime-400/10 text-lime-400 text-xs font-bold fade-slide-up">
+            ✓ 목표 달성!
           </span>
         )}
         {inputState === "fail" && (
-          <span className="px-3 py-1.5 rounded-full bg-orange-400/10 text-orange-400 text-xs font-bold fade-slide-up">
-            ⚠ 이번 주 목표를 유지하고 재도전!
+          <span className="px-3 py-1 rounded-full bg-orange-400/10 text-orange-400 text-xs font-bold fade-slide-up">
+            ⚠ 재도전
           </span>
         )}
       </div>
@@ -105,7 +92,7 @@ export default function CheckInCard() {
       <button
         onClick={handleRecord}
         disabled={!isValidNum}
-        className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
+        className={`w-full py-3 rounded-xl font-bold text-base transition-all ${
           !isValidNum
             ? "bg-neutral-800 text-neutral-600 pointer-events-none"
             : passed

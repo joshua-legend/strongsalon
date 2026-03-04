@@ -17,7 +17,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-neutral-950/80 backdrop-blur-lg border-t border-neutral-800 px-6 py-3 z-40 flex justify-between items-center shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
+      className="fixed bottom-0 left-0 right-0 w-full max-w-[480px] mx-auto bg-neutral-950/80 backdrop-blur-lg border-t border-neutral-800 px-6 py-3 z-40 flex justify-between items-center shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
       style={{
         paddingBottom: "max(8px, env(safe-area-inset-bottom))",
       }}

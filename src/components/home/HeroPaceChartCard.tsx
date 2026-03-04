@@ -42,39 +42,33 @@ export default function HeroPaceChartCard() {
   const successRate =
     history.length > 0 ? Math.round((successCount / history.length) * 100) : 0;
 
+  const remainingLabel: Record<string, string> = {
+    cut: "남은 체중",
+    bulk: "남은 근육량",
+    strength: "남은 중량",
+    endure: "남은 시간",
+  };
+  const remainingLabelText = remainingLabel[purpose.id] ?? "남은 거리";
+
   return (
     <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950 border border-neutral-800 relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-lime-500 opacity-5 blur-3xl rounded-full" />
       <div className="relative z-10 p-5">
-        {/* 상단: 현재 수치 + 목표까지 + 배지들 */}
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <div className="font-bebas text-5xl text-white tracking-wider">
-              {latestMetric}
-              <span className="font-mono text-lg text-neutral-500 ml-1">
-                {purpose.unit}
-              </span>
-            </div>
-            <div className="text-xs text-neutral-500 mt-0.5">
-              목표까지 {Math.abs(remaining).toFixed(1)}
-              {purpose.unit}
-            </div>
-          </div>
-          <div className="flex gap-2 flex-wrap justify-end">
-            {comeback && (
-              <span className="px-2 py-1 rounded-lg bg-sky-400/20 text-sky-400 text-[10px] font-bold">
-                복귀 성공!
-              </span>
-            )}
-            {streak >= 2 && (
-              <span className="px-2 py-1 rounded-lg bg-lime-400/20 text-lime-400 text-[10px] font-bold pulse-glow">
-                {streak}주 연속!
-              </span>
-            )}
-            <span className="px-2 py-1 rounded-lg bg-neutral-800 text-neutral-400 text-[10px] font-bold">
-              W{currentWeek}
+        {/* 상단: 배지만 */}
+        <div className="flex justify-end gap-2 flex-wrap mb-3">
+          {comeback && (
+            <span className="px-2 py-1 rounded-lg bg-sky-400/20 text-sky-400 text-[10px] font-bold">
+              복귀 성공!
             </span>
-          </div>
+          )}
+          {streak >= 2 && (
+            <span className="px-2 py-1 rounded-lg bg-lime-400/20 text-lime-400 text-[10px] font-bold pulse-glow">
+              {streak}주 연속!
+            </span>
+          )}
+          <span className="px-2 py-1 rounded-lg bg-neutral-800 text-neutral-400 text-[10px] font-bold">
+            W{currentWeek}
+          </span>
         </div>
 
         {/* 범례 */}
@@ -119,7 +113,7 @@ export default function HeroPaceChartCard() {
           </div>
           <div className="bg-neutral-950/80 rounded-2xl p-3 text-center">
             <div className="font-mono text-[10px] text-neutral-500 uppercase">
-              남은 거리
+              {remainingLabelText}
             </div>
             <div className="font-bebas text-lg text-white">
               {Math.abs(remaining).toFixed(1)}

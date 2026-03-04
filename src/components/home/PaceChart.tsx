@@ -31,12 +31,12 @@ export default function PaceChart({
   latestMetric,
   unit,
 }: PaceChartProps) {
-  const width = 340;
-  const height = 180;
-  const padLeft = 44;
-  const padRight = 14;
-  const padTop = 20;
-  const padBottom = 32;
+  const width = 400;
+  const height = 240;
+  const padLeft = 48;
+  const padRight = 16;
+  const padTop = 24;
+  const padBottom = 40;
   const chartW = width - padLeft - padRight;
   const chartH = height - padTop - padBottom;
 
@@ -71,10 +71,10 @@ export default function PaceChart({
   const isAhead = (weeklyDelta < 0 && paceDiff <= 0) || (weeklyDelta > 0 && paceDiff >= 0);
 
   return (
-    <div className="w-full">
+    <div className="w-full min-h-[240px]">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="w-full h-auto"
+        className="w-full h-auto min-h-[240px]"
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
