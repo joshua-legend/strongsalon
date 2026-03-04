@@ -2,7 +2,9 @@
 
 import AppShell from "@/components/shell/AppShell";
 import { useApp } from "@/context/AppContext";
+import { useQuest } from "@/context/QuestContext";
 import { ToastProvider } from "@/components/ui/Toast";
+import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 import HomeTab from "@/components/home/HomeTab";
 import StatsTab from "@/components/stats/StatsTab";
 import PerformanceTab from "@/components/performance/PerformanceTab";
@@ -12,10 +14,20 @@ import WorkoutPage from "@/components/workout/WorkoutPage";
 export default function Page() {
   return (
     <ToastProvider>
-      <AppShell>
-        <TabContent />
-      </AppShell>
+      <PageContent />
     </ToastProvider>
+  );
+}
+
+function PageContent() {
+  const { userProfile } = useQuest();
+  if (!userProfile) {
+    return <OnboardingWizard />;
+  }
+  return (
+    <AppShell>
+      <TabContent />
+    </AppShell>
   );
 }
 

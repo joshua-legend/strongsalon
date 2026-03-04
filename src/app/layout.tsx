@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
+import { QuestProvider } from "@/context/QuestContext";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -39,7 +40,9 @@ export default function RootLayout({
     <html lang="ko">
       <body className={`${bebasNeue.variable} ${spaceMono.variable}`}>
         <AppProvider>
-          {children}
+          <QuestProvider>
+            {children}
+          </QuestProvider>
         </AppProvider>
       </body>
     </html>
