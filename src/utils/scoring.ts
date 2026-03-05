@@ -1,5 +1,14 @@
 import type { MemberProfile, RankGrade } from '@/types';
 
+/**
+ * Epley Formula: 1RM = weight × (1 + reps / 30)
+ */
+export function estimate1RM(weight: number, reps: number): number {
+  if (reps === 0) return 0;
+  if (reps === 1) return weight;
+  return Math.round(weight * (1 + reps / 30) * 10) / 10;
+}
+
 export function calcStrengthScore(profile: MemberProfile): number {
   const benchPct = Math.min(profile.lifts[0]?.pct ?? 0, 100);
   const squatPct = Math.min(profile.lifts[1]?.pct ?? 0, 100);

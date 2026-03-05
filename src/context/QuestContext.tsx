@@ -8,35 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import type { UserProfile, ActiveQuest } from "@/types/quest";
-import { purposeOptions } from "@/config/purposeOptions";
-
-const PROFILE_KEY = "fitlog-user-profile";
-const QUEST_KEY = "fitlog-active-quest";
-
-function loadProfile(): UserProfile | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(PROFILE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as UserProfile;
-    const fullPurpose = purposeOptions.find((p) => p.id === parsed.purpose.id);
-    if (!fullPurpose) return null;
-    return { ...parsed, purpose: fullPurpose };
-  } catch {
-    return null;
-  }
-}
-
-function loadQuest(): ActiveQuest | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(QUEST_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw) as ActiveQuest;
-  } catch {
-    return null;
-  }
-}
+import { loadProfile, loadQuest, saveProfile, saveQuest } from "./useQuestStorage";
 
 interface QuestContextValue {
   userProfile: UserProfile | null;
@@ -62,48 +34,12 @@ export function QuestProvider({ children }: { children: React.ReactNode }) {
 
   const setUserProfile = useCallback((p: UserProfile | null) => {
     setUserProfileState(p);
-    if (p) {
-      try {
-        const { purpose } = p;
-        const toSave = {
-          ...p,
-          purpose: {
-            id: purpose.id,
-            label: purpose.label,
-            desc: purpose.desc,
-            unit: purpose.unit,
-            weeklyDelta: purpose.weeklyDelta,
-            metricKey: purpose.metricKey,
-          },
-        };
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(toSave));
-      } catch {
-        // ignore
-      }
-    } else {
-      try {
-        localStorage.removeItem(PROFILE_KEY);
-      } catch {
-        // ignore
-      }
-    }
+    saveProfile(p);
   }, []);
 
   const setActiveQuest = useCallback((q: ActiveQuest | null) => {
     setActiveQuestState(q);
-    if (q) {
-      try {
-        localStorage.setItem(QUEST_KEY, JSON.stringify(q));
-      } catch {
-        // ignore
-      }
-    } else {
-      try {
-        localStorage.removeItem(QUEST_KEY);
-      } catch {
-        // ignore
-      }
-    }
+    saveQuest(q);
   }, []);
 
   const isGoalReached = (() => {
@@ -111,9 +47,7 @@ export function QuestProvider({ children }: { children: React.ReactNode }) {
     const { weeklyDelta } = userProfile.purpose;
     const { latestMetric } = activeQuest;
     const { targetValue } = userProfile;
-    return weeklyDelta < 0
-      ? latestMetric <= targetValue
-      : latestMetric >= targetValue;
+    return weeklyDelta < 0 ? latestMetric <= targetValue : latestMetric >= targetValue;
   })();
 
   const recordWeek = useCallback(
@@ -124,24 +58,13 @@ export function QuestProvider({ children }: { children: React.ReactNode }) {
       const weekTargetRaw = activeQuest.latestMetric + weeklyDelta;
       const weekTarget = Math.ceil(weekTargetRaw * 100) / 100;
 
-      const passed =
-        weeklyDelta < 0 ? inputValue <= weekTarget : inputValue >= weekTarget;
-
-      // 최종 목표 즉시 달성 — 실측값이 최종 목표 도달/초과 시 바로 완료
-      const finalReached =
-        weeklyDelta < 0
-          ? inputValue <= finalTarget
-          : inputValue >= finalTarget;
+      const passed = weeklyDelta < 0 ? inputValue <= weekTarget : inputValue >= weekTarget;
+      const finalReached = weeklyDelta < 0 ? inputValue <= finalTarget : inputValue >= finalTarget;
       const newLatestMetric = finalReached ? finalTarget : (passed ? weekTarget : activeQuest.latestMetric);
 
       const newHistory = [
         ...activeQuest.history,
-        {
-          week: activeQuest.currentWeek,
-          recorded: inputValue,
-          target: weekTarget,
-          passed,
-        },
+        { week: activeQuest.currentWeek, recorded: inputValue, target: weekTarget, passed },
       ];
 
       setActiveQuest({
@@ -149,10 +72,7 @@ export function QuestProvider({ children }: { children: React.ReactNode }) {
         latestMetric: newLatestMetric,
         history: newHistory,
         streak: passed ? activeQuest.streak + 1 : 0,
-        bestStreak: Math.max(
-          activeQuest.bestStreak,
-          passed ? activeQuest.streak + 1 : 0
-        ),
+        bestStreak: Math.max(activeQuest.bestStreak, passed ? activeQuest.streak + 1 : 0),
       });
     },
     [userProfile, activeQuest, setActiveQuest]
@@ -164,11 +84,7 @@ export function QuestProvider({ children }: { children: React.ReactNode }) {
     const extraWeeks = 8;
     const newTarget = activeQuest.latestMetric + weeklyDelta * extraWeeks;
 
-    setUserProfile({
-      ...userProfile,
-      startValue: activeQuest.latestMetric,
-      targetValue: newTarget,
-    });
+    setUserProfile({ ...userProfile, startValue: activeQuest.latestMetric, targetValue: newTarget });
     setActiveQuest({
       currentWeek: 1,
       latestMetric: activeQuest.latestMetric,
@@ -185,16 +101,7 @@ export function QuestProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <QuestContext.Provider
-      value={{
-        userProfile,
-        activeQuest,
-        setUserProfile,
-        setActiveQuest,
-        recordWeek,
-        extendGoal,
-        resetQuest,
-        isGoalReached,
-      }}
+      value={{ userProfile, activeQuest, setUserProfile, setActiveQuest, recordWeek, extendGoal, resetQuest, isGoalReached }}
     >
       {children}
     </QuestContext.Provider>

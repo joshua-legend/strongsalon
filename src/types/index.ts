@@ -4,71 +4,37 @@ export type SubTabId = 'body' | 'strength' | 'cardio';
 /** 동물 티어 (와일드 피트니스) */
 export type AnimalTier = 'sloth' | 'meerkat' | 'gazelle' | 'tiger' | 'grizzly';
 
-/** 5대 능력치 (레이더 차트) */
-export interface AbilityStats {
-  strength: number;      // 근력
-  endurance: number;    // 근지구력
-  explosiveness: number; // 순발력
-  cardio: number;       // 심폐지구력
-  stability: number;   // 안정성
-}
+// 성능 측정 관련 타입
+export type {
+  AbilityStats,
+  Grade,
+  StrengthAbilityResult,
+  BalanceAbilityResult,
+  EnduranceAbilityResult,
+  AbilityResult,
+  AbilityResults,
+} from './performance';
 
-export type Grade = "S" | "A" | "B" | "C" | "D" | "F";
+// 출석 관련 타입
+export type { AttendType, AttendanceRecord } from './attendance';
 
-/** 1RM 기반 측정 결과 (하체근력, 상체푸쉬, 상체풀) */
-export interface StrengthAbilityResult {
-  score: number;
-  grade: Grade;
-  equipment: string;
-  weight: number;
-  reps: number;
-  estimated1RM: number;
-  bodyweightRatio: number;
-  isAssist?: boolean;
-  date: string;
-}
-
-/** 하체 밸런스 측정 결과 */
-export interface BalanceAbilityResult {
-  score: number;
-  grade: Grade;
-  frontBackRatio: number;
-  innerOuterRatio: number;
-  frontBackScore: number;
-  innerOuterScore: number;
-  quad: { equipment: string; weight: number; reps: number; est1RM: number };
-  ham: { equipment: string; weight: number; reps: number; est1RM: number };
-  inner: { equipment: string; weight: number; reps: number; est1RM: number };
-  outer: { equipment: string; weight: number; reps: number; est1RM: number };
-  date: string;
-}
-
-/** 근지구력 측정 결과 */
-export interface EnduranceAbilityResult {
-  score: number;
-  grade: Grade;
-  equipment: string;
-  testWeight: number;
-  reps: number;
-  date: string;
-}
-
-export type AbilityResult =
-  | StrengthAbilityResult
-  | BalanceAbilityResult
-  | EnduranceAbilityResult;
-
-export type AbilityResults = {
-  lowerStrength: StrengthAbilityResult | null;
-  upperPush: StrengthAbilityResult | null;
-  upperPull: StrengthAbilityResult | null;
-  lowerBalance: BalanceAbilityResult | null;
-  endurance: EnduranceAbilityResult | null;
-};
+// 운동 기록 관련 타입
+export type {
+  Condition,
+  WorkoutSet,
+  Exercise,
+  WorkoutMode,
+  WorkoutCondition,
+  SetRecord,
+  TrainerExercise,
+  FreeExercise,
+  TrainerProg,
+  CardioType,
+  CardioEntry,
+} from './workout';
 
 export type GoalCategory = 'strength' | 'body' | 'cardio' | 'attendance' | 'weight';
 
-// ── Goal Tracker & Setup Wizard ──
 export type GoalPurpose = '다이어트' | '벌크업' | '스트렝스' | '바디프로필';
 
 export type GoalInputs =
@@ -187,34 +153,17 @@ export interface ExerciseInfoItem {
   /** YouTube embed URL (autoplay+mute 권장). 예: https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID&playsinline=1 */
   embedUrl?: string | null;
 }
-export type Condition = '최고' | '좋음' | '보통' | '피로' | '최악';
 
-export interface WorkoutSet {
-  label: string;
-  kg: number;
-  reps: number;
-  done: boolean;
-}
+export type MuscleStatus = 'none' | 'injury' | 'worked' | 'fatigue' | 'recover';
 
-export interface Exercise {
-  id: number;
+export interface MuscleCondition {
+  id: string;
   name: string;
-  emoji: string;
-  cat: string;
-  intensity: string;
-  prevKg: number;
-  prevReps: number;
-  prKg: number;
-  sets: WorkoutSet[];
-  svgIllust: string;
+  status: MuscleStatus;
+  detail: string;
 }
 
-export type AttendType = 'pt' | 'self' | 'both';
-
-export interface AttendanceRecord {
-  date: string;
-  type: AttendType;
-}
+export type RankGrade = 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'ELITE';
 
 export interface BodyComposition {
   weight: number;
@@ -244,17 +193,6 @@ export interface LiftData {
   pct: number;
 }
 
-export type MuscleStatus = 'none' | 'injury' | 'worked' | 'fatigue' | 'recover';
-
-export interface MuscleCondition {
-  id: string;
-  name: string;
-  status: MuscleStatus;
-  detail: string;
-}
-
-export type RankGrade = 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'ELITE';
-
 export interface MemberProfile {
   name: string;
   initial: string;
@@ -278,44 +216,4 @@ export interface MemberProfile {
   nextPtDate?: string | null;
   membershipExpiry?: string | null;
   membershipStart?: string | null;
-}
-
-// ── 운동 기록 페이지 (WorkoutPage) 전용 ──
-export type WorkoutMode = 'trainer' | 'free';
-export type WorkoutCondition = '최악' | '나쁨' | '좋음' | '최고' | '불타';
-
-export interface SetRecord {
-  id: string;
-  weight: number;
-  reps: number;
-}
-
-export interface TrainerExercise {
-  id: string;
-  icon: string;
-  name: string;
-  rx: string;
-  tSets: number;
-  prevPR: number | null;
-  sets: SetRecord[];
-}
-
-export interface FreeExercise {
-  icon: string;
-  name: string;
-  sets: SetRecord[];
-}
-
-export interface TrainerProg {
-  exercises: TrainerExercise[];
-}
-
-// 오늘 운동용 유산소 1건 (km + 시간)
-export type CardioType = 'run' | 'cycle' | 'row';
-
-export interface CardioEntry {
-  id: string;
-  type: CardioType;
-  distanceKm: number;
-  timeMinutes: number;
 }
