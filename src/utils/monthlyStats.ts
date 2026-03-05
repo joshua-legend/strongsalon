@@ -1,4 +1,4 @@
-import { attendance } from "@/data/attendance";
+import type { AttendanceRecord } from "@/types";
 import { workoutHistory } from "@/data/workoutHistory";
 
 const TARGET_DAYS = 22;
@@ -44,7 +44,11 @@ export interface MonthlyStats {
   streak: number;
 }
 
-export function getMonthlyStats(year: number, month: number): MonthlyStats {
+export function getMonthlyStats(
+  year: number,
+  month: number,
+  attendance: AttendanceRecord[]
+): MonthlyStats {
   const y = safeNum(year);
   const monthNum = safeNum(month) + 1;
 

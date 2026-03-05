@@ -1,8 +1,8 @@
 "use client";
 
 import { member } from "@/data/member";
-import { attendance } from "@/data/attendance";
 import { useApp } from "@/context/AppContext";
+import { useAttendance } from "@/context/AttendanceContext";
 import { useQuest } from "@/context/QuestContext";
 import { getWeekStreak, getDaysLeft, formatExpiry, getTodayWeekIndex } from "@/utils/homeUtils";
 import QuestStartCard from "./QuestStartCard";
@@ -16,6 +16,7 @@ import GymTicketCard from "./GymTicketCard";
 export default function HomeTab() {
   const { enterWorkout } = useApp();
   const { userProfile, activeQuest, isGoalReached } = useQuest();
+  const { attendance } = useAttendance();
 
   const weekStreak = getWeekStreak(attendance);
   const ptRemaining = member.remainingSessions ?? 0;

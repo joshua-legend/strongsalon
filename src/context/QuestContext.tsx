@@ -121,7 +121,8 @@ export function QuestProvider({ children }: { children: React.ReactNode }) {
       if (!userProfile || !activeQuest) return;
       const { weeklyDelta } = userProfile.purpose;
       const { targetValue: finalTarget } = userProfile;
-      const weekTarget = activeQuest.latestMetric + weeklyDelta;
+      const weekTargetRaw = activeQuest.latestMetric + weeklyDelta;
+      const weekTarget = Math.ceil(weekTargetRaw * 100) / 100;
 
       const passed =
         weeklyDelta < 0 ? inputValue <= weekTarget : inputValue >= weekTarget;

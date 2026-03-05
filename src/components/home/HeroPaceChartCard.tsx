@@ -71,23 +71,28 @@ export default function HeroPaceChartCard() {
           </span>
         </div>
 
-        {/* 범례 */}
-        <div className="flex items-center gap-4 mb-2 text-[9px] text-neutral-500">
-          <span className="flex items-center gap-1">
-            <span className="w-4 h-0.5 bg-lime-400 rounded" />
-            실제기록
-          </span>
-          <span className="flex items-center gap-1">
-            <span
-              className="w-4 h-0.5 border-t border-dashed border-neutral-600"
-              style={{ borderTopWidth: 1 }}
-            />
-            이상페이스
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-4 h-0.5 bg-lime-400/70 rounded" />
-            목표선
-          </span>
+        {/* 범례 + 동기부여 문구 */}
+        <div className="mb-2">
+          <div className="flex items-center gap-4 text-[10px] text-neutral-400">
+            <span className="flex items-center gap-1">
+              <span className="w-5 h-0.5 bg-lime-400 rounded" />
+              실제기록
+            </span>
+            <span className="flex items-center gap-1">
+              <span
+                className="w-5 h-0.5 border-t border-dashed border-lime-400/50"
+                style={{ borderTopWidth: 1.5 }}
+              />
+              이상페이스
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-5 h-0.5 bg-lime-400 rounded" />
+              최종 목표
+            </span>
+          </div>
+          <p className="mt-1.5 text-[10px] text-neutral-500 font-mono tracking-wide">
+            이 선을 넘어서라 · 이상 페이스를 추월하라
+          </p>
         </div>
 
         {/* PaceChart */}

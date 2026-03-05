@@ -62,12 +62,12 @@ export default function PaceChart({
   const toY = (val: number) =>
     padTop + chartH - ((val - yMinNice) / yRangeNice) * chartH;
 
+  // 실제 기록값 vs 이상 페이스(현재 주차 시점의 목표선 상 값) 비교
+  const actualRecorded = history.length > 0 ? history[history.length - 1].recorded : null;
+  const idealValueAtCurrentWeek =
+    startValue + (targetValue - startValue) * (history.length / maxWeek);
   const paceDiff =
-    history.length > 0
-      ? latestMetric -
-        (startValue +
-          (targetValue - startValue) * (history.length / maxWeek))
-      : 0;
+    actualRecorded != null ? actualRecorded - idealValueAtCurrentWeek : 0;
   const isAhead = (weeklyDelta < 0 && paceDiff <= 0) || (weeklyDelta > 0 && paceDiff >= 0);
 
   return (
@@ -79,7 +79,7 @@ export default function PaceChart({
       >
         <defs>
           <filter id="targetGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="1.5" result="blur" />
+            <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -192,51 +192,51 @@ export default function PaceChart({
           );
         })}
 
-        {/* Target line (deadline) */}
+        {/* Target line (deadline) - 강화된 시각 효과 */}
         <line
           x1={padLeft}
           y1={toY(targetValue)}
           x2={padLeft + chartW}
           y2={toY(targetValue)}
           stroke="#a3e635"
-          strokeWidth={2}
-          opacity={0.7}
+          strokeWidth={3}
+          opacity={0.9}
           filter="url(#targetGlow)"
         />
         <rect
           x={padLeft}
-          y={toY(targetValue) - 6}
+          y={toY(targetValue) - 8}
           width={chartW}
-          height={12}
+          height={16}
           fill="#a3e635"
-          opacity={0.03}
+          opacity={0.08}
         />
         <text
           x={padLeft - 4}
           y={toY(targetValue) - 2}
           textAnchor="end"
-          fontSize={9}
+          fontSize={10}
           fontWeight="bold"
           fill="#a3e635"
-          opacity={0.8}
+          opacity={1}
         >
-          ── 목표
+          ── 최종 목표
         </text>
         <rect
-          x={padLeft + chartW - 56}
-          y={toY(targetValue) - 9}
-          width={52}
-          height={18}
-          rx={4}
+          x={padLeft + chartW - 62}
+          y={toY(targetValue) - 11}
+          width={60}
+          height={22}
+          rx={6}
           fill="#171717"
           stroke="#a3e635"
-          strokeWidth={1}
+          strokeWidth={1.5}
         />
         <text
-          x={padLeft + chartW - 30}
-          y={toY(targetValue) + 2}
+          x={padLeft + chartW - 32}
+          y={toY(targetValue) + 3}
           textAnchor="middle"
-          fontSize={9}
+          fontSize={11}
           fontWeight="bold"
           fill="#a3e635"
         >
@@ -244,7 +244,7 @@ export default function PaceChart({
           {unit}
         </text>
 
-        {/* Ideal pace line (dashed) */}
+        {/* Ideal pace line (dashed) - 눈에 띄게 강화 */}
         <polyline
           points={Array.from({ length: maxWeek + 1 }, (_, i) => {
             const week = i;
@@ -252,10 +252,10 @@ export default function PaceChart({
             return `${toX(week)},${toY(val)}`;
           }).join(" ")}
           fill="none"
-          stroke="#525252"
-          strokeWidth={1.5}
-          strokeDasharray="4 5"
-          opacity={0.7}
+          stroke="rgba(163,230,53,0.5)"
+          strokeWidth={2}
+          strokeDasharray="6 4"
+          opacity={0.9}
         />
 
         {/* Actual recorded line */}
@@ -367,24 +367,26 @@ export default function PaceChart({
                 startValue +
                   (targetValue - startValue) * (history.length / maxWeek)
               )}
-              r={4}
+              r={5}
               fill="none"
-              stroke="#525252"
-              strokeWidth={1}
-              strokeDasharray="2 2"
+              stroke="rgba(163,230,53,0.6)"
+              strokeWidth={1.5}
+              strokeDasharray="3 3"
             />
             <text
-              x={toX(history.length) + 8}
+              x={toX(history.length) + 10}
               y={
                 toY(
                   startValue +
                     (targetValue - startValue) * (history.length / maxWeek)
                 ) + 3
               }
-              fontSize={7}
-              fill="#737373"
+              fontSize={9}
+              fontWeight="bold"
+              fill="#a3e635"
+              opacity={0.9}
             >
-              이상
+              이상 페이스
             </text>
           </g>
         )}

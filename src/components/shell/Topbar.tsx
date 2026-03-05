@@ -3,11 +3,14 @@
 import { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { getCarrotBalance } from "@/data/credits";
+import { member } from "@/data/member";
 import CarrotShop from "@/components/home/CarrotShop";
+import MyPageModal from "@/components/mypage/MyPageModal";
 
 export default function Topbar() {
   const { theme } = useApp();
   const [showShop, setShowShop] = useState(false);
+  const [showMyPage, setShowMyPage] = useState(false);
   const balance = getCarrotBalance();
 
   if (theme === "workout") return null;
@@ -66,16 +69,19 @@ export default function Topbar() {
           </button>
 
           {/* Avatar */}
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-black"
+          <button
+            type="button"
+            onClick={() => setShowMyPage(true)}
+            className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-black transition-all hover:brightness-110"
             style={{ background: "#a3e635", boxShadow: "0 0 16px rgba(163,230,53,.45)" }}
           >
-            김
-          </div>
+            {member.initial}
+          </button>
         </div>
       </header>
 
       <CarrotShop open={showShop} onClose={() => setShowShop(false)} />
+      <MyPageModal open={showMyPage} onClose={() => setShowMyPage(false)} />
     </>
   );
 }

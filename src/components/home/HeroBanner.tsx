@@ -1,17 +1,12 @@
 "use client";
 
 import { member } from "@/data/member";
-import { attendance } from "@/data/attendance";
+import { useAttendance } from "@/context/AttendanceContext";
 import { getGreeting } from "@/utils/format";
 
 function todayKey(): string {
   const n = new Date();
   return `${n.getFullYear()}-${n.getMonth() + 1}-${n.getDate()}`;
-}
-
-function isCheckedIn(): boolean {
-  const key = todayKey();
-  return attendance.some((a) => a.date === key);
 }
 
 function ptAlert(): "today" | "tomorrow" | null {
@@ -27,8 +22,9 @@ function ptAlert(): "today" | "tomorrow" | null {
 }
 
 export default function HeroBanner() {
-  const greeting  = getGreeting();
-  const checkedIn = isCheckedIn();
+  const { isCheckedIn } = useAttendance();
+  const greeting = getGreeting();
+  const checkedIn = isCheckedIn(todayKey());
   const ptStatus  = ptAlert();
 
   return (

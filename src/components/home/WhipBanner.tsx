@@ -1,8 +1,8 @@
 "use client";
 
-import { attendance } from "@/data/attendance";
+import { useAttendance } from "@/context/AttendanceContext";
 
-function hasTwoWeekNoAttend(): boolean {
+function hasTwoWeekNoAttend(attendance: { date: string }[]): boolean {
   const dates = attendance.map((a) => {
     const [y, m, d] = a.date.split("-").map(Number);
     return new Date(y, m - 1, d).getTime();
@@ -26,7 +26,8 @@ function hasTwoWeekNoAttend(): boolean {
 }
 
 export default function WhipBanner() {
-  const show = hasTwoWeekNoAttend();
+  const { attendance } = useAttendance();
+  const show = hasTwoWeekNoAttend(attendance);
   if (!show) return null;
 
   return (

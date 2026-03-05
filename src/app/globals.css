@@ -357,3 +357,59 @@ input[type="range"].setup-slider::-webkit-slider-thumb {
 input[type="range"].setup-slider::-webkit-slider-thumb:hover {
   box-shadow: 0 0 16px rgba(249, 115, 22, 0.8);
 }
+
+/* number input 스피너(+- 버튼) 숨김 - 모든 input에 적용 */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* 능력치 측정 3-2-1 카운트다운 */
+@keyframes countdownScale {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+/* 탭 시 카운트 숫자 bounce */
+@keyframes tapBounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-tap-bounce {
+  animation: tapBounce 0.15s ease-out;
+}
+
+/* 홀드 모드 배경 breathing */
+@keyframes breathingGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(163, 230, 53, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(163, 230, 53, 0.2);
+  }
+}
+.animate-breathing-glow {
+  animation: breathingGlow 2s ease-in-out infinite;
+}

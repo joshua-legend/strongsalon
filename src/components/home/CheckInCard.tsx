@@ -11,7 +11,8 @@ export default function CheckInCard() {
 
   const { purpose } = userProfile;
   const { latestMetric, currentWeek } = activeQuest;
-  const weekTarget = latestMetric + purpose.weeklyDelta;
+  const weekTargetRaw = latestMetric + purpose.weeklyDelta;
+  const weekTarget = Math.ceil(weekTargetRaw * 100) / 100;
   const numVal = parseFloat(inputValue);
   const isValidNum = !isNaN(numVal) && numVal > 0;
   const passed =

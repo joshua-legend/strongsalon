@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useAttendance } from "@/context/AttendanceContext";
 import { getMonthlyStats } from "@/utils/monthlyStats";
 
 function formatVolume(kg: number): string {
@@ -21,15 +22,16 @@ interface StatGridProps {
 }
 
 export default function StatGrid({ year, month }: StatGridProps) {
+  const { attendance } = useAttendance();
   const stats = useMemo(() => {
     const y = Number(year);
     const m = Number(month);
     if (!Number.isFinite(y) || !Number.isFinite(m)) {
       const now = new Date();
-      return getMonthlyStats(now.getFullYear(), now.getMonth());
+      return getMonthlyStats(now.getFullYear(), now.getMonth(), attendance);
     }
-    return getMonthlyStats(y, m);
-  }, [year, month]);
+    return getMonthlyStats(y, m, attendance);
+  }, [year, month, attendance]);
 
   const monthLabel = `${Number.isFinite(Number(month)) ? Number(month) + 1 : 1}월`;
 

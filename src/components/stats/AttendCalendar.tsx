@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { attendance } from "@/data/attendance";
+import { useAttendance } from "@/context/AttendanceContext";
 import { workoutHistory } from "@/data/workoutHistory";
 import { getMonthGrid, getWeekDays, isToday } from "@/utils/calendar";
 
@@ -145,6 +145,7 @@ interface AttendCalendarProps {
 
 export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }: AttendCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const { attendance } = useAttendance();
 
   const grid = useMemo(() => getMonthGrid(year, month), [year, month]);
   const dayNames = getWeekDays();
@@ -155,7 +156,7 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
       map[a.date] = a.type;
     });
     return map;
-  }, []);
+  }, [attendance]);
 
   return (
     <div className="card">
