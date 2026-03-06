@@ -34,7 +34,7 @@ export default function CardioRecords() {
           <div className="rounded-xl p-3 flex items-center justify-between bg-neutral-900 border border-neutral-800">
             <div>
               <p className="font-bebas text-[8px] uppercase text-neutral-400">
-                {c.type === 'run5k' ? '5km' : c.type === 'row2k' ? '2km' : '10km'} PR
+                {c.type === 'run5k' ? '5km' : c.type === 'row2k' ? '2km' : c.type === 'skierg' ? '2km' : '10km'} PR
               </p>
               <p className="font-bebas text-[22px] leading-none text-orange-500">
                 {formatTimeMmSs(c.pr)}

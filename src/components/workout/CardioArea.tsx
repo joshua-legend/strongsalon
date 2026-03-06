@@ -6,11 +6,11 @@ const CARDIO_META: Record<CardioType, { label: string; emoji: string }> = {
   run: { label: '런닝', emoji: '🏃' },
   cycle: { label: '싸이클', emoji: '🚴' },
   row: { label: '로잉', emoji: '🚣' },
+  skierg: { label: '스키에르그', emoji: '⛷️' },
 };
 
 interface CardioAreaProps {
   entries: CardioEntry[];
-  onAdd: (type: CardioType) => void;
   onUpdate: (
     id: string,
     patch: Partial<Pick<CardioEntry, 'distanceKm' | 'timeMinutes'>>
@@ -18,47 +18,22 @@ interface CardioAreaProps {
   onRemove: (id: string) => void;
 }
 
-export default function CardioArea({ entries, onAdd, onUpdate, onRemove }: CardioAreaProps) {
+export default function CardioArea({ entries, onUpdate, onRemove }: CardioAreaProps) {
   return (
     <div className="flex flex-col gap-3">
-      {/* Header row */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-0.5">
-        <div>
-          <h3
-            className="font-bebas text-[14px] tracking-wider uppercase"
-            style={{
-              color: '#00e5ff',
-              textShadow: '0 0 8px rgba(0,229,255,.5)',
-            }}
-          >
-            유산소
-          </h3>
-          <p className="font-bebas text-[10px] mt-1 tracking-wider" style={{ color: '#fff' }}>
-            거리(km) · 시간(분) 입력
-          </p>
-        </div>
-
-        {/* Add buttons */}
-        <div className="flex flex-wrap gap-1.5">
-          {(Object.keys(CARDIO_META) as CardioType[]).map((type) => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => onAdd(type)}
-              className="flex items-center gap-1.5 py-1.5 px-3 rounded-xl border font-bebas text-[11px] tracking-wider transition-all hover:brightness-110"
-              style={{
-                borderColor: 'rgba(0,229,255,.4)',
-                background: '#0a0a0a',
-                color: '#00e5ff',
-                boxShadow: '0 0 8px rgba(0,229,255,.2)',
-                textShadow: '0 0 8px rgba(0,229,255,.5)',
-              }}
-            >
-              <span>{CARDIO_META[type].emoji}</span>
-              <span>+ {CARDIO_META[type].label}</span>
-            </button>
-          ))}
-        </div>
+      <div className="px-0.5">
+        <h3
+          className="font-bebas text-[14px] tracking-wider uppercase"
+          style={{
+            color: '#00e5ff',
+            textShadow: '0 0 8px rgba(0,229,255,.5)',
+          }}
+        >
+          유산소
+        </h3>
+        <p className="font-bebas text-[10px] mt-1 tracking-wider" style={{ color: '#fff' }}>
+          거리(km) · 시간(분) 입력
+        </p>
       </div>
 
       {/* Entry cards */}

@@ -49,11 +49,21 @@ export interface TrainerProg {
   exercises: TrainerExercise[];
 }
 
-export type CardioType = 'run' | 'cycle' | 'row';
+export type CardioType = 'run' | 'cycle' | 'row' | 'skierg';
 
 export interface CardioEntry {
   id: string;
   type: CardioType;
   distanceKm: number;
   timeMinutes: number;
+}
+
+export interface InbodyRecord {
+  date: string;
+  weight: number;
+  muscleMass: number;
+  fatMass: number;
+  fatPercent: number;
+  bmi?: number;
+  bmr?: number;
 }

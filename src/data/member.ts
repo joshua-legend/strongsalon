@@ -69,6 +69,20 @@ export const member: MemberProfile = {
         { label: '평균페이스', value: '2:08/km' },
       ],
     },
+    {
+      type: 'skierg',
+      label: '스키에르그 2km',
+      emoji: '⛷️',
+      time: 520,
+      pr: 505,
+      prDelta: '지난달 대비 -0:15 개선',
+      date: '2026-02-25',
+      stats: [
+        { label: '거리', value: '2,000m' },
+        { label: '시간', value: '8:40' },
+        { label: '스플릿', value: '2:07/500m' },
+      ],
+    },
   ],
   prMap: {
     'bench': 100,

@@ -175,7 +175,7 @@ export interface BodyComposition {
 }
 
 export interface CardioRecord {
-  type: 'run5k' | 'row2k' | 'cycle';
+  type: 'run5k' | 'row2k' | 'cycle' | 'skierg';
   label: string;
   emoji: string;
   time: number;

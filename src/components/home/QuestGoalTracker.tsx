@@ -2,25 +2,16 @@
 
 import { useState } from "react";
 import { useQuest } from "@/context/QuestContext";
-import HeroPaceChartCard from "./HeroPaceChartCard";
-import CheckInCard from "./CheckInCard";
-import WeeklyLog from "./WeeklyLog";
+import UnifiedGoalCard from "./UnifiedGoalCard";
 import ResetGoalConfirmModal from "./ResetGoalConfirmModal";
 
 export default function QuestGoalTracker() {
-  const { resetQuest } = useQuest();
+  const { activeQuest, resetQuest } = useQuest();
   const [showResetModal, setShowResetModal] = useState(false);
 
   return (
     <div className="space-y-4">
-      <HeroPaceChartCard />
-      <CheckInCard />
-      <div>
-        <div className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-2">
-          주간 기록
-        </div>
-        <WeeklyLog />
-      </div>
+      {activeQuest && <UnifiedGoalCard />}
       <button
         type="button"
         onClick={() => setShowResetModal(true)}

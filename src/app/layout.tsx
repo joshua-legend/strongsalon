@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
 import { QuestProvider } from "@/context/QuestContext";
 import { AttendanceProvider } from "@/context/AttendanceContext";
+import { InbodyProvider } from "@/context/InbodyContext";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -43,7 +44,9 @@ export default function RootLayout({
         <AppProvider>
           <QuestProvider>
             <AttendanceProvider>
-              {children}
+              <InbodyProvider>
+                {children}
+              </InbodyProvider>
             </AttendanceProvider>
           </QuestProvider>
         </AppProvider>

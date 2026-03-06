@@ -9,7 +9,7 @@ interface FreeAreaProps {
   prData: Record<string, number>;
   selectedFavNames: Set<string>;
   onToggleFav: (icon: string, name: string) => void;
-  onAddCustom: (name: string) => void;
+  onAddCardio: (type: 'run' | 'cycle' | 'row' | 'skierg') => void;
   onAddSet: (exId: string) => void;
   onCopyLastSet: (exId: string) => void;
   onDeleteSet: (exId: string, setId: string) => void;
@@ -23,7 +23,7 @@ export default function FreeArea({
   prData,
   selectedFavNames,
   onToggleFav,
-  onAddCustom,
+  onAddCardio,
   onAddSet,
   onCopyLastSet,
   onDeleteSet,
@@ -38,7 +38,7 @@ export default function FreeArea({
       <AddExerciseCard
         selectedNames={selectedFavNames}
         onToggleFav={onToggleFav}
-        onAddCustom={onAddCustom}
+        onAddCardio={onAddCardio}
       />
       <div className="flex flex-col gap-3">
         {ids.length > 0 && (

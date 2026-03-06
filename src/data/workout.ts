@@ -81,6 +81,63 @@ export const FAV_CHIPS: { icon: string; name: string }[] = [
   { icon: '🏋️', name: '체스트프레스' },
 ];
 
+/** 종류별 그룹 (토글용) */
+type ExerciseGroup =
+  | { label: string; icon: string; chips: { icon: string; name: string }[] }
+  | { label: string; icon: string; cardio: { type: 'run' | 'cycle' | 'row' | 'skierg'; label: string; emoji: string }[] };
+
+export const EXERCISE_GROUPS: ExerciseGroup[] = [
+  {
+    label: '하체',
+    icon: '🦵',
+    chips: [
+      { icon: '🦵', name: '레그익스텐션' },
+      { icon: '🦵', name: '라잉레그컬' },
+      { icon: '🦵', name: '시티드레그컬' },
+      { icon: '🦿', name: '이너타이' },
+      { icon: '🦿', name: '아웃타이' },
+      { icon: '🏋️', name: '파워레그프레스' },
+      { icon: '🔥', name: '퍼팩트스쿼트' },
+    ],
+  },
+  {
+    label: '상체 푸쉬',
+    icon: '💪',
+    chips: [
+      { icon: '🏋️', name: '체스트프레스' },
+      { icon: '📐', name: '인클라인프레스' },
+      { icon: '💪', name: '스탠딩체스트프레스' },
+      { icon: '🏋️', name: '숄더프레스' },
+      { icon: '⬇️', name: '어시스트딥스(스탠딩)' },
+      { icon: '⬇️', name: '어시스트딥스(닐링)' },
+      { icon: '🦋', name: '팩덱플라이' },
+    ],
+  },
+  {
+    label: '상체 풀',
+    icon: '⬇️',
+    chips: [
+      { icon: '⬇️', name: '랫풀다운' },
+      { icon: '🚣', name: '시티드로우' },
+      { icon: '💪', name: '롱풀' },
+      { icon: '🏋️', name: '티바로우' },
+      { icon: '🆙', name: '어시스트풀업(스탠딩)' },
+      { icon: '🆙', name: '어시스트풀업(닐링)' },
+      { icon: '🔄', name: '리버스플라이' },
+    ],
+  },
+  {
+    label: '유산소',
+    icon: '🏃',
+    cardio: [
+      { type: 'run' as const, label: '런닝', emoji: '🏃' },
+      { type: 'cycle' as const, label: '싸이클', emoji: '🚴' },
+      { type: 'row' as const, label: '로잉', emoji: '🚣' },
+      { type: 'skierg' as const, label: '스키에르그', emoji: '⛷️' },
+    ],
+  },
+];
+
 export const PREV_RECORD = {
   title: '지난 벤치프레스',
   ago: '5일 전',
