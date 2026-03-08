@@ -37,7 +37,8 @@ export function usePaceChartData(
   startValue: number,
   targetValue: number,
   weeklyDelta: number,
-  history: WeekRecord[]
+  history: WeekRecord[],
+  maxWeekOverride?: number
 ): PaceChartCalculations {
   const dims: PaceChartDimensions = {
     width: 400, height: 240,
@@ -48,7 +49,9 @@ export function usePaceChartData(
 
   const totalDelta = Math.abs(targetValue - startValue);
   const deltaStep = Math.abs(weeklyDelta);
-  const maxWeek = Math.max(6, Math.ceil(totalDelta / deltaStep) || 1);
+  const maxWeek =
+    maxWeekOverride ??
+    Math.max(6, Math.ceil(totalDelta / deltaStep) || 1);
 
   const allValues = [startValue, targetValue, ...history.map((h) => h.recorded)];
   const yMin = Math.min(...allValues);

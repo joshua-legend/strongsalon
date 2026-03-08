@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import AppShell from "@/components/shell/AppShell";
 import { useApp } from "@/context/AppContext";
 import { useQuest } from "@/context/QuestContext";
@@ -21,17 +22,23 @@ export default function Page() {
 
 function PageContent() {
   const { userProfile } = useQuest();
-  if (!userProfile) {
+  const [showGoalSetup, setShowGoalSetup] = useState(false);
+
+  if (!userProfile && showGoalSetup) {
     return <OnboardingWizard />;
   }
   return (
     <AppShell>
-      <TabContent />
+      <TabContent onGoalSetupRequest={() => setShowGoalSetup(true)} />
     </AppShell>
   );
 }
 
-function TabContent() {
+function TabContent({
+  onGoalSetupRequest,
+}: {
+  onGoalSetupRequest: () => void;
+}) {
   const { activeTab, theme } = useApp();
 
   if (theme === "workout") {
@@ -41,7 +48,7 @@ function TabContent() {
   return (
     <>
       <div style={{ display: activeTab === "home" ? "block" : "none" }}>
-        <HomeTab />
+        <HomeTab onGoalSetupRequest={onGoalSetupRequest} />
       </div>
       <div style={{ display: activeTab === "performance" ? "block" : "none" }}>
         <PerformanceTab />

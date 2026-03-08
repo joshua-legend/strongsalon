@@ -21,7 +21,9 @@ export default function GoalSelect({
         어떤 변화를 만들고 싶으세요?
       </h2>
       <div className="space-y-3 mb-8">
-        {purposeOptions.map((p) => {
+        {purposeOptions
+          .filter((p) => ["cut", "bulk", "endure"].includes(p.id))
+          .map((p) => {
           const isSelected = selected?.id === p.id;
           return (
             <button

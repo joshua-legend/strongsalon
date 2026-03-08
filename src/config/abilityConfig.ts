@@ -97,7 +97,7 @@ export function calcBalanceScore(
 
 const STORAGE_KEY = "fitlog-ability-results";
 
-const DEFAULT_RESULTS: AbilityResults = {
+export const DEFAULT_ABILITY_RESULTS: AbilityResults = {
   lowerStrength: null,
   upperPush: null,
   upperPull: null,
@@ -106,7 +106,7 @@ const DEFAULT_RESULTS: AbilityResults = {
 };
 
 export function loadAbilityResults(): AbilityResults {
-  if (typeof window === "undefined") return DEFAULT_RESULTS;
+  if (typeof window === "undefined") return DEFAULT_ABILITY_RESULTS;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -118,7 +118,7 @@ export function loadAbilityResults(): AbilityResults {
         "lowerBalance",
         "endurance",
       ];
-      const result: AbilityResults = { ...DEFAULT_RESULTS };
+      const result: AbilityResults = { ...DEFAULT_ABILITY_RESULTS };
       for (const k of keys) {
         const v = parsed[k];
         if (v != null && typeof v === "object") {
@@ -130,7 +130,7 @@ export function loadAbilityResults(): AbilityResults {
   } catch {
     // ignore
   }
-  return DEFAULT_RESULTS;
+  return DEFAULT_ABILITY_RESULTS;
 }
 
 export function saveAbilityResults(results: AbilityResults): void {

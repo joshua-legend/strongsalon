@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { AbilityResults, AbilityResult } from "@/types";
-import { ABILITY_CATEGORIES, loadAbilityResults, saveAbilityResults } from "@/config/abilityConfig";
+import { ABILITY_CATEGORIES, DEFAULT_ABILITY_RESULTS, loadAbilityResults, saveAbilityResults } from "@/config/abilityConfig";
 import { useQuest } from "@/context/QuestContext";
 import { member } from "@/data/member";
 
@@ -11,7 +11,18 @@ type TestScreen = null | "input" | "result";
 export function usePerformanceTab() {
   const { userProfile } = useQuest();
   const [showTierModal, setShowTierModal] = useState(false);
-  const [abilityResults, setAbilityResults] = useState<AbilityResults>(loadAbilityResults);
+  const [abilityResults, setAbilityResults] = useState<AbilityResults>(DEFAULT_ABILITY_RESULTS);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      setAbilityResults(loadAbilityResults());
+      return;
+    }
+    saveAbilityResults(abilityResults);
+  }, [abilityResults]);
+
   const [testScreen, setTestScreen] = useState<TestScreen>(null);
   const [activeCategoryId, setActiveCategoryId] = useState<keyof AbilityResults | null>(null);
   const [fullTestMode, setFullTestMode] = useState(false);
@@ -25,10 +36,6 @@ export function usePerformanceTab() {
     userProfile?.weight ??
     member?.bodyComp?.weight ??
     (tempWeight ? parseFloat(tempWeight) || 0 : 0);
-
-  useEffect(() => {
-    saveAbilityResults(abilityResults);
-  }, [abilityResults]);
 
   const activeCategory = activeCategoryId
     ? ABILITY_CATEGORIES.find((c) => c.id === activeCategoryId)

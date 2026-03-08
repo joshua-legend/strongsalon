@@ -14,7 +14,10 @@ export function loadProfile(): UserProfile | null {
     const parsed = JSON.parse(raw) as UserProfile;
     const fullPurpose = purposeOptions.find((p) => p.id === parsed.purpose.id);
     if (!fullPurpose) return null;
-    return { ...parsed, purpose: fullPurpose };
+    const purpose = parsed.inbodyGoal
+      ? { ...fullPurpose, metricKey: parsed.purpose.metricKey, unit: parsed.purpose.unit, weeklyDelta: parsed.purpose.weeklyDelta }
+      : fullPurpose;
+    return { ...parsed, purpose };
   } catch {
     return null;
   }

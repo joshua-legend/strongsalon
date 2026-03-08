@@ -1,6 +1,37 @@
 import type { WeekRecord } from "@/types/quest";
+import type { InbodyGoal, InbodyMetricKey, InbodyPace } from "@/types/quest";
 import type { InbodyRecord } from "@/types/workout";
 import type { UserProfile } from "@/types/quest";
+
+export type InbodyChartOption = "total" | "weight" | "muscleMass" | "fatPercent";
+
+export const INBODY_SUB_TABS: { id: InbodyChartOption; label: string }[] = [
+  { id: "total", label: "토탈" },
+  { id: "weight", label: "체중" },
+  { id: "muscleMass", label: "골격근량" },
+  { id: "fatPercent", label: "체지방률" },
+];
+
+export interface InbodySession {
+  index: number;
+  date: string;
+}
+
+export interface InbodySeriesData {
+  metricKey: InbodyMetricKey;
+  values: number[];
+  unit: string;
+  color: string;
+  pace?: InbodyPace;
+}
+
+export interface InbodyMultiLineChartData {
+  sessions: InbodySession[];
+  series: InbodySeriesData[];
+}
+
+/** 인바디 더미 데이터: 백엔드 연동 전 임시 사용 (6개월 체중 추이) */
+const INBODY_DUMMY_WEIGHTS = [75, 74.2, 73.5, 72.8, 72.2, 71.5];
 
 const STRENGTH_TREND_DATA = [
   { month: "9월", bench: 85, squat: 100, deadlift: 120 },
@@ -48,13 +79,62 @@ export interface GoalChartData {
   unit: string;
 }
 
-/** 인바디(체중) 차트 데이터: inbodyHistory 또는 activeQuest(purpose=cut) 기반 */
+function inbodyHistoryToSessions(inbodyHistory: InbodyRecord[]): InbodySession[] {
+  const sorted = [...inbodyHistory].sort((a, b) => a.date.localeCompare(b.date));
+  return sorted.map((r, i) => ({ index: i + 1, date: r.date }));
+}
+
+/** 인바디 차트 데이터: option에 따라 토탈(3선) 또는 개별 지표 */
 export function getInbodyChartData(
   inbodyHistory: InbodyRecord[],
   userProfile?: UserProfile | null,
-  activeQuestHistory?: WeekRecord[]
-): GoalChartData | null {
-  if (userProfile?.purpose?.id === "cut" && activeQuestHistory && activeQuestHistory.length > 0) {
+  activeQuestHistory?: WeekRecord[],
+  inbodyGoal?: InbodyGoal | null,
+  option: InbodyChartOption = "total"
+): GoalChartData | InbodyMultiLineChartData | null {
+  const sorted = [...inbodyHistory].sort((a, b) => a.date.localeCompare(b.date));
+
+  if (option === "total") {
+    if (sorted.length < 2) return null;
+    const sessions = inbodyHistoryToSessions(inbodyHistory);
+    const series: InbodySeriesData[] = [
+      {
+        metricKey: "weight",
+        values: sorted.map((r) => r.weight),
+        unit: "kg",
+        color: "#ffffff",
+        pace: inbodyGoal?.paces.weight,
+      },
+      {
+        metricKey: "muscleMass",
+        values: sorted.map((r) => r.muscleMass),
+        unit: "kg",
+        color: "#a3e635",
+        pace: inbodyGoal?.paces.muscleMass,
+      },
+      {
+        metricKey: "fatPercent",
+        values: sorted.map((r) => r.fatPercent),
+        unit: "%",
+        color: "#fb923c",
+        pace: inbodyGoal?.paces.fatPercent,
+      },
+    ];
+    return { sessions, series };
+  }
+
+  const metricKey = option as InbodyMetricKey;
+  const pace = inbodyGoal?.paces[metricKey];
+  const unit = metricKey === "fatPercent" ? "%" : "kg";
+  const getValue = (r: InbodyRecord) =>
+    metricKey === "weight" ? r.weight : metricKey === "muscleMass" ? r.muscleMass : r.fatPercent;
+
+  if (
+    userProfile?.purpose?.id === "cut" &&
+    metricKey === "weight" &&
+    activeQuestHistory &&
+    activeQuestHistory.length > 0
+  ) {
     const startValue = userProfile.startValue;
     const targetValue = userProfile.targetValue;
     const weeklyDelta = userProfile.purpose.weeklyDelta;
@@ -70,18 +150,16 @@ export function getInbodyChartData(
     };
   }
 
-  if (inbodyHistory.length < 2) return null;
+  if (sorted.length < 2) return null;
 
-  const sorted = [...inbodyHistory].sort((a, b) => a.date.localeCompare(b.date));
-  const weights = sorted.map((r) => r.weight);
-  const startValue = weights[0];
-  const targetValue = weights[weights.length - 1];
-  const diff = targetValue - startValue;
-  const weeklyDelta = diff / Math.max(1, weights.length - 1);
+  const values = sorted.map(getValue);
+  const startValue = values[0];
+  const targetValue = pace?.target ?? values[values.length - 1];
+  const weeklyDelta = pace?.weeklyDelta ?? (targetValue - startValue) / Math.max(1, values.length - 1);
 
-  const history: WeekRecord[] = weights.slice(1, -1).map((w, i) => ({
+  const history: WeekRecord[] = values.slice(1).map((val, i) => ({
     week: i + 1,
-    recorded: w,
+    recorded: val,
     target: startValue + weeklyDelta * (i + 1),
     passed: true,
   }));
@@ -91,27 +169,37 @@ export function getInbodyChartData(
     targetValue,
     weeklyDelta,
     history,
-    currentWeek: weights.length,
-    latestMetric: weights[weights.length - 1],
-    unit: "kg",
+    currentWeek: values.length,
+    latestMetric: values[values.length - 1],
+    unit,
   };
 }
 
-/** 스트렝스 3대 토탈 차트 데이터: squat + bench + deadlift 합산 */
-export function getStrengthChartData(): GoalChartData {
-  const totals = STRENGTH_TREND_DATA.map((d) => d.squat + d.bench + d.deadlift);
-  const startValue = totals[0];
-  const targetValue = totals[totals.length - 1];
-  const weeklyDelta = 7.5;
+export type StrengthChartOption = "total" | "squat" | "bench" | "deadlift";
 
-  const history: WeekRecord[] = totals.slice(1, -1).map((total, i) => {
+/** 스트렝스 차트 데이터: option에 따라 토탈 또는 개별 종목 */
+export function getStrengthChartData(
+  option: StrengthChartOption = "total"
+): GoalChartData {
+  const values =
+    option === "total"
+      ? STRENGTH_TREND_DATA.map((d) => d.squat + d.bench + d.deadlift)
+      : STRENGTH_TREND_DATA.map((d) => d[option]);
+
+  const startValue = values[0];
+  const targetValue = values[values.length - 1];
+  const totalDelta = targetValue - startValue;
+  const weeklyDelta =
+    values.length > 1 ? totalDelta / (values.length - 1) : 0;
+
+  const history: WeekRecord[] = values.slice(1, -1).map((val, i) => {
     const week = i + 1;
     const target = startValue + weeklyDelta * week;
     return {
       week,
-      recorded: total,
+      recorded: val,
       target,
-      passed: total >= target,
+      passed: val >= target,
     };
   });
 
@@ -120,34 +208,44 @@ export function getStrengthChartData(): GoalChartData {
     targetValue,
     weeklyDelta,
     history,
-    currentWeek: totals.length,
-    latestMetric: totals[totals.length - 1],
+    currentWeek: values.length,
+    latestMetric: values[values.length - 1],
     unit: "kg",
   };
 }
 
-/** 체력 3대 유산소 토탈 차트 데이터: run5k + row2k + skierg 합산 (분 단위) */
-export function getCardioChartData(): GoalChartData {
-  const totalsSec = CARDIO_TREND_DATA.run5k.map((_, i) => {
-    const r5 = CARDIO_TREND_DATA.run5k[i].time;
-    const r2 = CARDIO_TREND_DATA.row2k[i].time;
-    const sk = CARDIO_TREND_DATA.skierg[i].time;
-    return r5 + r2 + sk;
-  });
-  const totals = totalsSec.map((s) => Math.round((s / 60) * 10) / 10);
+export type CardioChartOption = "total" | "run5k" | "row2k" | "skierg";
 
-  const startValue = totals[0];
-  const targetValue = totals[totals.length - 1];
-  const weeklyDelta = -0.5;
+/** 체력 차트 데이터: option에 따라 토탈 또는 개별 유산소 종목 (분 단위) */
+export function getCardioChartData(
+  option: CardioChartOption = "total"
+): GoalChartData {
+  const valuesSec =
+    option === "total"
+      ? CARDIO_TREND_DATA.run5k.map((_, i) => {
+          const r5 = CARDIO_TREND_DATA.run5k[i].time;
+          const r2 = CARDIO_TREND_DATA.row2k[i].time;
+          const sk = CARDIO_TREND_DATA.skierg[i].time;
+          return r5 + r2 + sk;
+        })
+      : CARDIO_TREND_DATA[option].map((d) => d.time);
 
-  const history: WeekRecord[] = totals.slice(1, -1).map((total, i) => {
+  const values = valuesSec.map((s) => Math.round((s / 60) * 10) / 10);
+
+  const startValue = values[0];
+  const targetValue = values[values.length - 1];
+  const totalDelta = targetValue - startValue;
+  const weeklyDelta =
+    values.length > 1 ? totalDelta / (values.length - 1) : 0;
+
+  const history: WeekRecord[] = values.slice(1, -1).map((val, i) => {
     const week = i + 1;
     const target = startValue + weeklyDelta * week;
     return {
       week,
-      recorded: total,
+      recorded: val,
       target,
-      passed: total <= target,
+      passed: val <= target,
     };
   });
 
@@ -156,8 +254,8 @@ export function getCardioChartData(): GoalChartData {
     targetValue,
     weeklyDelta,
     history,
-    currentWeek: totals.length,
-    latestMetric: totals[totals.length - 1],
+    currentWeek: values.length,
+    latestMetric: values[values.length - 1],
     unit: "분",
   };
 }

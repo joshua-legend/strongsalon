@@ -27,15 +27,16 @@ export default function BodyInfo({ purpose, form, onChange, onNext, onBack }: Bo
         <InputRow label="몸무게 (kg)" value={form.weight} onChangeVal={(v) => onChange({ ...form, weight: v })}
           unit="kg" placeholder="70" min={30} max={300} step={0.1} isRequired />
 
-        {purpose.id === "bulk" && (
+        {(purpose.id === "bulk" || purpose.id === "cut") && (
           <InputRow label="골격근량 (kg)" value={form.muscleMass ?? 0}
             onChangeVal={(v) => onChange({ ...form, muscleMass: v > 0 ? v : null })}
-            unit="kg" placeholder="30" min={20} max={60} step={0.1} isRequired />
+            unit="kg" placeholder="30" min={20} max={60} step={0.1}
+            isRequired={purpose.id === "bulk"} />
         )}
-        {purpose.id === "cut" && (
-          <InputRow label="체지방률 (%) - 선택" value={form.bodyFatPct ?? 0}
+        {(purpose.id === "cut" || purpose.id === "bulk") && (
+          <InputRow label="체지방률 (%)" value={form.bodyFatPct ?? 0}
             onChangeVal={(v) => onChange({ ...form, bodyFatPct: v > 0 ? v : null })}
-            unit="%" placeholder="20 (선택)" min={5} max={50} step={0.1} />
+            unit="%" placeholder="25" min={5} max={50} step={0.1} />
         )}
         {purpose.id === "strength" && (
           <InputRow label="1RM 중량 (kg)" value={form.liftMax ?? 0}

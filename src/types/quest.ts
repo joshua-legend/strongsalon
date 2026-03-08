@@ -6,7 +6,21 @@ export interface PurposeOption {
   desc: string;
   unit: string;
   weeklyDelta: number;
-  metricKey: "weight" | "muscleMass" | "liftMax" | "cardioTime";
+  metricKey: "weight" | "muscleMass" | "liftMax" | "cardioTime" | "fatPercent";
+}
+
+export type InbodyMetricKey = "weight" | "muscleMass" | "fatPercent";
+
+export interface InbodyPace {
+  start: number;
+  target: number;
+  weeklyDelta: number;
+  isMain: boolean;
+}
+
+export interface InbodyGoal {
+  mainMetric: InbodyMetricKey;
+  paces: Record<InbodyMetricKey, InbodyPace>;
 }
 
 export interface UserProfile {
@@ -18,6 +32,7 @@ export interface UserProfile {
   startValue: number;
   targetValue: number;
   createdAt: string;
+  inbodyGoal?: InbodyGoal;
 }
 
 export interface WeekRecord {

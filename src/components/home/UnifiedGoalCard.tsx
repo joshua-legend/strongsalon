@@ -4,10 +4,15 @@ import { useState } from "react";
 import { useQuest } from "@/context/QuestContext";
 import { useInbody } from "@/context/InbodyContext";
 import PaceChart from "./PaceChart";
+import InbodyPaceChart from "./InbodyPaceChart";
 import {
   getInbodyChartData,
   getStrengthChartData,
   getCardioChartData,
+  INBODY_SUB_TABS,
+  type StrengthChartOption,
+  type CardioChartOption,
+  type InbodyChartOption,
 } from "@/utils/goalChartData";
 
 type MainTabId = "inbody" | "strength" | "cardio";
@@ -16,6 +21,20 @@ const MAIN_TABS: { id: MainTabId; label: string }[] = [
   { id: "inbody", label: "인바디" },
   { id: "strength", label: "스트렝스" },
   { id: "cardio", label: "체력" },
+];
+
+const STRENGTH_SUB_TABS: { id: StrengthChartOption; label: string }[] = [
+  { id: "total", label: "토탈" },
+  { id: "squat", label: "스쿼트" },
+  { id: "bench", label: "벤치프레스" },
+  { id: "deadlift", label: "데드리프트" },
+];
+
+const CARDIO_SUB_TABS: { id: CardioChartOption; label: string }[] = [
+  { id: "total", label: "토탈" },
+  { id: "run5k", label: "런닝" },
+  { id: "row2k", label: "로잉" },
+  { id: "skierg", label: "스키에르그" },
 ];
 
 function getMainTabFromPurpose(purposeId: string): MainTabId {
@@ -34,6 +53,9 @@ export default function UnifiedGoalCard() {
     : "inbody";
 
   const [mainTab, setMainTab] = useState<MainTabId>(defaultMainTab);
+  const [subTab, setSubTab] = useState<
+    StrengthChartOption | CardioChartOption | InbodyChartOption
+  >("total");
 
   if (!userProfile || !activeQuest) return null;
 
@@ -48,12 +70,24 @@ export default function UnifiedGoalCard() {
       return getInbodyChartData(
         inbodyHistory,
         userProfile,
-        purpose.id === "cut" ? history : undefined
+        purpose.id === "cut" ? history : undefined,
+        userProfile.inbodyGoal,
+        subTab as InbodyChartOption
       );
     }
-    if (mainTab === "strength") return getStrengthChartData();
-    return getCardioChartData();
+    if (mainTab === "strength") {
+      return getStrengthChartData(subTab as StrengthChartOption);
+    }
+    if (mainTab === "cardio") {
+      return getCardioChartData(subTab as CardioChartOption);
+    }
+    return null;
   })();
+
+  const isInbodyMultiLine =
+    chartData &&
+    "sessions" in chartData &&
+    "series" in chartData;
 
   const progressPct =
     purpose.weeklyDelta < 0
@@ -84,24 +118,23 @@ export default function UnifiedGoalCard() {
   const successRate =
     history.length > 0 ? Math.round((successCount / history.length) * 100) : 0;
 
-  const remainingLabel: Record<string, string> = {
-    cut: "남은 체중",
-    bulk: "남은 근육량",
-    strength: "남은 중량",
-    endure: "남은 시간",
-  };
-  const remainingLabelText = remainingLabel[purpose.id] ?? "남은 거리";
-
-  const displayStats = chartData
+  const statsSource = isInbodyMultiLine
+    ? null
+    : (chartData as { startValue?: number; targetValue?: number; latestMetric?: number; weeklyDelta?: number; unit?: string; history?: { passed: boolean }[] } | null);
+  const displayStats = statsSource &&
+    statsSource.startValue != null &&
+    statsSource.targetValue != null &&
+    statsSource.latestMetric != null &&
+    statsSource.weeklyDelta != null
     ? {
         progressPct:
-          chartData.weeklyDelta < 0
+          statsSource.weeklyDelta < 0
             ? Math.max(
                 0,
                 Math.min(
                   100,
-                  ((chartData.startValue - chartData.latestMetric) /
-                    (chartData.startValue - chartData.targetValue)) *
+                  ((statsSource.startValue - statsSource.latestMetric) /
+                    (statsSource.startValue - statsSource.targetValue)) *
                     100
                 )
               )
@@ -109,20 +142,20 @@ export default function UnifiedGoalCard() {
                 0,
                 Math.min(
                   100,
-                  ((chartData.latestMetric - chartData.startValue) /
-                    (chartData.targetValue - chartData.startValue)) *
+                  ((statsSource.latestMetric - statsSource.startValue) /
+                    (statsSource.targetValue - statsSource.startValue)) *
                     100
                 )
               ),
         remaining:
-          chartData.weeklyDelta < 0
-            ? chartData.latestMetric - chartData.targetValue
-            : chartData.targetValue - chartData.latestMetric,
+          statsSource.weeklyDelta < 0
+            ? statsSource.latestMetric - statsSource.targetValue
+            : statsSource.targetValue - statsSource.latestMetric,
         successRate:
-          chartData.history.length > 0
+          statsSource.history && statsSource.history.length > 0
             ? Math.round(
-                (chartData.history.filter((r) => r.passed).length /
-                  chartData.history.length) *
+                (statsSource.history.filter((r) => r.passed).length /
+                  statsSource.history.length) *
                   100
               )
             : 0,
@@ -164,7 +197,10 @@ export default function UnifiedGoalCard() {
             <button
               key={tab.id}
               type="button"
-              onClick={() => setMainTab(tab.id)}
+              onClick={() => {
+                setMainTab(tab.id);
+                setSubTab(tab.id === "inbody" ? "total" : "total");
+              }}
               className={`flex-1 py-1.5 px-4 rounded-full text-xs font-bold transition-all ${
                 mainTab === tab.id ? "bg-neutral-800 text-white" : "text-neutral-500"
               }`}
@@ -174,7 +210,59 @@ export default function UnifiedGoalCard() {
           ))}
         </div>
 
-        {/* 3. 탭별 단일 PaceChart */}
+        {/* 2-1. 스트렝스/체력 하위 버튼 */}
+        {mainTab === "strength" && (
+          <div className="rounded-full p-1 bg-neutral-950/80 border border-neutral-800 flex flex-wrap gap-1">
+            {STRENGTH_SUB_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setSubTab(tab.id)}
+                className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
+                  subTab === tab.id ? "bg-neutral-800 text-white" : "text-neutral-500"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
+        {mainTab === "cardio" && (
+          <div className="rounded-full p-1 bg-neutral-950/80 border border-neutral-800 flex flex-wrap gap-1">
+            {CARDIO_SUB_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setSubTab(tab.id)}
+                className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
+                  subTab === tab.id ? "bg-neutral-800 text-white" : "text-neutral-500"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
+        {mainTab === "inbody" && (
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar px-1">
+            {INBODY_SUB_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setSubTab(tab.id)}
+                className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-colors ${
+                  subTab === tab.id
+                    ? "bg-lime-400 text-black"
+                    : "bg-neutral-800 text-neutral-500"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* 3. 탭별 PaceChart */}
         <div className="pt-2">
           <div className="mb-2">
             <div className="flex items-center gap-4 text-[10px] text-neutral-400">
@@ -192,7 +280,13 @@ export default function UnifiedGoalCard() {
             </div>
           </div>
 
-          {chartData ? (
+          {mainTab === "inbody" ? (
+            <InbodyPaceChart
+              data={chartData}
+              subTab={subTab as InbodyChartOption}
+              inbodyGoal={userProfile.inbodyGoal}
+            />
+          ) : chartData && !isInbodyMultiLine ? (
             <PaceChart
               startValue={chartData.startValue}
               targetValue={chartData.targetValue}
@@ -221,15 +315,17 @@ export default function UnifiedGoalCard() {
           </div>
           <div className="bg-neutral-950/80 rounded-2xl p-3 text-center">
             <div className="font-mono text-[10px] text-neutral-500 uppercase">
-              {mainTab === "inbody"
-                ? "남은 체중"
-                : mainTab === "strength"
-                  ? "남은 중량"
+              {statsSource?.unit === "kg"
+                ? mainTab === "inbody"
+                  ? "남은 체중"
+                  : "남은 중량"
+                : statsSource?.unit === "%"
+                  ? "남은 %"
                   : "남은 시간"}
             </div>
             <div className="font-bebas text-lg text-white">
-              {chartData
-                ? Math.abs(displayStats?.remaining ?? 0).toFixed(1) + chartData.unit
+              {statsSource && displayStats
+                ? Math.abs(displayStats.remaining ?? 0).toFixed(1) + (statsSource.unit ?? purpose.unit)
                 : Math.abs(remaining).toFixed(1) + purpose.unit}
             </div>
           </div>

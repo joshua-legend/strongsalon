@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { RotateCcw } from "lucide-react";
 import { useQuest } from "@/context/QuestContext";
 import { purposeOptions } from "@/config/purposeOptions";
 import ResetGoalConfirmModal from "./ResetGoalConfirmModal";
@@ -58,8 +59,9 @@ export default function QuestStartCard() {
         <button
           type="button"
           onClick={() => setShowResetModal(true)}
-          className="w-full mt-3 py-2 text-sm text-neutral-500 hover:text-neutral-400 transition-colors"
+          className="w-full mt-3 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold border-2 border-neutral-600 text-neutral-400 hover:border-lime-400/50 hover:text-lime-400 hover:bg-lime-400/5 transition-all"
         >
+          <RotateCcw className="w-4 h-4" />
           목표 다시 설정하기
         </button>
       </div>

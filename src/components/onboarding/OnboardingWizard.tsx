@@ -9,7 +9,9 @@ import type { BodyFormData } from "./BodyInfo";
 import GoalSelect from "./GoalSelect";
 import BodyInfo from "./BodyInfo";
 import TargetSet from "./TargetSet";
+import InbodyTargetSet from "./InbodyTargetSet";
 import type { UserProfile } from "@/types/quest";
+import type { InbodyGoal } from "@/types/quest";
 
 const defaultBodyForm: BodyFormData = {
   height: 170,
@@ -51,6 +53,8 @@ export default function OnboardingWizard() {
           return bodyForm.liftMax ?? 100;
         case "cardioTime":
           return bodyForm.cardioTime ?? 10;
+        case "fatPercent":
+          return bodyForm.bodyFatPct ?? 25;
         default:
           return bodyForm.weight;
       }
@@ -70,6 +74,31 @@ export default function OnboardingWizard() {
       createdAt: new Date().toISOString(),
     };
     setUserProfile(profile);
+  };
+
+  const handleInbodyConfirm = (
+    inbodyGoal: InbodyGoal,
+    startValue: number,
+    finalTarget: number
+  ) => {
+    if (!selectedPurpose) return;
+    const purposeWithMetric = {
+      ...selectedPurpose,
+      metricKey: inbodyGoal.mainMetric as "weight" | "muscleMass" | "fatPercent",
+      unit: inbodyGoal.mainMetric === "fatPercent" ? "%" : "kg",
+      weeklyDelta: inbodyGoal.paces[inbodyGoal.mainMetric].weeklyDelta,
+    };
+    const profile: UserProfile = {
+      height: bodyForm.height,
+      weight: bodyForm.weight,
+      muscleMass: bodyForm.muscleMass,
+      bodyFatPct: bodyForm.bodyFatPct,
+      purpose: purposeWithMetric,
+      startValue,
+      targetValue: finalTarget,
+      createdAt: new Date().toISOString(),
+    };
+    setUserProfile({ ...profile, inbodyGoal });
   };
 
   return (
@@ -136,14 +165,23 @@ export default function OnboardingWizard() {
         )}
 
         {step === 3 && selectedPurpose && (
-          <TargetSet
-            purpose={selectedPurpose}
-            bodyForm={bodyForm}
-            targetValue={targetValue}
-            onTargetChange={setTargetValue}
-            onConfirm={handleConfirm}
-            onBack={() => setStep(2)}
-          />
+          selectedPurpose.id === "cut" || selectedPurpose.id === "bulk" ? (
+            <InbodyTargetSet
+              purpose={selectedPurpose}
+              bodyForm={bodyForm}
+              onConfirm={handleInbodyConfirm}
+              onBack={() => setStep(2)}
+            />
+          ) : (
+            <TargetSet
+              purpose={selectedPurpose}
+              bodyForm={bodyForm}
+              targetValue={targetValue}
+              onTargetChange={setTargetValue}
+              onConfirm={handleConfirm}
+              onBack={() => setStep(2)}
+            />
+          )
         )}
       </div>
     </div>

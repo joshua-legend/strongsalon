@@ -7,13 +7,18 @@ import { useQuest } from "@/context/QuestContext";
 import { getWeekStreak, getDaysLeft, formatExpiry, getTodayWeekIndex } from "@/utils/homeUtils";
 import QuestStartCard from "./QuestStartCard";
 import QuestGoalTracker from "./QuestGoalTracker";
+import GoalSetupPrompt from "./GoalSetupPrompt";
 import GoalCompleteCard from "./GoalCompleteCard";
 import TodayRoutineButton from "./TodayRoutineButton";
 import WeeklyStreakCard from "./WeeklyStreakCard";
 import PtTicketCard from "./PtTicketCard";
 import GymTicketCard from "./GymTicketCard";
 
-export default function HomeTab() {
+interface HomeTabProps {
+  onGoalSetupRequest: () => void;
+}
+
+export default function HomeTab({ onGoalSetupRequest }: HomeTabProps) {
   const { enterWorkout } = useApp();
   const { userProfile, activeQuest, isGoalReached } = useQuest();
   const { attendance } = useAttendance();
@@ -27,6 +32,7 @@ export default function HomeTab() {
   const todayIdx = getTodayWeekIndex();
 
   const questSection = (() => {
+    if (!userProfile) return <GoalSetupPrompt onStart={onGoalSetupRequest} />;
     if (isGoalReached) return <GoalCompleteCard />;
     if (!activeQuest) return <QuestStartCard />;
     return <QuestGoalTracker />;
@@ -37,9 +43,7 @@ export default function HomeTab() {
       {questSection}
 
       <TodayRoutineButton onClick={enterWorkout} />
-
       <WeeklyStreakCard weekStreak={weekStreak} todayIdx={todayIdx} />
-
       <div className="space-y-3 pb-4">
         <PtTicketCard
           remaining={ptRemaining}
