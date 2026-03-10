@@ -2,16 +2,13 @@
 
 import { useState } from "react";
 import { useApp } from "@/context/AppContext";
-import { getCarrotBalance } from "@/data/credits";
-import { member } from "@/data/member";
-import CarrotShop from "@/components/home/CarrotShop";
+import { useUser } from "@/context/UserContext";
 import MyPageModal from "@/components/mypage/MyPageModal";
 
 export default function Topbar() {
   const { theme } = useApp();
-  const [showShop, setShowShop] = useState(false);
+  const { user } = useUser();
   const [showMyPage, setShowMyPage] = useState(false);
-  const balance = getCarrotBalance();
 
   if (theme === "workout") return null;
 
@@ -36,26 +33,6 @@ export default function Topbar() {
 
         {/* Right icons */}
         <div className="flex items-center gap-2">
-          {/* Carrot balance */}
-          <button
-            type="button"
-            onClick={() => setShowShop(true)}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-full transition-all hover:brightness-110"
-            style={{
-              background: "#0a0a0a",
-              border: "1px solid rgba(163,230,53,.3)",
-              boxShadow: "0 0 12px rgba(163,230,53,.08)",
-            }}
-          >
-            <span className="text-[13px]">🥕</span>
-            <span
-              className="font-bebas text-[14px] leading-none"
-              style={{ color: "#a3e635", textShadow: "0 0 8px rgba(163,230,53,.6)" }}
-            >
-              {balance}
-            </span>
-          </button>
-
           {/* Bell */}
           <button
             className="relative w-9 h-9 flex items-center justify-center rounded-full"
@@ -75,12 +52,11 @@ export default function Topbar() {
             className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-black transition-all hover:brightness-110"
             style={{ background: "#a3e635", boxShadow: "0 0 16px rgba(163,230,53,.45)" }}
           >
-            {member.initial}
+            {user?.initial ?? "?"}
           </button>
         </div>
       </header>
 
-      <CarrotShop open={showShop} onClose={() => setShowShop(false)} />
       <MyPageModal open={showMyPage} onClose={() => setShowMyPage(false)} />
     </>
   );

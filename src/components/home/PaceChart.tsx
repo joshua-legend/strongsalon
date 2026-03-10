@@ -2,7 +2,9 @@
 
 import { TrendingDown, TrendingUp } from "lucide-react";
 import type { WeekRecord } from "@/types/quest";
-import { usePaceChartData } from "./usePaceChartData";
+import type { ChartDataPoint } from "@/types/chartData";
+import { CYCLE_WEEKS } from "@/utils/chartConstants";
+import { usePaceChartData, usePaceChartDataDay } from "./usePaceChartData";
 import PaceChartAxes from "./PaceChartAxes";
 import PaceChartDataLines from "./PaceChartDataLines";
 
@@ -14,6 +16,14 @@ interface PaceChartProps {
   currentWeek: number;
   latestMetric: number;
   unit: string;
+  /** Day-based X축 (W1, W2...) 사용 시 */
+  dataPoints?: ChartDataPoint[];
+  /** 그래프 라인/도트 색상 (기본: lime) */
+  lineColor?: string;
+  /** 값 표시 포맷 (예: 체력 분/km → 소수점 1자리) */
+  formatValue?: (v: number) => string;
+  /** 목표 설정일 (YYYY-MM-DD) - X축 mm-dd 라벨용 */
+  configuredAt?: string | null;
 }
 
 export default function PaceChart({
@@ -22,10 +32,81 @@ export default function PaceChart({
   weeklyDelta,
   history,
   unit,
+  dataPoints,
+  lineColor = "#a3e635",
+  formatValue = (v) => String(v),
+  configuredAt,
 }: PaceChartProps) {
-  const { dims, maxWeek, yMinNice, yRangeNice, toX, toY, paceDiff, isAhead } =
-    usePaceChartData(startValue, targetValue, weeklyDelta, history);
+  const useDayMode = dataPoints != null && dataPoints.length > 0;
+  const maxWeeks = CYCLE_WEEKS;
+
+  const weekCalc = usePaceChartData(startValue, targetValue, weeklyDelta, history, CYCLE_WEEKS);
+  const dayCalc = usePaceChartDataDay(
+    startValue,
+    targetValue,
+    weeklyDelta,
+    dataPoints ?? [],
+    maxWeeks
+  );
+
+  const calc = useDayMode ? dayCalc : weekCalc;
+  const dims = calc.dims;
   const { width, height, padLeft, chartW } = dims;
+  const { yMinNice, yRangeNice, toY, paceDiff, isAhead } = calc;
+
+  const axesProps = useDayMode
+    ? {
+        dims,
+        maxWeek: dayCalc.maxWeeks,
+        yMinNice,
+        yRangeNice,
+        toX: (w: number) => dayCalc.toXDay(w * 7),
+        toY,
+        dayMode: { maxWeeks: dayCalc.maxWeeks, toXDay: dayCalc.toXDay },
+        formatValue,
+        configuredAt,
+      }
+    : {
+        dims,
+        maxWeek: weekCalc.maxWeek,
+        yMinNice,
+        yRangeNice,
+        toX: weekCalc.toX,
+        toY,
+        formatValue,
+        configuredAt,
+      };
+
+  const linesProps = useDayMode
+    ? {
+        startValue,
+        targetValue,
+        maxWeek: dayCalc.maxWeeks,
+        history,
+        unit,
+        padLeft,
+        chartW,
+        toX: (w: number) => dayCalc.toXDay(w * 7),
+        toY,
+        dataPoints: dataPoints!,
+        toXDay: dayCalc.toXDay,
+        maxDays: dayCalc.maxDays,
+        lineColor,
+        formatValue,
+      }
+    : {
+        startValue,
+        targetValue,
+        maxWeek: weekCalc.maxWeek,
+        history,
+        unit,
+        padLeft,
+        chartW,
+        toX: weekCalc.toX,
+        toY,
+        lineColor,
+        formatValue,
+      };
 
   return (
     <div className="w-full min-h-[240px]">
@@ -45,15 +126,8 @@ export default function PaceChart({
           </filter>
         </defs>
 
-        <PaceChartAxes
-          dims={dims} maxWeek={maxWeek} yMinNice={yMinNice}
-          yRangeNice={yRangeNice} toX={toX} toY={toY}
-        />
-        <PaceChartDataLines
-          startValue={startValue} targetValue={targetValue} maxWeek={maxWeek}
-          history={history} unit={unit} padLeft={padLeft} chartW={chartW}
-          toX={toX} toY={toY}
-        />
+        <PaceChartAxes {...axesProps} />
+        <PaceChartDataLines {...linesProps} />
       </svg>
 
       {history.length > 0 && (
@@ -69,8 +143,8 @@ export default function PaceChart({
           )}
           <span>
             {isAhead
-              ? `이상 페이스보다 ${Math.abs(paceDiff).toFixed(1)}${unit} 앞서가는 중`
-              : `이상 페이스보다 ${Math.abs(paceDiff).toFixed(1)}${unit} 뒤처지는 중`}
+              ? `이상 페이스보다 ${formatValue(Math.abs(paceDiff))}${unit} 앞서가는 중`
+              : `이상 페이스보다 ${formatValue(Math.abs(paceDiff))}${unit} 뒤처지는 중`}
           </span>
         </div>
       )}

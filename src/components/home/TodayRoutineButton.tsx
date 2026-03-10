@@ -26,7 +26,7 @@ export default function TodayRoutineButton({
       <div className="absolute inset-0 bg-stripes opacity-10" />
       <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/20 to-transparent" />
 
-      <div className="relative z-10 p-6 flex justify-between items-center">
+      <div className="relative p-6 flex justify-between items-center">
         <div className="text-left flex flex-col items-start">
           <span
             className="inline-block px-2 py-0.5 bg-black font-bold text-[10px] uppercase italic -skew-x-12 mb-2"

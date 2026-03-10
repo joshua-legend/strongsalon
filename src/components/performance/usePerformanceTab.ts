@@ -3,13 +3,14 @@
 import { useState, useEffect, useRef } from "react";
 import type { AbilityResults, AbilityResult } from "@/types";
 import { ABILITY_CATEGORIES, DEFAULT_ABILITY_RESULTS, loadAbilityResults, saveAbilityResults } from "@/config/abilityConfig";
-import { useQuest } from "@/context/QuestContext";
-import { member } from "@/data/member";
+import { useProfile } from "@/context/ProfileContext";
+import { useUser } from "@/context/UserContext";
 
 type TestScreen = null | "input" | "result";
 
 export function usePerformanceTab() {
-  const { userProfile } = useQuest();
+  const { profile } = useProfile();
+  const { user } = useUser();
   const [showTierModal, setShowTierModal] = useState(false);
   const [abilityResults, setAbilityResults] = useState<AbilityResults>(DEFAULT_ABILITY_RESULTS);
   const isInitialMount = useRef(true);
@@ -33,8 +34,8 @@ export function usePerformanceTab() {
   const [tempWeight, setTempWeight] = useState("");
 
   const bodyweight =
-    userProfile?.weight ??
-    member?.bodyComp?.weight ??
+    profile?.weight ??
+    user?.bodyComp?.weight ??
     (tempWeight ? parseFloat(tempWeight) || 0 : 0);
 
   const activeCategory = activeCategoryId

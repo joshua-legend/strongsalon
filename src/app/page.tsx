@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import AppShell from "@/components/shell/AppShell";
 import { useApp } from "@/context/AppContext";
-import { useQuest } from "@/context/QuestContext";
+import { useProfile } from "@/context/ProfileContext";
 import { ToastProvider } from "@/components/ui/Toast";
 import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 import HomeTab from "@/components/home/HomeTab";
@@ -21,24 +20,20 @@ export default function Page() {
 }
 
 function PageContent() {
-  const { userProfile } = useQuest();
-  const [showGoalSetup, setShowGoalSetup] = useState(false);
+  const { profile } = useProfile();
 
-  if (!userProfile && showGoalSetup) {
+  const needsOnboarding = !profile;
+  if (needsOnboarding) {
     return <OnboardingWizard />;
   }
   return (
     <AppShell>
-      <TabContent onGoalSetupRequest={() => setShowGoalSetup(true)} />
+      <TabContent />
     </AppShell>
   );
 }
 
-function TabContent({
-  onGoalSetupRequest,
-}: {
-  onGoalSetupRequest: () => void;
-}) {
+function TabContent() {
   const { activeTab, theme } = useApp();
 
   if (theme === "workout") {
@@ -48,7 +43,7 @@ function TabContent({
   return (
     <>
       <div style={{ display: activeTab === "home" ? "block" : "none" }}>
-        <HomeTab onGoalSetupRequest={onGoalSetupRequest} />
+        <HomeTab />
       </div>
       <div style={{ display: activeTab === "performance" ? "block" : "none" }}>
         <PerformanceTab />

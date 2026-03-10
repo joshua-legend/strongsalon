@@ -1,15 +1,16 @@
 'use client';
 
-import { member } from '@/data/member';
+import { useUser } from '@/context/UserContext';
 import { calcTotalScore, calcStrengthScore, calcBodyScore, calcCardioScore, getGrade } from '@/utils/scoring';
 import Badge from '@/components/ui/Badge';
 import RadarChart from './RadarChart';
 
 export default function RankHero() {
-  const total = calcTotalScore(member);
-  const strength = calcStrengthScore(member);
-  const body = calcBodyScore(member);
-  const cardio = calcCardioScore(member);
+  const { user } = useUser();
+  const total = user ? calcTotalScore(user) : 0;
+  const strength = user ? calcStrengthScore(user) : 0;
+  const body = user ? calcBodyScore(user) : 0;
+  const cardio = user ? calcCardioScore(user) : 0;
   const grade = getGrade(total);
 
   return (

@@ -1,4 +1,5 @@
 import type { WeekRecord } from "@/types/quest";
+import type { ChartDataPoint } from "@/types/chartData";
 
 interface PaceChartDataLinesProps {
   startValue: number;
@@ -10,6 +11,12 @@ interface PaceChartDataLinesProps {
   chartW: number;
   toX: (week: number) => number;
   toY: (val: number) => number;
+  /** Day-based: dataPoints 우선, toXDay 사용 */
+  dataPoints?: ChartDataPoint[];
+  toXDay?: (day: number) => number;
+  maxDays?: number;
+  lineColor?: string;
+  formatValue?: (v: number) => string;
 }
 
 export default function PaceChartDataLines({
@@ -22,93 +29,199 @@ export default function PaceChartDataLines({
   chartW,
   toX,
   toY,
+  dataPoints,
+  toXDay,
+  maxDays,
+  lineColor = "#a3e635",
+  formatValue = (v) => String(v),
 }: PaceChartDataLinesProps) {
+  const useDayMode = dataPoints != null && toXDay != null && maxDays != null;
+  const x0 = useDayMode ? toXDay(0) : toX(0);
+  const xEnd = useDayMode ? toXDay(maxDays) : toX(maxWeek);
+
+  const idealPacePoints = useDayMode
+    ? Array.from({ length: Math.ceil(maxDays / 7) + 1 }, (_, i) => {
+        const day = Math.min(i * 7, maxDays);
+        const val = startValue + (targetValue - startValue) * (day / maxDays);
+        return `${toXDay(day)},${toY(val)}`;
+      }).join(" ")
+    : Array.from({ length: maxWeek + 1 }, (_, i) => {
+        const val = startValue + (targetValue - startValue) * (i / maxWeek);
+        return `${toX(i)},${toY(val)}`;
+      }).join(" ");
+
+  const actualPoints = useDayMode
+    ? dataPoints!.length > 0
+      ? [
+          `${toXDay(0)},${toY(startValue)}`,
+          ...dataPoints!
+            .sort((a, b) => a.day - b.day)
+            .map((p) => `${toXDay(p.day)},${toY(p.value)}`),
+        ].join(" ")
+      : null
+    : history.length > 0
+      ? [
+          `${toX(0)},${toY(startValue)}`,
+          ...history.map((h) => `${toX(h.week)},${toY(h.recorded)}`),
+        ].join(" ")
+      : null;
+
+  const pointsToRender = useDayMode ? dataPoints! : history;
+  const getPointCoords = useDayMode
+    ? (p: ChartDataPoint) => ({ x: toXDay!(p.day), y: toY(p.value) })
+    : (h: WeekRecord) => ({ x: toX(h.week), y: toY(h.recorded) });
+  const getPointValue = useDayMode
+    ? (p: ChartDataPoint) => p.value
+    : (h: WeekRecord) => h.recorded;
+  const getPointPassed = useDayMode ? () => true : (h: WeekRecord) => h.passed;
+
+  const lineRgb = lineColor.startsWith("#")
+    ? (() => {
+        const hex = lineColor.slice(1);
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+        return `rgba(${r},${g},${b},0.5)`;
+      })()
+    : "rgba(163,230,53,0.5)";
+
+  const targetY = toY(targetValue);
+
   return (
     <>
       {/* Target line */}
-      <line x1={padLeft} y1={toY(targetValue)} x2={padLeft + chartW} y2={toY(targetValue)}
-        stroke="#a3e635" strokeWidth={3} opacity={0.9} filter="url(#targetGlow)" />
-      <rect x={padLeft} y={toY(targetValue) - 8} width={chartW} height={16}
-        fill="#a3e635" opacity={0.08} />
-      <text x={padLeft - 4} y={toY(targetValue) - 2} textAnchor="end" fontSize={10}
-        fontWeight="bold" fill="#a3e635" opacity={1}>── 최종 목표</text>
-      <rect x={padLeft + chartW - 62} y={toY(targetValue) - 11} width={60} height={22}
-        rx={6} fill="#171717" stroke="#a3e635" strokeWidth={1.5} />
-      <text x={padLeft + chartW - 32} y={toY(targetValue) + 3} textAnchor="middle"
-        fontSize={11} fontWeight="bold" fill="#a3e635">
-        {targetValue}{unit}
-      </text>
+      <line
+        x1={padLeft}
+        y1={targetY}
+        x2={padLeft + chartW}
+        y2={targetY}
+        stroke={lineColor}
+        strokeWidth={2}
+        opacity={0.7}
+      />
+
+      {/* 목표 + 수치 통합 배지 */}
+      {(() => {
+        const label = `목표 ${formatValue(targetValue)}${unit}`;
+        const badgeW = Math.max(100, label.length * 8);
+        const badgeH = 22;
+        const badgeX = padLeft + chartW - badgeW - 8;
+        const badgeY = targetY - badgeH / 2;
+        const textX = badgeX + badgeW / 2;
+        const textY = badgeY + badgeH / 2 + 4;
+        return (
+          <>
+            <rect
+              x={badgeX}
+              y={badgeY}
+              width={badgeW}
+              height={badgeH}
+              rx={6}
+              fill="#0a0a0a"
+              stroke={lineColor}
+              strokeWidth={1}
+              opacity={0.95}
+            />
+            <text
+              x={textX}
+              y={textY}
+              textAnchor="middle"
+              fontSize={10}
+              fontWeight="bold"
+              fill={lineColor}
+            >
+              {label}
+            </text>
+          </>
+        );
+      })()}
 
       {/* Ideal pace line (dashed) */}
       <polyline
-        points={Array.from({ length: maxWeek + 1 }, (_, i) => {
-          const val = startValue + (targetValue - startValue) * (i / maxWeek);
-          return `${toX(i)},${toY(val)}`;
-        }).join(" ")}
-        fill="none" stroke="rgba(163,230,53,0.5)" strokeWidth={2} strokeDasharray="6 4" opacity={0.9}
+        points={idealPacePoints}
+        fill="none" stroke={lineRgb} strokeWidth={2} strokeDasharray="6 4" opacity={0.9}
       />
 
       {/* Actual recorded line */}
-      {history.length > 0 && (
+      {actualPoints && (
         <polyline
-          points={[
-            `${toX(0)},${toY(startValue)}`,
-            ...history.map((h) => `${toX(h.week)},${toY(h.recorded)}`),
-          ].join(" ")}
-          fill="none" stroke="#a3e635" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
+          points={actualPoints}
+          fill="none" stroke={lineColor} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
         />
       )}
 
       {/* Start dot (W0) */}
-      <circle cx={toX(0)} cy={toY(startValue)} r={3} fill="#171717" stroke="#525252" strokeWidth={1} />
+      <circle cx={x0} cy={toY(startValue)} r={3} fill="#171717" stroke="#525252" strokeWidth={1} />
 
       {/* History dots */}
-      {history.map((h, i) => {
-        const isCurrent = i === history.length - 1;
-        const x = toX(h.week);
-        const y = toY(h.recorded);
+      {pointsToRender.map((item, i) => {
+        const { x, y } = getPointCoords(item as ChartDataPoint & WeekRecord);
+        const val = getPointValue(item as ChartDataPoint & WeekRecord);
+        const passed = getPointPassed(item as ChartDataPoint & WeekRecord);
+        const isCurrent = i === pointsToRender.length - 1;
         if (isCurrent) {
           return (
             <g key={`dot-${i}`}>
-              <circle cx={x} cy={y} r={7} fill="#a3e635" filter="url(#dotGlow)" />
+              <circle cx={x} cy={y} r={7} fill={lineColor} filter="url(#dotGlow)" />
               <circle cx={x} cy={y} r={3} fill="#0a0a0a" />
               <rect x={x - 25} y={y - 28} width={50} height={20} rx={4}
-                fill="#171717" stroke="#a3e635" strokeWidth={1} />
+                fill="#171717" stroke={lineColor} strokeWidth={1} />
               <polygon points={`${x - 4},${y - 8} ${x + 4},${y - 8} ${x},${y - 4}`}
-                fill="#171717" stroke="#a3e635" strokeWidth={1} />
-              <text x={x} y={y - 14} textAnchor="middle" fontSize={10} fontWeight="bold" fill="#a3e635">
-                {h.recorded}{unit}
+                fill="#171717" stroke={lineColor} strokeWidth={1} />
+              <text x={x} y={y - 14} textAnchor="middle" fontSize={10} fontWeight="bold" fill={lineColor}>
+                {formatValue(val)}{unit}
               </text>
             </g>
           );
         }
         return (
           <g key={`dot-${i}`}>
-            {!h.passed && (
+            {!passed && (
               <circle cx={x} cy={y} r={7} fill="none" stroke="#f97316" strokeWidth={1} opacity={0.3} />
             )}
             <circle cx={x} cy={y} r={4} fill="#0a0a0a"
-              stroke={h.passed ? "#a3e635" : "#f97316"} strokeWidth={2} />
+              stroke={passed ? lineColor : "#f97316"} strokeWidth={2} />
           </g>
         );
       })}
 
       {/* Ghost marker (ideal pace current position) */}
-      {history.length > 0 && history.length <= maxWeek && (
-        <g>
-          <circle
-            cx={toX(history.length)}
-            cy={toY(startValue + (targetValue - startValue) * (history.length / maxWeek))}
-            r={5} fill="none" stroke="rgba(163,230,53,0.6)" strokeWidth={1.5} strokeDasharray="3 3"
-          />
-          <text
-            x={toX(history.length) + 10}
-            y={toY(startValue + (targetValue - startValue) * (history.length / maxWeek)) + 3}
-            fontSize={9} fontWeight="bold" fill="#a3e635" opacity={0.9}>
-            이상 페이스
-          </text>
-        </g>
-      )}
+      {(() => {
+        const currentIdx = useDayMode
+          ? (dataPoints!.length > 0 ? dataPoints![dataPoints!.length - 1].day : 0)
+          : history.length;
+        const maxIdx = useDayMode ? maxDays! : maxWeek;
+        const ghostX = useDayMode ? toXDay!(currentIdx) : toX(currentIdx);
+        const ghostY = toY(
+          startValue + (targetValue - startValue) * (currentIdx / maxIdx)
+        );
+        if (pointsToRender.length === 0 || currentIdx >= maxIdx) return null;
+        const ghostRgb = lineColor.startsWith("#")
+          ? (() => {
+              const hex = lineColor.slice(1);
+              const r = parseInt(hex.slice(0, 2), 16);
+              const g = parseInt(hex.slice(2, 4), 16);
+              const b = parseInt(hex.slice(4, 6), 16);
+              return `rgba(${r},${g},${b},0.6)`;
+            })()
+          : "rgba(163,230,53,0.6)";
+        return (
+          <g>
+            <circle
+              cx={ghostX}
+              cy={ghostY}
+              r={5}
+              fill="none"
+              stroke={ghostRgb}
+              strokeWidth={1.5}
+              strokeDasharray="3 3"
+            />
+            <text x={ghostX + 10} y={ghostY + 3} fontSize={9} fontWeight="bold" fill={lineColor} opacity={0.9}>
+              이상 페이스
+            </text>
+          </g>
+        );
+      })()}
     </>
   );
 }

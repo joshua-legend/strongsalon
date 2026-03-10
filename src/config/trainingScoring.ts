@@ -1,4 +1,4 @@
-import type { GoalId } from "@/types/quest";
+import type { GoalId } from "@/types/goalSetting";
 import type { DailyLog, ScoreGrade } from "@/types/workout";
 import {
   LOWER_EQUIPMENT,
@@ -53,7 +53,8 @@ function getMuscleGroupsFromLogs(logs: DailyLog[]): Set<string> {
   const all = [...LOWER_EQUIPMENT, ...UPPER_PUSH_EQUIPMENT, ...UPPER_PULL_EQUIPMENT];
   const idToGroup: Record<string, string> = {};
   all.forEach((e) => {
-    if (e.muscleGroup) idToGroup[e.id] = e.muscleGroup;
+    const group = e.targetMuscle?.split(",")[0]?.trim() ?? e.id;
+    idToGroup[e.id] = group;
   });
   logs.forEach((log) => {
     log.exercises.forEach((ex) => {
@@ -84,7 +85,7 @@ export function calcWeeklyTrainingScore(
         }
       });
     });
-    log.cardio.forEach((c) => {
+    (log.cardio ?? []).forEach((c) => {
       totalCardioMin += c.minutes;
     });
   });

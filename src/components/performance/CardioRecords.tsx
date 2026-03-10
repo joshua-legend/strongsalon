@@ -1,13 +1,15 @@
 'use client';
 
-import { member } from '@/data/member';
+import { useUser } from '@/context/UserContext';
 import Badge from '@/components/ui/Badge';
 import { formatTimeMmSs } from '@/utils/format';
 
 export default function CardioRecords() {
+  const { user } = useUser();
+  const cardio = user?.cardio ?? [];
   return (
     <div className="flex flex-col gap-4">
-      {member.cardio.map((c, i) => (
+      {cardio.map((c, i) => (
         <div key={i} className="card">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">

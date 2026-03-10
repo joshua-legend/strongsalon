@@ -18,39 +18,40 @@ export interface EquipmentItem {
   name: string;
   targetMuscle?: string;
   isAssist?: boolean;
+  complexityLabel?: "복합" | "단일";
 }
 
 // ── 하체 (Lower Body) ──
 export const LOWER_EQUIPMENT: EquipmentItem[] = [
-  { id: "legpress", name: "파워 레그프레스", targetMuscle: "대퇴사두, 둔근, 햄스트링" },
-  { id: "squat", name: "퍼팩트 스쿼트", targetMuscle: "대퇴사두, 둔근, 코어" },
-  { id: "legext", name: "레그 익스텐션", targetMuscle: "대퇴사두 (전면)" },
-  { id: "lyingcurl", name: "라잉 레그컬", targetMuscle: "햄스트링 (후면)" },
-  { id: "seatedcurl", name: "시티드 레그컬", targetMuscle: "햄스트링 (후면)" },
-  { id: "innerthigh", name: "이너타이", targetMuscle: "내전근 (내측)" },
-  { id: "outerthigh", name: "아웃타이", targetMuscle: "외전근 (외측)" },
+  { id: "legpress", name: "파워 레그프레스", targetMuscle: "대퇴사두, 둔근, 햄스트링", complexityLabel: "복합" },
+  { id: "squat", name: "퍼팩트 스쿼트", targetMuscle: "대퇴사두, 둔근, 코어", complexityLabel: "복합" },
+  { id: "legext", name: "레그 익스텐션", targetMuscle: "대퇴사두 (전면)", complexityLabel: "단일" },
+  { id: "lyingcurl", name: "라잉 레그컬", targetMuscle: "햄스트링 (후면)", complexityLabel: "단일" },
+  { id: "seatedcurl", name: "시티드 레그컬", targetMuscle: "햄스트링 (후면)", complexityLabel: "단일" },
+  { id: "innerthigh", name: "이너타이", targetMuscle: "내전근 (내측)", complexityLabel: "단일" },
+  { id: "outerthigh", name: "아웃타이", targetMuscle: "외전근 (외측)", complexityLabel: "단일" },
 ];
 
 // ── 상체 푸쉬 (Upper Push) ──
 export const UPPER_PUSH_EQUIPMENT: EquipmentItem[] = [
-  { id: "chestpress", name: "체스트프레스", targetMuscle: "대흉근, 삼두" },
-  { id: "incline", name: "인클라인프레스", targetMuscle: "상부 대흉근, 전면 삼각근" },
-  { id: "standchest", name: "스탠딩 체스트프레스", targetMuscle: "대흉근, 코어" },
-  { id: "shoulderpress", name: "숄더프레스", targetMuscle: "삼각근, 삼두" },
-  { id: "dipstand", name: "어시스트 딥스 (스탠딩)", isAssist: true },
-  { id: "dipkneel", name: "어시스트 딥스 (닐링)", isAssist: true },
-  { id: "pecfly", name: "팩덱 플라이", targetMuscle: "대흉근 내측" },
+  { id: "chestpress", name: "체스트프레스", targetMuscle: "대흉근, 삼두", complexityLabel: "복합" },
+  { id: "incline", name: "인클라인프레스", targetMuscle: "상부 대흉근, 전면 삼각근", complexityLabel: "복합" },
+  { id: "standchest", name: "스탠딩 체스트프레스", targetMuscle: "대흉근, 코어", complexityLabel: "복합" },
+  { id: "shoulderpress", name: "숄더프레스", targetMuscle: "삼각근, 삼두", complexityLabel: "복합" },
+  { id: "dipstand", name: "어시스트 딥스 (스탠딩)", isAssist: true, complexityLabel: "복합" },
+  { id: "dipkneel", name: "어시스트 딥스 (닐링)", isAssist: true, complexityLabel: "복합" },
+  { id: "pecfly", name: "팩덱 플라이", targetMuscle: "대흉근 내측", complexityLabel: "단일" },
 ];
 
 // ── 상체 풀 (Upper Pull) ──
 export const UPPER_PULL_EQUIPMENT: EquipmentItem[] = [
-  { id: "latpull", name: "랫풀다운", targetMuscle: "광배근, 이두" },
-  { id: "seatedrow", name: "시티드로우", targetMuscle: "승모근, 능형근, 이두" },
-  { id: "longpull", name: "롱풀", targetMuscle: "광배근, 후면 삼각근" },
-  { id: "tbarrow", name: "티바로우", targetMuscle: "광배근, 승모근" },
-  { id: "pullupstand", name: "어시스트 풀업 (스탠딩)", isAssist: true },
-  { id: "pullupkneel", name: "어시스트 풀업 (닐링)", isAssist: true },
-  { id: "reversefly", name: "리버스 플라이", targetMuscle: "후면 삼각근, 승모근" },
+  { id: "latpull", name: "랫풀다운", targetMuscle: "광배근, 이두", complexityLabel: "복합" },
+  { id: "seatedrow", name: "시티드로우", targetMuscle: "승모근, 능형근, 이두", complexityLabel: "복합" },
+  { id: "longpull", name: "롱풀", targetMuscle: "광배근, 후면 삼각근", complexityLabel: "복합" },
+  { id: "tbarrow", name: "티바로우", targetMuscle: "광배근, 승모근", complexityLabel: "복합" },
+  { id: "pullupstand", name: "어시스트 풀업 (스탠딩)", isAssist: true, complexityLabel: "복합" },
+  { id: "pullupkneel", name: "어시스트 풀업 (닐링)", isAssist: true, complexityLabel: "복합" },
+  { id: "reversefly", name: "리버스 플라이", targetMuscle: "후면 삼각근, 승모근", complexityLabel: "단일" },
 ];
 
 export const ENDURANCE_EQUIPMENT_CONFIG: Record<

@@ -1,40 +1,27 @@
 "use client";
 
-import { member } from "@/data/member";
-import { useApp } from "@/context/AppContext";
-import { useAttendance } from "@/context/AttendanceContext";
-import { useQuest } from "@/context/QuestContext";
-import { getWeekStreak, getDaysLeft, formatExpiry, getTodayWeekIndex } from "@/utils/homeUtils";
+import { useUser } from "@/context/UserContext";
+import { useGoal } from "@/context/GoalContext";
+import { getDaysLeft, formatExpiry } from "@/utils/homeUtils";
 import QuestStartCard from "./QuestStartCard";
 import QuestGoalTracker from "./QuestGoalTracker";
-import GoalSetupPrompt from "./GoalSetupPrompt";
 import GoalCompleteCard from "./GoalCompleteCard";
-import TodayRoutineButton from "./TodayRoutineButton";
-import WeeklyStreakCard from "./WeeklyStreakCard";
 import PtTicketCard from "./PtTicketCard";
 import GymTicketCard from "./GymTicketCard";
 
-interface HomeTabProps {
-  onGoalSetupRequest: () => void;
-}
+export default function HomeTab() {
+  const { user } = useUser();
+  const { goalSetting, activeQuest, isGoalReached } = useGoal();
 
-export default function HomeTab({ onGoalSetupRequest }: HomeTabProps) {
-  const { enterWorkout } = useApp();
-  const { userProfile, activeQuest, isGoalReached } = useQuest();
-  const { attendance } = useAttendance();
-
-  const weekStreak = getWeekStreak(attendance);
-  const ptRemaining = member.remainingSessions ?? 0;
-  const ptTotal = member.totalSessions ?? 0;
-  const membershipExpiry = member.membershipExpiry;
+  const ptRemaining = user?.remainingSessions ?? 0;
+  const ptTotal = user?.totalSessions ?? 0;
+  const membershipExpiry = user?.membershipExpiry;
   const membershipDaysLeft = membershipExpiry ? Math.max(0, getDaysLeft(membershipExpiry)) : null;
   const membershipExpiryFmt = membershipExpiry ? formatExpiry(membershipExpiry) : null;
-  const todayIdx = getTodayWeekIndex();
 
   const questSection = (() => {
-    if (!userProfile) return <GoalSetupPrompt onStart={onGoalSetupRequest} />;
     if (isGoalReached) return <GoalCompleteCard />;
-    if (!activeQuest) return <QuestStartCard />;
+    if (goalSetting && !activeQuest) return <QuestStartCard />;
     return <QuestGoalTracker />;
   })();
 
@@ -42,14 +29,12 @@ export default function HomeTab({ onGoalSetupRequest }: HomeTabProps) {
     <div className="px-4 py-4 space-y-4">
       {questSection}
 
-      <TodayRoutineButton onClick={enterWorkout} />
-      <WeeklyStreakCard weekStreak={weekStreak} todayIdx={todayIdx} />
       <div className="space-y-3 pb-4">
         <PtTicketCard
           remaining={ptRemaining}
           total={ptTotal}
-          nextPtDate={member.nextPtDate}
-          trainerName={member.trainerName}
+          nextPtDate={user?.nextPtDate}
+          trainerName={user?.trainerName}
         />
         <GymTicketCard daysLeft={membershipDaysLeft} expiryFormatted={membershipExpiryFmt} />
       </div>

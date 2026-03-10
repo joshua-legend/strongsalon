@@ -1,46 +1,34 @@
 import { Scale, Dumbbell, Activity } from "lucide-react";
-
-export type GoalId = "diet" | "strength" | "fitness";
+import type { GoalId } from "@/types/goalSetting";
 
 export interface GoalOption {
   id: GoalId;
   label: string;
   desc: string;
-  metric: "weight" | "estimated1RM" | "cardioTime";
-  unit: string;
-  weeklyDelta: number;
+  icon: typeof Scale;
+  color: string;
 }
 
-export interface GoalOptionWithIcon extends GoalOption {
-  Icon: typeof Scale;
-}
-
-export const goalOptions: GoalOptionWithIcon[] = [
+export const goalOptions: GoalOption[] = [
   {
     id: "diet",
-    label: "다이어트",
-    desc: "체지방 감량 + 근육 성장 병행",
-    metric: "weight",
-    unit: "kg",
-    weeklyDelta: -0.5,
-    Icon: Scale,
+    label: "살 빼기",
+    desc: "체지방 감량 + 근육 유지",
+    icon: Scale,
+    color: "#a3e635",
   },
   {
     id: "strength",
-    label: "근력 스트렝스",
-    desc: "주요 복합 운동 1RM 향상",
-    metric: "estimated1RM",
-    unit: "kg",
-    weeklyDelta: 2.5,
-    Icon: Dumbbell,
+    label: "스트렝스",
+    desc: "3대 운동 1RM 향상",
+    icon: Dumbbell,
+    color: "#a3e635",
   },
   {
     id: "fitness",
-    label: "체력 상승",
+    label: "체력",
     desc: "유산소 수행능력 향상",
-    metric: "cardioTime",
-    unit: "분",
-    weeklyDelta: 2,
-    Icon: Activity,
+    icon: Activity,
+    color: "#a3e635",
   },
 ];

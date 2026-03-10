@@ -67,3 +67,85 @@ export interface InbodyRecord {
   bmi?: number;
   bmr?: number;
 }
+
+/** 위클리 스코어 등급 */
+export type ScoreGrade = "S" | "A" | "B" | "C" | "D";
+
+/** 일별 운동 로그 (loadDailyLogsV3 / calcWeeklyTrainingScore용) */
+export interface DailyLog {
+  date: string;
+  isCompleted: boolean;
+  exercises: Array<{
+    equipmentId: string;
+    sets: Array<{ weight: number; reps: number; completed: boolean }>;
+  }>;
+  cardio?: Array<{ minutes: number }>;
+}
+
+/** 운동 일 유형 (상체 푸쉬, 하체 등) */
+export type DayType =
+  | "upperPush"
+  | "upperPull"
+  | "upperFull"
+  | "lowerCompound"
+  | "lowerIsolation"
+  | "fullBody";
+
+/** 처방 운동 (주간 플랜용) */
+export interface PrescribedExercise {
+  equipmentId: string;
+  equipmentName: string;
+  targetWeight: number;
+  targetReps: number;
+  targetSets: number;
+  restSeconds: number;
+}
+
+/** 운동 로그 (완료 시 기록) */
+export interface ExerciseLog {
+  equipmentId: string;
+  equipmentName?: string;
+  targetWeight: number;
+  actualWeight?: number;
+  targetReps: number;
+  targetSets: number;
+  completedSets: number;
+  sets?: Array<{ weight: number; reps: number; completed: boolean }>;
+}
+
+/** 일별 처방 로그 */
+export interface PrescriptionDailyLog {
+  date: string;
+  dayType: DayType;
+  exercises: ExerciseLog[];
+  totalTargetSets: number;
+  totalCompletedSets: number;
+  completionRate: number;
+  isCompleted: boolean;
+}
+
+/** 주간 플랜 */
+export interface WeeklyPlan {
+  weekNumber: number;
+  startDate: string;
+  days: DayPlan[];
+}
+
+/** 일별 플랜 */
+export interface DayPlan {
+  dayOfWeek: number;
+  dayLabel: string;
+  dayType: DayType;
+  exercises: PrescribedExercise[];
+}
+
+/** 주간 진행 */
+export interface WeeklyProgress {
+  weekNumber: number;
+  trainingDays: number[];
+  completedDays: number[];
+  totalTargetSets: number;
+  totalCompletedSets: number;
+  dayCompletionRate: number;
+  setCompletionRate: number;
+}

@@ -17,8 +17,8 @@ import type {
   ExerciseLog,
   DayType,
 } from "@/types";
-import type { UserProfile } from "@/types/quest";
-import { useQuest } from "./QuestContext";
+import { useProfile } from "./ProfileContext";
+import { useGoal } from "./GoalContext";
 import { loadAbilityResults } from "@/config/abilityConfig";
 import {
   getSplitForTrainingDays,
@@ -122,7 +122,8 @@ interface WorkoutContextValue {
 const WorkoutContext = createContext<WorkoutContextValue | null>(null);
 
 export function WorkoutProvider({ children }: { children: React.ReactNode }) {
-  const { userProfile } = useQuest();
+  const { profile } = useProfile();
+  const { goalSetting } = useGoal();
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlan | null>(null);
   const [dailyLogs, setDailyLogsState] = useState<Record<string, PrescriptionDailyLog>>({});
   const [weeklyProgress, setWeeklyProgress] = useState<WeeklyProgress | null>(null);
@@ -177,22 +178,17 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const regenerateWeeklyPlan = useCallback(() => {
-    if (!userProfile) return;
-    const trainingDays = userProfile.trainingDays ?? [1, 3, 5];
+    if (!profile || !goalSetting) return;
+    const trainingDays = [1, 3, 5];
     const split = getSplitForTrainingDays(trainingDays);
     if (split.length === 0) return;
 
-    const goalOrPurpose = userProfile.goal ?? userProfile.purpose;
-    if (!goalOrPurpose) return;
-
-    const purposeId = userProfile.goal
-      ? (userProfile.goal.id === "diet" ? "cut" : userProfile.goal.id === "fitness" ? "endure" : "strength")
-      : userProfile.purpose!.id;
+    const purposeId = goalSetting.goalId === "diet" ? "cut" : goalSetting.goalId === "fitness" ? "endure" : "strength";
 
     const today = new Date();
     const weekStart = getWeekStart(today);
     const weekNum = getWeekNumber(today);
-    const bodyWeight = userProfile.weight;
+    const bodyWeight = profile.weight;
     const ability1RMs = buildAbility1RMs();
 
     const days: DayPlan[] = split.map((s) => ({
@@ -231,11 +227,11 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
       setCompletionRate: 0,
     };
     saveWeeklyProgress(progress);
-  }, [userProfile, saveWeeklyPlan, saveWeeklyProgress]);
+  }, [profile, goalSetting, saveWeeklyPlan, saveWeeklyProgress]);
 
   useEffect(() => {
-    if (!userProfile) return;
-    const trainingDays = userProfile.trainingDays ?? [1, 3, 5];
+    if (!profile || !goalSetting) return;
+    const trainingDays = [1, 3, 5];
     const today = new Date();
     const weekStart = getWeekStart(today);
     const weekStartStr = weekStart.toISOString().split("T")[0];
@@ -274,16 +270,16 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
       };
       saveWeeklyProgress(progress);
     }
-  }, [userProfile, regenerateWeeklyPlan, saveWeeklyProgress]);
+  }, [profile, goalSetting, regenerateWeeklyPlan, saveWeeklyProgress]);
 
   const getTodayPlan = useCallback((): DayPlan | null => {
-    if (!userProfile || !weeklyPlan) return null;
-    const trainingDays = userProfile.trainingDays ?? [1, 3, 5];
+    if (!profile || !weeklyPlan) return null;
+    const trainingDays = [1, 3, 5];
     const today = new Date();
     const dow = today.getDay();
     if (!trainingDays.includes(dow)) return null;
     return weeklyPlan.days.find((d) => d.dayOfWeek === dow) ?? null;
-  }, [userProfile, weeklyPlan]);
+  }, [profile, weeklyPlan]);
 
   const recordWorkoutComplete = useCallback(
     (date: string, exercises: ExerciseLog[], dayType: DayType, dayLabel: string) => {

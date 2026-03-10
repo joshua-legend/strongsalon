@@ -1,19 +1,20 @@
 'use client';
 
-import { member } from '@/data/member';
+import { useUser } from '@/context/UserContext';
 import ProgressBar from '@/components/ui/ProgressBar';
 
 export default function LevelMini() {
+  const { user } = useUser();
   return (
     <div className="card">
       <div className="flex items-center gap-3 mb-3">
         <span className="text-[24px]">🥇</span>
         <div>
           <p className="font-bebas text-[22px] leading-none text-yellow-500">
-            {member.level}
+            {user?.level ?? "-"}
           </p>
           <p className="text-[10px] mt-0.5 text-neutral-400">
-            3대 합계 {member.liftTotal}kg · 상위 40%
+            3대 합계 {user?.liftTotal ?? 0}kg · 상위 40%
           </p>
         </div>
       </div>

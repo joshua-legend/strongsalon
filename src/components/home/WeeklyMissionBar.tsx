@@ -1,17 +1,17 @@
 "use client";
 
 import { useWorkout } from "@/context/WorkoutContext";
-import { useQuest } from "@/context/QuestContext";
+import { useProfile } from "@/context/ProfileContext";
 
 const DAY_NAMES = ["일", "월", "화", "수", "목", "금", "토"];
 
 export default function WeeklyMissionBar() {
   const { weeklyProgress } = useWorkout();
-  const { userProfile } = useQuest();
+  const { profile } = useProfile();
 
-  if (!userProfile || !weeklyProgress) return null;
+  if (!profile || !weeklyProgress) return null;
 
-  const trainingDays = userProfile.trainingDays ?? [1, 3, 5];
+  const trainingDays = [1, 3, 5];
   const today = new Date();
   const currentDow = today.getDay();
   const completedDays = weeklyProgress.completedDays;

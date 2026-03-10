@@ -21,21 +21,6 @@ interface CardioAreaProps {
 export default function CardioArea({ entries, onUpdate, onRemove }: CardioAreaProps) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="px-0.5">
-        <h3
-          className="font-bebas text-[14px] tracking-wider uppercase"
-          style={{
-            color: '#00e5ff',
-            textShadow: '0 0 8px rgba(0,229,255,.5)',
-          }}
-        >
-          유산소
-        </h3>
-        <p className="font-bebas text-[10px] mt-1 tracking-wider" style={{ color: '#fff' }}>
-          거리(km) · 시간(분) 입력
-        </p>
-      </div>
-
       {/* Entry cards */}
       {entries.length > 0 && (
         <div className="flex flex-col gap-2">

@@ -61,13 +61,12 @@ export function generateIdealPaces(
     Math.abs(targetValue - currentValues[mainMetric]) / Math.abs(weeklyDelta)
   ) || 1;
 
-  const paces: Record<InbodyMetricKey, { start: number; target: number; weeklyDelta: number; isMain: boolean }> = {
-    [mainMetric]: {
-      start: currentValues[mainMetric],
-      target: targetValue,
-      weeklyDelta,
-      isMain: true,
-    },
+  const paces = {} as Record<InbodyMetricKey, { start: number; target: number; weeklyDelta: number; isMain: boolean }>;
+  paces[mainMetric] = {
+    start: currentValues[mainMetric],
+    target: targetValue,
+    weeklyDelta,
+    isMain: true,
   };
 
   const otherMetrics: InbodyMetricKey[] = ["weight", "muscleMass", "fatPercent"].filter(

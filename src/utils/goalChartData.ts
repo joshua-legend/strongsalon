@@ -1,15 +1,16 @@
 import type { WeekRecord } from "@/types/quest";
 import type { InbodyGoal, InbodyMetricKey, InbodyPace } from "@/types/quest";
 import type { InbodyRecord } from "@/types/workout";
-import type { UserProfile } from "@/types/quest";
+import type { GoalSetting } from "@/types/goalSetting";
+import type { ChartDataPoint } from "@/types/chartData";
+import type { CategorySetting } from "@/types/categorySettings";
 
-export type InbodyChartOption = "total" | "weight" | "muscleMass" | "fatPercent";
+export type InbodyChartOption = "fatPercent" | "muscleMass" | "weight";
 
 export const INBODY_SUB_TABS: { id: InbodyChartOption; label: string }[] = [
-  { id: "total", label: "토탈" },
-  { id: "weight", label: "체중" },
-  { id: "muscleMass", label: "골격근량" },
   { id: "fatPercent", label: "체지방률" },
+  { id: "muscleMass", label: "골격근" },
+  { id: "weight", label: "체중" },
 ];
 
 export interface InbodySession {
@@ -77,6 +78,8 @@ export interface GoalChartData {
   currentWeek: number;
   latestMetric: number;
   unit: string;
+  /** Day-based 차트용 (configuredAt 기준 경과 일수). 우선 사용 */
+  dataPoints?: ChartDataPoint[];
 }
 
 function inbodyHistoryToSessions(inbodyHistory: InbodyRecord[]): InbodySession[] {
@@ -84,70 +87,199 @@ function inbodyHistoryToSessions(inbodyHistory: InbodyRecord[]): InbodySession[]
   return sorted.map((r, i) => ({ index: i + 1, date: r.date }));
 }
 
-/** 인바디 차트 데이터: option에 따라 토탈(3선) 또는 개별 지표 */
+/** CategorySetting (inbody) → InbodyGoal 변환 (goalSetting 없을 때 사용) */
+export function categorySettingToInbodyGoal(cat: CategorySetting): InbodyGoal | null {
+  const g = cat?.goal;
+  if (!g) return null;
+  const mainMetric = (g.metric === "fatPercent" || g.metric === "muscleMass" || g.metric === "weight"
+    ? g.metric
+    : "fatPercent") as InbodyMetricKey;
+  const paces: Record<InbodyMetricKey, InbodyPace> = {
+    weight: { start: 0, target: 0, weeklyDelta: 0, isMain: false },
+    muscleMass: { start: 0, target: 0, weeklyDelta: 0, isMain: false },
+    fatPercent: { start: 0, target: 0, weeklyDelta: 0, isMain: false },
+  };
+  paces[mainMetric] = {
+    start: g.startValue,
+    target: g.targetValue,
+    weeklyDelta: g.weeklyDelta,
+    isMain: true,
+  };
+  if (cat.autoPaces) {
+    if (cat.autoPaces.weight) paces.weight = { ...cat.autoPaces.weight, isMain: mainMetric === "weight" };
+    if (cat.autoPaces.muscleMass) paces.muscleMass = { ...cat.autoPaces.muscleMass, isMain: mainMetric === "muscleMass" };
+    if (cat.autoPaces.fatPercent) paces.fatPercent = { ...cat.autoPaces.fatPercent, isMain: mainMetric === "fatPercent" };
+  }
+  return { mainMetric, paces };
+}
+
+/** GoalSetting (inbody) → InbodyGoal 변환 */
+export function goalSettingToInbodyGoal(gs: GoalSetting): InbodyGoal {
+  const main = gs.mainMetric as InbodyMetricKey;
+  const paces: Record<InbodyMetricKey, InbodyPace> = {
+    weight: { start: 0, target: 0, weeklyDelta: 0, isMain: false },
+    muscleMass: { start: 0, target: 0, weeklyDelta: 0, isMain: false },
+    fatPercent: { start: 0, target: 0, weeklyDelta: 0, isMain: false },
+  };
+  paces[main] = {
+    start: gs.target.startValue,
+    target: gs.target.targetValue,
+    weeklyDelta: gs.target.weeklyDelta,
+    isMain: true,
+  };
+  if (gs.autoPaces) {
+    for (const [k, v] of Object.entries(gs.autoPaces)) {
+      if (k !== main && (k === "weight" || k === "muscleMass" || k === "fatPercent")) {
+        paces[k as InbodyMetricKey] = { ...v, isMain: false };
+      }
+    }
+  }
+  return { mainMetric: main, paces };
+}
+
+const CYCLE_WEEKS = 4;
+const INBODY_SERIES_COLORS: Record<InbodyMetricKey, string> = {
+  fatPercent: "#fb923c",
+  muscleMass: "#a3e635",
+  weight: "#ffffff",
+};
+
+/** 주차별 목표 추이 값 생성 (start → target, 4주) */
+function buildWeeklyValues(
+  start: number,
+  target: number,
+  weeks: number = CYCLE_WEEKS
+): number[] {
+  const values: number[] = [start];
+  for (let w = 1; w <= weeks; w++) {
+    const v = start + (target - start) * (w / weeks);
+    values.push(Math.round(v * 100) / 100);
+  }
+  return values;
+}
+
+/** 인바디 차트 데이터: 목표 설정 시 3선(체지방률/골격근/체중) 그래프, 미설정 시 단일 또는 null */
 export function getInbodyChartData(
   inbodyHistory: InbodyRecord[],
-  userProfile?: UserProfile | null,
+  goalSetting?: GoalSetting | null,
   activeQuestHistory?: WeekRecord[],
-  inbodyGoal?: InbodyGoal | null,
-  option: InbodyChartOption = "total"
+  option: InbodyChartOption = "fatPercent",
+  categorySetting?: CategorySetting | null,
+  dataPoints?: ChartDataPoint[]
 ): GoalChartData | InbodyMultiLineChartData | null {
   const sorted = [...inbodyHistory].sort((a, b) => a.date.localeCompare(b.date));
 
-  if (option === "total") {
-    if (sorted.length < 2) return null;
-    const sessions = inbodyHistoryToSessions(inbodyHistory);
-    const series: InbodySeriesData[] = [
-      {
-        metricKey: "weight",
-        values: sorted.map((r) => r.weight),
-        unit: "kg",
-        color: "#ffffff",
-        pace: inbodyGoal?.paces.weight,
-      },
-      {
-        metricKey: "muscleMass",
-        values: sorted.map((r) => r.muscleMass),
-        unit: "kg",
-        color: "#a3e635",
-        pace: inbodyGoal?.paces.muscleMass,
-      },
-      {
-        metricKey: "fatPercent",
-        values: sorted.map((r) => r.fatPercent),
-        unit: "%",
-        color: "#fb923c",
-        pace: inbodyGoal?.paces.fatPercent,
-      },
-    ];
-    return { sessions, series };
+  const inbodyGoal =
+    goalSetting?.category === "inbody"
+      ? goalSettingToInbodyGoal(goalSetting)
+      : categorySetting?.isConfigured && categorySetting?.goal
+        ? categorySettingToInbodyGoal(categorySetting)
+        : null;
+
+  const hasAnyInbodyConfig =
+    categorySetting?.startValues && Object.keys(categorySetting.startValues).some((k) => (categorySetting.startValues![k] ?? 0) > 0);
+  const hasAnyAutoPace = categorySetting?.autoPaces && Object.keys(categorySetting.autoPaces).length > 0;
+  const cat = (categorySetting?.isConfigured || hasAnyInbodyConfig || hasAnyAutoPace) && categorySetting?.goal
+    ? categorySetting
+    : null;
+
+  // 목표 설정 + autoPaces 있으면 그래프 데이터 (단일 메트릭 설정 지원)
+  if (cat?.goal) {
+    const configuredAt = cat.configuredAt ?? new Date().toISOString().slice(0, 10);
+    const sessions: InbodySession[] = [];
+    for (let w = 0; w <= CYCLE_WEEKS; w++) {
+      const d = new Date(configuredAt);
+      d.setDate(d.getDate() + w * 7);
+      sessions.push({ index: w, date: d.toISOString().slice(0, 10) });
+    }
+
+    const series: InbodySeriesData[] = [];
+    const goal = cat.goal!;
+    const autoPaces = cat.autoPaces ?? {};
+
+    const metrics: InbodyMetricKey[] = ["fatPercent", "muscleMass", "weight"];
+    for (const m of metrics) {
+      const pace = autoPaces[m] ?? (goal.metric === m ? { start: goal.startValue, target: goal.targetValue, weeklyDelta: goal.weeklyDelta } : null);
+      if (pace) {
+        const startVal = pace.start;
+        const targetVal = pace.target;
+        const unit = m === "fatPercent" ? "%" : "kg";
+        series.push({
+          metricKey: m,
+          values: buildWeeklyValues(startVal, targetVal),
+          unit,
+          color: INBODY_SERIES_COLORS[m],
+          pace: { ...pace, isMain: goal.metric === m },
+        });
+      }
+    }
+
+    if (series.length > 0) {
+      const metricMap: Record<InbodyChartOption, InbodyMetricKey> = {
+        fatPercent: "fatPercent",
+        muscleMass: "muscleMass",
+        weight: "weight",
+      };
+      const metricKey = metricMap[option];
+      const s = series.find((x) => x.metricKey === metricKey);
+      if (s) {
+        const latestMetric =
+          dataPoints && dataPoints.length > 0
+            ? dataPoints[dataPoints.length - 1].value
+            : s.values[s.values.length - 1];
+        return {
+          startValue: s.values[0],
+          targetValue: s.values[s.values.length - 1],
+          weeklyDelta: s.pace?.weeklyDelta ?? (s.values[s.values.length - 1] - s.values[0]) / CYCLE_WEEKS,
+          history: [],
+          currentWeek: 1,
+          latestMetric,
+          unit: s.unit,
+          dataPoints,
+        };
+      }
+    }
   }
 
-  const metricKey = option as InbodyMetricKey;
+  const metricKey: InbodyMetricKey = "fatPercent";
   const pace = inbodyGoal?.paces[metricKey];
-  const unit = metricKey === "fatPercent" ? "%" : "kg";
-  const getValue = (r: InbodyRecord) =>
-    metricKey === "weight" ? r.weight : metricKey === "muscleMass" ? r.muscleMass : r.fatPercent;
+  const unit = "%";
+  const getValue = (r: InbodyRecord) => r.fatPercent;
 
-  if (
-    userProfile?.purpose?.id === "cut" &&
-    metricKey === "weight" &&
-    activeQuestHistory &&
-    activeQuestHistory.length > 0
-  ) {
-    const startValue = userProfile.startValue;
-    const targetValue = userProfile.targetValue;
-    const weeklyDelta = userProfile.purpose.weeklyDelta;
-    const latest = activeQuestHistory[activeQuestHistory.length - 1];
-    return {
-      startValue,
-      targetValue,
-      weeklyDelta,
-      history: activeQuestHistory,
-      currentWeek: activeQuestHistory.length,
-      latestMetric: latest.recorded,
-      unit: "kg",
-    };
+  const gs = goalSetting?.category === "inbody" ? goalSetting : null;
+  const catSingle = categorySetting?.isConfigured && categorySetting?.goal ? categorySetting : null;
+  if (gs || catSingle) {
+    const startVal =
+      gs?.target?.startValue ??
+      (catSingle?.startValues?.fatPercent ?? catSingle?.goal?.startValue ?? 0);
+    const targetVal = (gs?.target ?? catSingle?.goal)?.targetValue ?? 0;
+    const weeklyDeltaVal = (gs?.target ?? catSingle?.goal)?.weeklyDelta ?? 0;
+    if (targetVal > 0 || weeklyDeltaVal !== 0) {
+      const useMain = gs ? gs.mainMetric === metricKey : true;
+      if (useMain && activeQuestHistory && activeQuestHistory.length > 0) {
+        const latest = activeQuestHistory[activeQuestHistory.length - 1];
+        return {
+          startValue: startVal,
+          targetValue: targetVal,
+          weeklyDelta: weeklyDeltaVal,
+          history: activeQuestHistory,
+          currentWeek: activeQuestHistory.length,
+          latestMetric: latest.recorded,
+          unit: "%",
+        };
+      }
+      const latestFromHistory =
+        sorted.length > 0 ? getValue(sorted[sorted.length - 1]) : startVal;
+      return {
+        startValue: startVal,
+        targetValue: targetVal,
+        weeklyDelta: weeklyDeltaVal,
+        history: [],
+        currentWeek: 1,
+        latestMetric: latestFromHistory,
+        unit: "%",
+      };
+    }
   }
 
   if (sorted.length < 2) return null;
@@ -175,87 +307,142 @@ export function getInbodyChartData(
   };
 }
 
-export type StrengthChartOption = "total" | "squat" | "bench" | "deadlift";
+export type StrengthChartOption = "squat" | "bench" | "deadlift";
 
-/** 스트렝스 차트 데이터: option에 따라 토탈 또는 개별 종목 */
+const STRENGTH_OPTION_TO_METRIC: Record<StrengthChartOption, string> = {
+  squat: "squat",
+  bench: "bench",
+  deadlift: "deadlift",
+};
+
+export interface MultiLineSeriesData {
+  key: string;
+  label: string;
+  values: number[];
+  color: string;
+  unit: string;
+}
+
+export interface MultiLineChartData {
+  type: "multiLine";
+  sessions: { index: number; label: string }[];
+  series: MultiLineSeriesData[];
+  unit: string;
+}
+
+export function isMultiLineChart(
+  data: GoalChartData | InbodyMultiLineChartData | MultiLineChartData | null
+): data is MultiLineChartData {
+  return data !== null && "type" in data && (data as MultiLineChartData).type === "multiLine";
+}
+
+const STRENGTH_KEYS = ["squat", "bench", "deadlift"] as const;
+const STRENGTH_LABELS: Record<string, string> = { squat: "스쿼트", bench: "벤치프레스", deadlift: "데드리프트" };
+const STRENGTH_COLORS: Record<string, string> = { squat: "#a3e635", bench: "#38bdf8", deadlift: "#fb923c" };
+
+/** 스트렝스 차트 데이터: 개별 종목별 목표 적용 */
 export function getStrengthChartData(
-  option: StrengthChartOption = "total"
-): GoalChartData {
-  const values =
-    option === "total"
-      ? STRENGTH_TREND_DATA.map((d) => d.squat + d.bench + d.deadlift)
-      : STRENGTH_TREND_DATA.map((d) => d[option]);
-
-  const startValue = values[0];
-  const targetValue = values[values.length - 1];
-  const totalDelta = targetValue - startValue;
-  const weeklyDelta =
-    values.length > 1 ? totalDelta / (values.length - 1) : 0;
-
-  const history: WeekRecord[] = values.slice(1, -1).map((val, i) => {
-    const week = i + 1;
-    const target = startValue + weeklyDelta * week;
-    return {
-      week,
-      recorded: val,
-      target,
-      passed: val >= target,
+  option: StrengthChartOption = "squat",
+  opts?: {
+    categorySetting?: {
+      startValues: Record<string, number> | null;
+      goal: { targetValue: number; weeklyDelta: number } | null;
+      autoPaces: Record<string, { start: number; target: number; weeklyDelta: number }> | null;
     };
-  });
+    dataPoints?: ChartDataPoint[];
+  }
+): GoalChartData {
+  const cat = opts?.categorySetting;
+  const useReal = cat?.startValues;
+  const autoPace = cat?.autoPaces?.[option];
+
+  const startVal = autoPace
+    ? autoPace.start
+    : useReal
+      ? (useReal[STRENGTH_OPTION_TO_METRIC[option]] ?? 0)
+      : STRENGTH_TREND_DATA[0][option];
+  const targetVal = autoPace
+    ? autoPace.target
+    : cat?.goal
+      ? cat.goal.targetValue
+      : STRENGTH_TREND_DATA.slice(-1)[0][option];
+  const weeklyDelta = autoPace
+    ? autoPace.weeklyDelta
+    : cat?.goal
+      ? cat.goal.weeklyDelta
+      : (targetVal - startVal) / 12;
+  const latestMetric = opts?.dataPoints && opts.dataPoints.length > 0
+    ? opts.dataPoints[opts.dataPoints.length - 1].value
+    : startVal;
 
   return {
-    startValue,
-    targetValue,
+    startValue: startVal,
+    targetValue: targetVal,
     weeklyDelta,
-    history,
-    currentWeek: values.length,
-    latestMetric: values[values.length - 1],
+    history: [],
+    currentWeek: 1,
+    latestMetric,
     unit: "kg",
+    dataPoints: opts?.dataPoints,
   };
 }
 
-export type CardioChartOption = "total" | "run5k" | "row2k" | "skierg";
+export type CardioChartOption = "run5k" | "row2k" | "skierg";
 
-/** 체력 차트 데이터: option에 따라 토탈 또는 개별 유산소 종목 (분 단위) */
+const CARDIO_OPTION_TO_METRIC: Record<CardioChartOption, string> = {
+  run5k: "running",
+  row2k: "rowing",
+  skierg: "skierg",
+};
+
+const CARDIO_KEYS = ["running", "rowing", "skierg"] as const;
+const CARDIO_LABELS: Record<string, string> = { running: "런닝", rowing: "로잉", skierg: "스키에르그" };
+const CARDIO_COLORS: Record<string, string> = { running: "#a3e635", rowing: "#38bdf8", skierg: "#fb923c" };
+
+/** 체력 차트 데이터: 개별 유산소 종목 (페이스 분/km), 종목별 autoPaces 지원 */
 export function getCardioChartData(
-  option: CardioChartOption = "total"
-): GoalChartData {
-  const valuesSec =
-    option === "total"
-      ? CARDIO_TREND_DATA.run5k.map((_, i) => {
-          const r5 = CARDIO_TREND_DATA.run5k[i].time;
-          const r2 = CARDIO_TREND_DATA.row2k[i].time;
-          const sk = CARDIO_TREND_DATA.skierg[i].time;
-          return r5 + r2 + sk;
-        })
-      : CARDIO_TREND_DATA[option].map((d) => d.time);
-
-  const values = valuesSec.map((s) => Math.round((s / 60) * 10) / 10);
-
-  const startValue = values[0];
-  const targetValue = values[values.length - 1];
-  const totalDelta = targetValue - startValue;
-  const weeklyDelta =
-    values.length > 1 ? totalDelta / (values.length - 1) : 0;
-
-  const history: WeekRecord[] = values.slice(1, -1).map((val, i) => {
-    const week = i + 1;
-    const target = startValue + weeklyDelta * week;
-    return {
-      week,
-      recorded: val,
-      target,
-      passed: val <= target,
+  option: CardioChartOption = "run5k",
+  opts?: {
+    categorySetting?: {
+      startValues: Record<string, number> | null;
+      goal: { targetValue: number; weeklyDelta: number } | null;
+      autoPaces: Record<string, { start: number; target: number; weeklyDelta: number }> | null;
     };
-  });
+    dataPoints?: ChartDataPoint[];
+  }
+): GoalChartData {
+  const cat = opts?.categorySetting;
+  const useReal = cat?.startValues;
+  const metricKey = CARDIO_OPTION_TO_METRIC[option];
+  const autoPace = cat?.autoPaces?.[metricKey];
+
+  const startVal = autoPace
+    ? autoPace.start
+    : useReal
+      ? (useReal[metricKey] ?? 0)
+      : CARDIO_TREND_DATA[option][0].time / 60;
+  const targetVal = autoPace
+    ? autoPace.target
+    : cat?.goal
+      ? cat.goal.targetValue
+      : CARDIO_TREND_DATA[option].slice(-1)[0].time / 60;
+  const weeklyDelta = autoPace
+    ? autoPace.weeklyDelta
+    : cat?.goal
+      ? cat.goal.weeklyDelta
+      : (targetVal - startVal) / 12;
+  const latestMetric = opts?.dataPoints && opts.dataPoints.length > 0
+    ? opts.dataPoints[opts.dataPoints.length - 1].value
+    : startVal;
 
   return {
-    startValue,
-    targetValue,
+    startValue: startVal,
+    targetValue: targetVal,
     weeklyDelta,
-    history,
-    currentWeek: values.length,
-    latestMetric: values[values.length - 1],
-    unit: "분",
+    history: [],
+    currentWeek: 1,
+    latestMetric,
+    unit: "분/km",
+    dataPoints: opts?.dataPoints,
   };
 }

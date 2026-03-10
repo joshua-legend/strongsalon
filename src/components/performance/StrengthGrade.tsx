@@ -1,6 +1,6 @@
 'use client';
 
-import { member } from '@/data/member';
+import { useUser } from '@/context/UserContext';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Badge from '@/components/ui/Badge';
 
@@ -14,6 +14,9 @@ const trendData = [
 ];
 
 export default function StrengthGrade() {
+  const { user } = useUser();
+  const lifts = user?.lifts ?? [];
+
   return (
     <div className="flex flex-col gap-4">
       <div
@@ -27,10 +30,10 @@ export default function StrengthGrade() {
           <span className="text-[28px]">🥇</span>
           <div>
             <p className="font-bebas text-[30px] leading-none text-yellow-500">
-              {member.level}
+              {user?.level ?? "—"}
             </p>
             <p className="text-[11px] text-neutral-400">
-              3대 합계 {member.liftTotal}kg
+              3대 합계 {user?.liftTotal ?? 0}kg
             </p>
           </div>
         </div>
@@ -38,7 +41,7 @@ export default function StrengthGrade() {
         <div className="flex items-center gap-2 mb-2">
           <span className="font-bebas text-[8px] text-neutral-400">NOVICE</span>
           <div className="flex-1">
-            <ProgressBar value={360} max={405} gradient="linear-gradient(90deg, #eab308, #f97316)" height={8} />
+            <ProgressBar value={user?.liftTotal ?? 360} max={405} gradient="linear-gradient(90deg, #eab308, #f97316)" height={8} />
           </div>
           <span className="font-bebas text-[8px] text-neutral-400">ADVANCED</span>
         </div>
@@ -50,7 +53,7 @@ export default function StrengthGrade() {
       <div className="card">
         <p className="card-label mb-4">🏋️ 3대 운동 1RM</p>
         <div className="flex flex-col gap-4">
-          {member.lifts.map((lift, i) => (
+          {lifts.map((lift, i) => (
             <div key={i}>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[12px] font-medium text-white">

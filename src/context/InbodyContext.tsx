@@ -9,6 +9,8 @@ import React, {
   useMemo,
 } from "react";
 import type { InbodyRecord } from "@/types/workout";
+import { loadCategorySettings } from "./useCategoryStorage";
+import { appendChartPoint } from "./useChartDataStorage";
 
 const INBODY_HISTORY_KEY = "fitlog-inbody-history";
 
@@ -57,6 +59,30 @@ export function InbodyProvider({ children }: { children: React.ReactNode }) {
       saveInbodyHistory(next);
       return next;
     });
+
+    const categorySettings = loadCategorySettings();
+    const configuredAt = categorySettings.inbody?.configuredAt;
+    if (configuredAt) {
+      appendChartPoint(
+        "inbody.weight",
+        { day: 0, value: record.weight, date: record.date },
+        configuredAt
+      );
+      if (record.muscleMass > 0) {
+        appendChartPoint(
+          "inbody.muscleMass",
+          { day: 0, value: record.muscleMass, date: record.date },
+          configuredAt
+        );
+      }
+      if (record.fatPercent >= 0) {
+        appendChartPoint(
+          "inbody.fatPercent",
+          { day: 0, value: record.fatPercent, date: record.date },
+          configuredAt
+        );
+      }
+    }
   }, []);
 
   const value = useMemo(

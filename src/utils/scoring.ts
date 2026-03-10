@@ -9,23 +9,27 @@ export function estimate1RM(weight: number, reps: number): number {
   return Math.round(weight * (1 + reps / 30) * 10) / 10;
 }
 
-export function calcStrengthScore(profile: MemberProfile): number {
-  const benchPct = Math.min(profile.lifts[0]?.pct ?? 0, 100);
-  const squatPct = Math.min(profile.lifts[1]?.pct ?? 0, 100);
-  const deadPct = Math.min(profile.lifts[2]?.pct ?? 0, 100);
+type ScoreableProfile = { lifts?: { pct?: number }[]; bodyComp?: { muscle: number; fatPct: number }; cardio?: { type: string; pr: number }[] };
+
+export function calcStrengthScore(profile: ScoreableProfile): number {
+  const benchPct = Math.min(profile.lifts?.[0]?.pct ?? 0, 100);
+  const squatPct = Math.min(profile.lifts?.[1]?.pct ?? 0, 100);
+  const deadPct = Math.min(profile.lifts?.[2]?.pct ?? 0, 100);
   return Math.round((benchPct + squatPct + deadPct) / 3);
 }
 
-export function calcBodyScore(profile: MemberProfile): number {
-  const musclePts = Math.min(profile.bodyComp.muscle / 40 * 100, 100);
-  const fatPts = Math.max(0, 100 - (profile.bodyComp.fatPct - 10) * 5);
+export function calcBodyScore(profile: ScoreableProfile): number {
+  const bc = profile.bodyComp;
+  if (!bc) return 0;
+  const musclePts = Math.min(bc.muscle / 40 * 100, 100);
+  const fatPts = Math.max(0, 100 - (bc.fatPct - 10) * 5);
   return Math.round((musclePts + fatPts) / 2);
 }
 
-export function calcCardioScore(profile: MemberProfile): number {
-  const run = profile.cardio.find(c => c.type === 'run5k');
-  const row = profile.cardio.find(c => c.type === 'row2k');
-  const cycle = profile.cardio.find(c => c.type === 'cycle');
+export function calcCardioScore(profile: ScoreableProfile): number {
+  const run = profile.cardio?.find(c => c.type === 'run5k');
+  const row = profile.cardio?.find(c => c.type === 'row2k');
+  const cycle = profile.cardio?.find(c => c.type === 'cycle');
 
   const runPts = run ? Math.max(0, 100 - (run.pr - 1200) / 6) : 0;
   const rowPts = row ? Math.max(0, 100 - (row.pr - 360) / 3) : 0;
@@ -34,7 +38,7 @@ export function calcCardioScore(profile: MemberProfile): number {
   return Math.round((runPts + rowPts + cyclePts) / 3);
 }
 
-export function calcTotalScore(profile: MemberProfile): number {
+export function calcTotalScore(profile: ScoreableProfile): number {
   const s = calcStrengthScore(profile);
   const b = calcBodyScore(profile);
   const c = calcCardioScore(profile);

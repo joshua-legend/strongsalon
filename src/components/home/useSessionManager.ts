@@ -1,6 +1,6 @@
 'use client';
 
-import { member } from "@/data/member";
+import { useUser } from "@/context/UserContext";
 
 export function parseDateMs(dateStr: string): number {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -30,11 +30,12 @@ export function membershipBgColor(days: number): string {
 }
 
 export function useSessionManager() {
-  const sessions = member.remainingSessions ?? 0;
-  const total = member.totalSessions ?? 0;
-  const nextDate = member.nextPtDate;
-  const expiry = member.membershipExpiry;
-  const start = member.membershipStart;
+  const { user } = useUser();
+  const sessions = user?.remainingSessions ?? 0;
+  const total = user?.totalSessions ?? 0;
+  const nextDate = user?.nextPtDate;
+  const expiry = user?.membershipExpiry;
+  const start = user?.membershipStart;
   const daysLeft = expiry ? getDaysLeft(expiry) : null;
 
   const ptBg = ptBgColor(sessions, total);

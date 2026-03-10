@@ -2,9 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
-import { QuestProvider } from "@/context/QuestContext";
+import { UserProvider } from "@/context/UserContext";
+import { ProfileProvider } from "@/context/ProfileContext";
+import { GoalProvider } from "@/context/GoalContext";
 import { AttendanceProvider } from "@/context/AttendanceContext";
 import { InbodyProvider } from "@/context/InbodyContext";
+import MockGoalTrackerSeeder from "@/components/dev/MockGoalTrackerSeeder";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -42,13 +45,18 @@ export default function RootLayout({
     <html lang="ko">
       <body className={`${bebasNeue.variable} ${spaceMono.variable}`}>
         <AppProvider>
-          <QuestProvider>
-            <AttendanceProvider>
-              <InbodyProvider>
-                {children}
-              </InbodyProvider>
-            </AttendanceProvider>
-          </QuestProvider>
+          <UserProvider>
+          <ProfileProvider>
+            <GoalProvider>
+              <AttendanceProvider>
+                <InbodyProvider>
+                  <MockGoalTrackerSeeder />
+                  {children}
+                </InbodyProvider>
+              </AttendanceProvider>
+            </GoalProvider>
+          </ProfileProvider>
+          </UserProvider>
         </AppProvider>
       </body>
     </html>

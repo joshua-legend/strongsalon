@@ -1,26 +1,26 @@
 "use client";
 
-import { useQuest } from "@/context/QuestContext";
+import { useGoal } from "@/context/GoalContext";
 import PaceChart from "./PaceChart";
 
 export default function HeroPaceChartCard() {
-  const { userProfile, activeQuest } = useQuest();
-  if (!userProfile || !activeQuest) return null;
+  const { goalSetting, activeQuest } = useGoal();
+  if (!goalSetting || !activeQuest) return null;
 
-  const { purpose } = userProfile;
+  const { target } = goalSetting;
   const { latestMetric, streak, history, currentWeek } = activeQuest;
   const prevFailed = history[history.length - 2]?.passed === false;
   const lastRecord = history[history.length - 1];
   const comeback = prevFailed && lastRecord?.passed;
 
   const progressPct =
-    purpose.weeklyDelta < 0
+    target.weeklyDelta < 0
       ? Math.max(
           0,
           Math.min(
             100,
-            ((userProfile.startValue - latestMetric) /
-              (userProfile.startValue - userProfile.targetValue)) *
+            ((target.startValue - latestMetric) /
+              (target.startValue - target.targetValue)) *
               100
           )
         )
@@ -28,27 +28,27 @@ export default function HeroPaceChartCard() {
           0,
           Math.min(
             100,
-            ((latestMetric - userProfile.startValue) /
-              (userProfile.targetValue - userProfile.startValue)) *
+            ((latestMetric - target.startValue) /
+              (target.targetValue - target.startValue)) *
               100
           )
         );
   const remaining =
-    purpose.weeklyDelta < 0
-      ? latestMetric - userProfile.targetValue
-      : userProfile.targetValue - latestMetric;
+    target.weeklyDelta < 0
+      ? latestMetric - target.targetValue
+      : target.targetValue - latestMetric;
 
   const successCount = history.filter((r) => r.passed).length;
   const successRate =
     history.length > 0 ? Math.round((successCount / history.length) * 100) : 0;
 
   const remainingLabel: Record<string, string> = {
-    cut: "남은 체중",
-    bulk: "남은 근육량",
+    diet: "남은 체중",
     strength: "남은 중량",
-    endure: "남은 시간",
+    fitness: "남은 시간",
   };
-  const remainingLabelText = remainingLabel[purpose.id] ?? "남은 거리";
+  const remainingLabelText = remainingLabel[goalSetting.goalId] ?? "남은 거리";
+  const unit = goalSetting.mainMetric === "fatPercent" ? "%" : "kg";
 
   return (
     <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950 border border-neutral-800 relative">
@@ -97,13 +97,13 @@ export default function HeroPaceChartCard() {
 
         {/* PaceChart */}
         <PaceChart
-          startValue={userProfile.startValue}
-          targetValue={userProfile.targetValue}
-          weeklyDelta={purpose.weeklyDelta}
+          startValue={target.startValue}
+          targetValue={target.targetValue}
+          weeklyDelta={target.weeklyDelta}
           history={history}
           currentWeek={currentWeek}
           latestMetric={latestMetric}
-          unit={purpose.unit}
+          unit={unit}
         />
 
         {/* 하단 스탯 바: 진행률 / 남은 거리 / 성공률 */}
@@ -121,8 +121,8 @@ export default function HeroPaceChartCard() {
               {remainingLabelText}
             </div>
             <div className="font-bebas text-lg text-white">
-              {Math.abs(remaining).toFixed(1)}
-              {purpose.unit}
+            {Math.abs(remaining).toFixed(1)}
+            {unit}
             </div>
           </div>
           <div className="bg-neutral-950/80 rounded-2xl p-3 text-center">

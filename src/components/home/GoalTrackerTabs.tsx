@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuest } from "@/context/QuestContext";
+import { useGoal } from "@/context/GoalContext";
 import UnifiedGoalCard from "./UnifiedGoalCard";
 import WeeklyView from "./WeeklyView";
 import InBodyView from "./InBodyView";
@@ -15,7 +15,7 @@ const TABS: { id: TabId; label: string }[] = [
 ];
 
 export default function GoalTrackerTabs() {
-  const { activeQuest } = useQuest();
+  const { activeQuest } = useGoal();
   const [activeTab, setActiveTab] = useState<TabId>("goal");
 
   return (

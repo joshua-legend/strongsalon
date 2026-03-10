@@ -1,8 +1,9 @@
 'use client';
 
-import { member } from '@/data/member';
+import { useUser } from '@/context/UserContext';
 
 export default function TrainerMsg() {
+  const { user } = useUser();
   return (
     <div className="card">
       <div className="flex items-center gap-2.5 mb-3">
@@ -11,7 +12,7 @@ export default function TrainerMsg() {
         </div>
         <div>
           <p className="text-[12px] font-medium text-white">
-            {member.trainerName} 트레이너
+            {user?.trainerName ?? ""} 트레이너
           </p>
           <p className="font-bebas text-[8px] text-neutral-400">오늘 메시지</p>
         </div>

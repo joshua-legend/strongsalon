@@ -1,6 +1,6 @@
 "use client";
 
-import { member } from "@/data/member";
+import { useUser } from "@/context/UserContext";
 import { calcTotalScore } from "@/utils/scoring";
 import {
   getAnimalTierFromPercentile,
@@ -15,15 +15,17 @@ interface AnimalTierHeroProps {
 export default function AnimalTierHero({
   onOpenTierDistribution,
 }: AnimalTierHeroProps) {
-  const total = calcTotalScore(member);
+  const { user } = useUser();
+  const total = user ? calcTotalScore(user) : 0;
   const percentile = Math.min(100, Math.max(0, total));
   const tier = getAnimalTierFromPercentile(percentile);
   const cfg = ANIMAL_TIER_CONFIG[tier];
   const topPercent = Math.round(100 - percentile);
   const nextInfo = getNextTierInfo(tier);
-  const segment = member.ageSegment
-    ? `${member.ageSegment} / ${Math.round(member.bodyWeight)}kg 체급`
-    : `${Math.round(member.bodyWeight)}kg 체급`;
+  const bodyWeight = user?.bodyWeight ?? user?.weight ?? 0;
+  const segment = user?.ageSegment
+    ? `${user.ageSegment} / ${Math.round(bodyWeight)}kg 체급`
+    : `${Math.round(bodyWeight)}kg 체급`;
 
   return (
     <div

@@ -2,29 +2,28 @@
 
 import { useState } from "react";
 import { RotateCcw } from "lucide-react";
-import { useQuest } from "@/context/QuestContext";
-import { purposeOptions } from "@/config/purposeOptions";
+import { useGoal } from "@/context/GoalContext";
+import { goalOptions } from "@/config/goalOptions";
 import ResetGoalConfirmModal from "./ResetGoalConfirmModal";
 
 export default function QuestStartCard() {
-  const { userProfile, setActiveQuest, resetQuest } = useQuest();
+  const { goalSetting, setActiveQuest, resetGoal } = useGoal();
   const [showResetModal, setShowResetModal] = useState(false);
-  if (!userProfile) return null;
+  if (!goalSetting) return null;
 
-  const purposeWithIcon = purposeOptions.find(
-    (p) => p.id === userProfile.purpose.id
-  );
-  const Icon = purposeWithIcon?.Icon ?? (() => null);
-  const { purpose } = userProfile;
+  const opt = goalOptions.find((o) => o.id === goalSetting.goalId);
+  const Icon = opt?.icon ?? (() => null);
+  const { target } = goalSetting;
+  const unit = goalSetting.mainMetric === "fatPercent" ? "%" : "kg";
   const weeklyLabel =
-    purpose.weeklyDelta < 0
-      ? `매주 ${Math.abs(purpose.weeklyDelta)}${purpose.unit} 감소`
-      : `매주 ${purpose.weeklyDelta}${purpose.unit} 증가`;
+    target.weeklyDelta < 0
+      ? `매주 ${Math.abs(target.weeklyDelta)}${unit} 감소`
+      : `매주 ${target.weeklyDelta}${unit} 증가`;
 
   const handleStart = () => {
     setActiveQuest({
       currentWeek: 1,
-      latestMetric: userProfile.startValue,
+      latestMetric: target.startValue,
       history: [],
       streak: 0,
       bestStreak: 0,
@@ -38,15 +37,15 @@ export default function QuestStartCard() {
         <div className="flex items-center gap-2 mb-3">
           <Icon className="w-5 h-5 text-lime-400" />
           <span className="font-bebas text-lg text-white tracking-wider">
-            {purpose.label}
+            {opt?.label ?? "목표"}
           </span>
         </div>
         <div className="space-y-1 text-sm text-neutral-400 mb-4">
           <div>
-            시작: <span className="font-mono text-lime-400">{userProfile.startValue}{purpose.unit}</span>
+            시작: <span className="font-mono text-lime-400">{target.startValue}{unit}</span>
           </div>
           <div>
-            목표: <span className="font-mono text-lime-400">{userProfile.targetValue}{purpose.unit}</span>
+            목표: <span className="font-mono text-lime-400">{target.targetValue}{unit}</span>
           </div>
           <div className="text-xs">{weeklyLabel}</div>
         </div>
@@ -68,7 +67,7 @@ export default function QuestStartCard() {
       <ResetGoalConfirmModal
         open={showResetModal}
         onClose={() => setShowResetModal(false)}
-        onConfirm={resetQuest}
+        onConfirm={resetGoal}
       />
     </div>
   );

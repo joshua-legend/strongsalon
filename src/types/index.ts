@@ -31,6 +31,13 @@ export type {
   TrainerProg,
   CardioType,
   CardioEntry,
+  DayType,
+  PrescribedExercise,
+  ExerciseLog,
+  PrescriptionDailyLog,
+  WeeklyPlan,
+  DayPlan,
+  WeeklyProgress,
 } from './workout';
 
 export type GoalCategory = 'strength' | 'body' | 'cardio' | 'attendance' | 'weight';

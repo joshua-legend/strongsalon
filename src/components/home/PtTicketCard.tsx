@@ -78,7 +78,7 @@ export default function PtTicketCard({ remaining, total, nextPtDate, trainerName
 
       {/* Ticket stub */}
       <div
-        className="w-20 flex flex-col justify-center items-center relative z-10"
+        className="w-20 flex flex-col justify-center items-center relative"
         style={{ background: "#030303" }}
       >
         <div

@@ -1,6 +1,6 @@
 "use client";
 
-import { member } from "@/data/member";
+import { useUser } from "@/context/UserContext";
 import { useAttendance } from "@/context/AttendanceContext";
 import { getGreeting } from "@/utils/format";
 
@@ -9,9 +9,9 @@ function todayKey(): string {
   return `${n.getFullYear()}-${n.getMonth() + 1}-${n.getDate()}`;
 }
 
-function ptAlert(): "today" | "tomorrow" | null {
-  if (!member.nextPtDate) return null;
-  const [y, m, d] = member.nextPtDate.split("-").map(Number);
+function ptAlert(nextPtDate: string | null | undefined): "today" | "tomorrow" | null {
+  if (!nextPtDate) return null;
+  const [y, m, d] = nextPtDate.split("-").map(Number);
   const target = new Date(y, m - 1, d);
   const today  = new Date();
   const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -22,10 +22,11 @@ function ptAlert(): "today" | "tomorrow" | null {
 }
 
 export default function HeroBanner() {
+  const { user } = useUser();
   const { isCheckedIn } = useAttendance();
   const greeting = getGreeting();
   const checkedIn = isCheckedIn(todayKey());
-  const ptStatus  = ptAlert();
+  const ptStatus  = ptAlert(user?.nextPtDate);
 
   return (
     <div className="rounded-2xl px-5 py-4 relative overflow-hidden bg-neutral-900 border border-neutral-800">
@@ -34,7 +35,7 @@ export default function HeroBanner() {
       <div className="relative z-10">
         {/* 인사말 */}
         <p className="font-bebas text-[11px] text-neutral-400 mb-3">
-          {greeting}, <span className="text-white">{member.name}</span>님
+          {greeting}, <span className="text-white">{user?.name ?? ""}</span>님
         </p>
 
         {/* 스트릭 + 오늘 출석 */}
@@ -42,7 +43,7 @@ export default function HeroBanner() {
           <div className="flex items-center gap-3">
             <div>
               <p className="font-bebas text-[52px] leading-none text-white">
-                {member.streak}
+                {user?.streak ?? 0}
               </p>
               <p className="font-bebas text-[9px] text-neutral-500 uppercase tracking-wider -mt-1">
                 연속 출석 일
@@ -72,8 +73,8 @@ export default function HeroBanner() {
             <span className="text-[14px]">📋</span>
             <p className="font-bebas text-[10px] text-orange-400">
               {ptStatus === "today"
-                ? `오늘 PT 예정 — ${member.trainerName} 트레이너`
-                : `내일 PT 예정 — ${member.trainerName} 트레이너`
+                ? `오늘 PT 예정 — ${user?.trainerName ?? ""} 트레이너`
+                : `내일 PT 예정 — ${user?.trainerName ?? ""} 트레이너`
               }
             </p>
           </div>

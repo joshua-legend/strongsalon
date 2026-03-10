@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "@/context/AppContext";
 import { useWorkoutLog } from "./useWorkoutLog";
 import WorkoutTopbar from "./WorkoutTopbar";
@@ -11,9 +13,18 @@ import CardioArea from "./CardioArea";
 export default function WorkoutPage() {
   const log = useWorkoutLog();
   const { exitWorkout } = useApp();
+  const [showComplete, setShowComplete] = useState(false);
 
   const handleComplete = () => {
     log.completeWorkout();
+    setShowComplete(true);
+  };
+
+  const handleOverlayEnterComplete = () => {
+    setTimeout(() => setShowComplete(false), 1800);
+  };
+
+  const handleExitComplete = () => {
     exitWorkout();
   };
 
@@ -63,13 +74,65 @@ export default function WorkoutPage() {
             >
               <div className="absolute inset-0 bg-stripes opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-30" />
               <span className="skew-x-12 flex items-center gap-2">
-                <span>✅</span>
-                <span>오운완</span>
+                <span>🔥</span>
+                <span>오늘도 끝냈다</span>
               </span>
             </button>
           </div>
         </div>
       </div>
+
+      <AnimatePresence onExitComplete={handleExitComplete}>
+        {showComplete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            onAnimationComplete={handleOverlayEnterComplete}
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 1.2, opacity: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                delay: 0.1,
+              }}
+              className="text-center px-8"
+            >
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+                className="font-bebas text-5xl md:text-6xl text-lime-400 tracking-wider"
+                style={{ textShadow: "0 0 30px rgba(163,230,53,.6)" }}
+              >
+                오운완 ✨
+              </motion.div>
+              <motion.p
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.35, duration: 0.4 }}
+                className="mt-3 text-lg text-neutral-400"
+              >
+                오늘도 해냈다
+              </motion.p>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                className="mt-6 text-4xl"
+              >
+                💪
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { useQuest } from "@/context/QuestContext";
+import { useProfile } from "@/context/ProfileContext";
+import { useGoal } from "@/context/GoalContext";
 import { loadDailyLogsV3 } from "@/context/useDailyLogStorage";
 import {
   calcWeeklyTrainingScore,
@@ -47,10 +48,11 @@ function getScoreMessage(goalId: string, breakdown: ScoreBreakdown): string {
 }
 
 export default function WeeklyView() {
-  const { userProfile } = useQuest();
+  const { profile } = useProfile();
+  const { goalSetting } = useGoal();
 
   const weeklyData = useMemo(() => {
-    if (!userProfile) return null;
+    if (!profile || !goalSetting) return null;
     const logs = loadDailyLogsV3();
     const today = new Date();
     const weekStart = getWeekStart(today);
@@ -64,11 +66,11 @@ export default function WeeklyView() {
       }
     }
 
-    const goalId = userProfile.goal?.id ?? (userProfile.purpose?.id === "cut" ? "diet" : userProfile.purpose?.id === "endure" ? "fitness" : "strength");
+    const goalId = goalSetting.goalId;
     const { score, breakdown } = calcWeeklyTrainingScore(
-      goalId as "diet" | "strength" | "fitness",
+      goalId,
       weeklyLogs,
-      userProfile.weight
+      profile.weight
     );
     const grade = getScoreGrade(score);
 
@@ -84,7 +86,7 @@ export default function WeeklyView() {
           }
         });
       });
-      log.cardio.forEach((c) => {
+      (log.cardio ?? []).forEach((c) => {
         totalCardioMin += c.minutes;
       });
     });
@@ -100,9 +102,9 @@ export default function WeeklyView() {
       totalCardioMin,
       goalId,
     };
-  }, [userProfile]);
+  }, [profile, goalSetting]);
 
-  if (!userProfile || !weeklyData) return null;
+  if (!profile || !goalSetting || !weeklyData) return null;
 
   const { score, grade, breakdown, weeklyLogs, totalSets, totalVolume, totalCardioMin, goalId } = weeklyData;
   const strokeColor = getScoreStrokeColor(grade);
@@ -219,7 +221,7 @@ export default function WeeklyView() {
               const dow = d.getDay();
               const dayName = DAY_NAMES[dow];
               const exCount = log.exercises.length;
-              const cardioCount = log.cardio.length;
+              const cardioCount = (log.cardio ?? []).length;
               return (
                 <div
                   key={log.date}
@@ -232,7 +234,7 @@ export default function WeeklyView() {
                   </div>
                   <div className="text-xs text-neutral-500 space-y-1">
                     <div>근력: {exCount}종목</div>
-                    {cardioCount > 0 && <div>유산소: {log.cardio.map((c) => `${c.minutes}분`).join(", ")}</div>}
+                    {cardioCount > 0 && <div>유산소: {(log.cardio ?? []).map((c) => `${c.minutes}분`).join(", ")}</div>}
                   </div>
                 </div>
               );

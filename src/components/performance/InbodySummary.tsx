@@ -1,11 +1,15 @@
 "use client";
 
-import { member } from "@/data/member";
+import { useUser } from "@/context/UserContext";
 import { InbodySummaryChart } from "./InbodySummaryChart";
 
-const bc = member.bodyComp;
+const defaultMetrics = [
+  { label: "체중", value: 0, unit: "kg", delta: 0, color: "text-white" },
+  { label: "골격근량", value: 0, unit: "kg", delta: 0, color: "text-cyan-400" },
+  { label: "체지방률", value: 0, unit: "%", delta: 0, color: "text-orange-500" },
+];
 
-const metrics = [
+const metricsFromBodyComp = (bc: { weight: number; muscle: number; fatPct: number; delta: { weight: number; muscle: number; fatPct: number } }) => [
   { label: "체중", value: bc.weight, unit: "kg", delta: bc.delta.weight, color: "text-white" },
   { label: "골격근량", value: bc.muscle, unit: "kg", delta: bc.delta.muscle, color: "text-cyan-400" },
   { label: "체지방률", value: bc.fatPct, unit: "%", delta: bc.delta.fatPct, color: "text-orange-500" },
@@ -27,13 +31,17 @@ const trendData = [
 ];
 
 export default function InbodySummary() {
+  const { user } = useUser();
+  const bc = user?.bodyComp;
+  const metrics = bc ? metricsFromBodyComp(bc) : defaultMetrics;
+
   return (
     <div className="flex flex-col gap-4">
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <p className="card-label">📋 최근 측정</p>
           <span className="font-bebas text-[8px] text-neutral-400">
-            {bc.measuredAt} · 15일 전
+            {bc?.measuredAt ?? "-"} · 15일 전
           </span>
         </div>
 

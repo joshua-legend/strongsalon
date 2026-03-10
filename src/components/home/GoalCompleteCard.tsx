@@ -2,15 +2,13 @@
 
 import { useState } from "react";
 import { Trophy } from "lucide-react";
-import { useQuest } from "@/context/QuestContext";
+import { useGoal } from "@/context/GoalContext";
 import ResetGoalConfirmModal from "./ResetGoalConfirmModal";
 
 export default function GoalCompleteCard() {
-  const { userProfile, activeQuest, extendGoal, resetQuest } = useQuest();
+  const { goalSetting, activeQuest, extendGoal, resetGoal } = useGoal();
   const [showResetModal, setShowResetModal] = useState(false);
-  if (!userProfile || !activeQuest) return null;
-
-  const { purpose } = userProfile;
+  if (!goalSetting || !activeQuest) return null;
   const totalWeeks = activeQuest.history.length;
   const successCount = activeQuest.history.filter((r) => r.passed).length;
   const successRate =
@@ -47,7 +45,7 @@ export default function GoalCompleteCard() {
       <ResetGoalConfirmModal
         open={showResetModal}
         onClose={() => setShowResetModal(false)}
-        onConfirm={resetQuest}
+        onConfirm={resetGoal}
       />
     </div>
   );

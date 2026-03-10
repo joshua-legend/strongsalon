@@ -1,7 +1,6 @@
 "use client";
 
 import { useWorkout } from "@/context/WorkoutContext";
-import { useQuest } from "@/context/QuestContext";
 
 const DAY_NAMES = ["일", "월", "화", "수", "목", "금", "토"];
 const DAY_TYPE_LABELS: Record<string, string> = {
@@ -15,10 +14,9 @@ const DAY_TYPE_LABELS: Record<string, string> = {
 
 export default function RestDay() {
   const { weeklyPlan, weeklyProgress } = useWorkout();
-  const { userProfile } = useQuest();
   const today = new Date();
   const currentDow = today.getDay();
-  const trainingDays = userProfile?.trainingDays ?? [1, 3, 5];
+  const trainingDays = [1, 3, 5];
 
   const nextDay = trainingDays
     .sort((a, b) => a - b)

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { member } from '@/data/member';
+import { useUser } from '@/context/UserContext';
 import { calcStrengthScore, calcBodyScore, calcCardioScore } from '@/utils/scoring';
 
 interface CardSection {
@@ -14,47 +14,53 @@ interface CardSection {
   details: { label: string; value: string; pct: number; color: string }[];
 }
 
-const sections: CardSection[] = [
-  {
-    icon: '🏋️',
-    title: '근력 점수',
-    weight: '가중치 40%',
-    score: calcStrengthScore(member),
-    source: 'Strengthlevel 전국 표본',
-    details: member.lifts.map(l => ({
-      label: l.name,
-      value: `${l.weight}kg`,
-      pct: l.pct,
-      color: l.color,
-    })),
-  },
-  {
-    icon: '🧬',
-    title: '체성분 점수',
-    weight: '가중치 30%',
-    score: calcBodyScore(member),
-    source: '동연령·성별 표준',
-    details: [
-      { label: '골격근량', value: `${member.bodyComp.muscle}kg`, pct: 68, color: '#22d3ee' },
-      { label: '체지방률', value: `${member.bodyComp.fatPct}%`, pct: 62, color: '#f97316' },
-    ],
-  },
-  {
-    icon: '🏃',
-    title: '체력 점수',
-    weight: '가중치 30%',
-    score: calcCardioScore(member),
-    source: 'Cooper test · Concept2',
-    details: [
-      { label: '5km 런', value: '26:40', pct: 55, color: '#a3e635' },
-      { label: '로잉 2km', value: '7:38', pct: 50, color: '#22d3ee' },
-      { label: '싸이클 10km', value: '21:20', pct: 58, color: '#f97316' },
-    ],
-  },
-];
-
 export default function RankCards() {
+  const { user } = useUser();
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  const sections: CardSection[] = useMemo(() => {
+    if (!user) return [];
+    return [
+      {
+        icon: '🏋️',
+        title: '근력 점수',
+        weight: '가중치 40%',
+        score: calcStrengthScore(user),
+        source: 'Strengthlevel 전국 표본',
+        details: (user.lifts ?? []).map(l => ({
+          label: l.name,
+          value: `${l.weight}kg`,
+          pct: l.pct,
+          color: l.color,
+        })),
+      },
+      {
+        icon: '🧬',
+        title: '체성분 점수',
+        weight: '가중치 30%',
+        score: calcBodyScore(user),
+        source: '동연령·성별 표준',
+        details: user.bodyComp
+          ? [
+              { label: '골격근량', value: `${user.bodyComp.muscle}kg`, pct: 68, color: '#22d3ee' },
+              { label: '체지방률', value: `${user.bodyComp.fatPct}%`, pct: 62, color: '#f97316' },
+            ]
+          : [],
+      },
+      {
+        icon: '🏃',
+        title: '체력 점수',
+        weight: '가중치 30%',
+        score: calcCardioScore(user),
+        source: 'Cooper test · Concept2',
+        details: [
+          { label: '5km 런', value: '26:40', pct: 55, color: '#a3e635' },
+          { label: '로잉 2km', value: '7:38', pct: 50, color: '#22d3ee' },
+          { label: '싸이클 10km', value: '21:20', pct: 58, color: '#f97316' },
+        ],
+      },
+    ];
+  }, [user]);
 
   return (
     <div className="flex flex-col gap-3">
