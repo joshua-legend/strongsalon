@@ -4,8 +4,6 @@ import { useState, useCallback } from "react";
 import AttendCalendar from "./AttendCalendar";
 import ConditionDonut from "./ConditionDonut";
 import StatGrid from "./StatGrid";
-import VolumeChart from "./VolumeChart";
-import BodyMap from "@/components/home/BodyMap";
 
 export default function StatsTab() {
   const now = new Date();
@@ -54,12 +52,6 @@ export default function StatsTab() {
       <div className="fade-up fade-in-3">
         <ConditionDonut />
       </div>
-      <div className="fade-up fade-in-4">
-        <BodyMap />
-      </div>
-      {/* <div className="fade-up fade-in-2">
-        <VolumeChart />
-      </div> */}
       <div className="h-4" />
     </div>
   );

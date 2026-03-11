@@ -1,5 +1,7 @@
 import type { AttendanceRecord } from "@/types";
 import { workoutHistory } from "@/data/workoutHistory";
+import type { DayWorkoutRecord } from "@/data/workoutHistory";
+import { getWorkoutRecordByDate } from "@/context/useWorkoutRecordStorage";
 
 const TARGET_DAYS = 22;
 
@@ -8,7 +10,6 @@ function safeNum(n: unknown): number {
   return Number.isFinite(v) ? v : 0;
 }
 
-/** 날짜 파싱: '2026-1-2' -> {y, m, d} */
 function parseDate(dateStr: string): { y: number; m: number; d: number } {
   const parts = String(dateStr).split("-");
   return {
@@ -18,15 +19,29 @@ function parseDate(dateStr: string): { y: number; m: number; d: number } {
   };
 }
 
-/** cardio value에서 분 추출 */
 function parseCardioMinutes(value: string): number {
   const match = String(value).match(/(\d+)\s*분/);
   return match ? safeNum(match[1]) : 0;
 }
 
-function getWorkoutDuration(date: string): number {
-  const record = workoutHistory.find((r) => r.date === date);
-  if (!record) return 0;
+function getRecordForDate(date: string): DayWorkoutRecord | undefined {
+  return getWorkoutRecordByDate(date, workoutHistory);
+}
+
+function calcVolume(record: DayWorkoutRecord): number {
+  let vol = 0;
+  record.exercises.forEach((ex) => {
+    (ex.sets ?? []).forEach((s) => {
+      vol += safeNum(s.weight) * safeNum(s.reps);
+    });
+  });
+  return vol;
+}
+
+function calcDurationMinutes(record: DayWorkoutRecord): number {
+  if (record.durationSec && record.durationSec > 0) {
+    return Math.round(record.durationSec / 60);
+  }
   let strengthMin = 0;
   record.exercises.forEach((ex) => {
     strengthMin += (ex.sets?.length ?? 0) * 2.5;
@@ -65,14 +80,10 @@ export function getMonthlyStats(
   let totalVolume = 0;
   let totalMinutes = 0;
   monthRecords.forEach((r) => {
-    const wh = workoutHistory.find((w) => w.date === r.date);
-    if (wh?.exercises) {
-      wh.exercises.forEach((ex) => {
-        (ex.sets ?? []).forEach((s) => {
-          totalVolume += safeNum(s.weight) * safeNum(s.reps);
-        });
-      });
-      totalMinutes += getWorkoutDuration(r.date);
+    const record = getRecordForDate(r.date);
+    if (record) {
+      totalVolume += calcVolume(record);
+      totalMinutes += calcDurationMinutes(record);
     }
   });
 

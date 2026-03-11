@@ -52,6 +52,7 @@ export function createInitialTrainerProg(): TrainerProg {
         id: nextSetId(ex.id),
         weight: 0,
         reps: 0,
+        status: 'pending' as const,
       })),
     })),
   };

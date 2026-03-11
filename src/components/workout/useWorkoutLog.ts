@@ -111,11 +111,11 @@ export function useWorkoutLog() {
   }, [exercises, resetSession, showToast]);
 
   const completeWorkout = useCallback(() => {
-    const validSet = (s: SetRecord) => s.weight > 0 && s.reps > 0;
+    const clearedSet = (s: SetRecord) => s.weight > 0 && s.reps > 0 && s.status === 'clear';
 
     const 근력 = Object.values(exercises.freeExercises)
       .map((ex) => {
-        const sets = ex.sets.filter(validSet).map((s) => ({ weight: s.weight, reps: s.reps }));
+        const sets = ex.sets.filter(clearedSet).map((s) => ({ weight: s.weight, reps: s.reps }));
         return sets.length ? { name: ex.name, icon: ex.icon, sets } : null;
       })
       .filter((x): x is NonNullable<typeof x> => x !== null);

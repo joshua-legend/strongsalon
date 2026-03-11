@@ -113,11 +113,14 @@ export default function TrainerExCard({
               weight={set.weight}
               reps={set.reps}
               volume={set.weight * set.reps}
+              status={set.status ?? 'pending'}
+              isWorkoutActive={false}
               onWeightChange={(v) => onSetChange(exercise.id, set.id, v, set.reps)}
               onRepsChange={(v) => onSetChange(exercise.id, set.id, set.weight, v)}
               onAdjWeight={(d) => handleAdj(set.id, set.weight, set.reps, d, 0)}
               onAdjReps={(d) => handleAdj(set.id, set.weight, set.reps, 0, d)}
               onDelete={() => onDeleteSet(exercise.id, set.id)}
+              onStatusChange={() => {}}
               accentColor="purple"
             />
           ))}
