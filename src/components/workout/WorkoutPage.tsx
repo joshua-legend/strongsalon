@@ -49,6 +49,7 @@ export default function WorkoutPage() {
               freeExercises={log.freeExercises}
               orderedIds={log.orderedIds}
               cardioEntries={log.cardioEntries}
+              isWorkoutActive={isInProgress}
               onUpdateCardio={log.updateCardio}
               onRemoveCardio={log.removeCardio}
               prData={log.prData}
@@ -59,8 +60,10 @@ export default function WorkoutPage() {
               onCopyLastSet={log.copyLastFreeSet}
               onDeleteSet={log.delFreeSet}
               onSetChange={log.onFSetChange}
+              onSetStatusChange={log.setSetStatus}
               onRemove={log.removeFreeEx}
               onCheckPR={log.showPR}
+              onToggleCardioCheck={log.toggleCardioCheck}
             />
             <div className="mt-2 flex items-stretch gap-3">
               {isInProgress && (
@@ -95,7 +98,7 @@ export default function WorkoutPage() {
               <button
                 type="button"
                 onClick={handleButtonClick}
-                disabled={isReady && !log.isWorkoutReady}
+                disabled={(isReady && !log.isWorkoutReady) || (isInProgress && !(log.allSetsChecked && log.allCardioChecked))}
                 className="group relative flex-1 px-6 py-4 rounded-2xl font-black text-base uppercase italic -skew-x-12 text-white transition-all duration-300 ease-out hover:scale-[1.02] hover:brightness-110 hover:shadow-[0_0_28px_rgba(163,230,53,.6)] active:scale-[0.97] flex items-center justify-center disabled:opacity-40 disabled:pointer-events-none disabled:hover:scale-100"
                 style={{
                   background: isInProgress ? "#f97316" : "#a3e635",

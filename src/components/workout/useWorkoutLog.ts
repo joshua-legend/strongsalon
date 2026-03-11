@@ -209,7 +209,7 @@ export function useWorkoutLog() {
   const addCardio = useCallback((type: CardioType) => {
     setCardioEntries((prev) => [
       ...prev,
-      { id: nextId('cardio'), type, distanceKm: 0, timeMinutes: 0 },
+      { id: nextId('cardio'), type, distanceKm: 0, timeMinutes: 0, checked: false },
     ]);
   }, []);
 
@@ -223,6 +223,14 @@ export function useWorkoutLog() {
   const removeCardio = useCallback((id: string) => {
     setCardioEntries((prev) => prev.filter((e) => e.id !== id));
   }, []);
+
+  const toggleCardioCheck = useCallback((id: string) => {
+    setCardioEntries((prev) => prev.map((e) => (e.id === id ? { ...e, checked: !e.checked } : e)));
+  }, []);
+
+  const allCardioChecked =
+    cardioEntries.length === 0 ||
+    cardioEntries.every((e) => e.checked);
 
   return {
     workoutDate,
@@ -246,6 +254,8 @@ export function useWorkoutLog() {
     addCardio,
     updateCardio,
     removeCardio,
+    toggleCardioCheck,
+    allCardioChecked,
     ...exercises,
   };
 }

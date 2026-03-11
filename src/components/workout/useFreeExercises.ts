@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import type { FreeExercise, SetRecord } from '@/types';
+import type { FreeExercise, SetRecord, SetStatus } from '@/types';
 import { useToast } from '@/components/ui/Toast';
 
 function nextId(prefix: string): string {
@@ -35,7 +35,7 @@ export function useFreeExercises(
         return prev;
       }
       const id = nextId('fx');
-      const newSet: SetRecord = { id: nextId('fs'), weight: 0, reps: 0 };
+      const newSet: SetRecord = { id: nextId('fs'), weight: 0, reps: 0, status: 'pending' };
       setExerciseOrder((o) => [...o, id]);
       return { ...prev, [id]: { icon, name, sets: [newSet] } };
     });
@@ -45,7 +45,7 @@ export function useFreeExercises(
     setFreeExercises((prev) => {
       if (Object.values(prev).some((e) => e.name === name)) return prev;
       const id = nextId('fx');
-      const newSet: SetRecord = { id: nextId('fs'), weight: 0, reps: 0 };
+      const newSet: SetRecord = { id: nextId('fs'), weight: 0, reps: 0, status: 'pending' };
       setExerciseOrder((o) => [...o, id]);
       return { ...prev, [id]: { icon: '💪', name, sets: [newSet] } };
     });
@@ -55,7 +55,7 @@ export function useFreeExercises(
     setFreeExercises((prev) => {
       const ex = prev[exId];
       if (!ex) return prev;
-      const newSet: SetRecord = { id: nextId('fs'), weight, reps };
+      const newSet: SetRecord = { id: nextId('fs'), weight, reps, status: 'pending' };
       return { ...prev, [exId]: { ...ex, sets: [...ex.sets, newSet] } };
     });
   }, []);
@@ -67,7 +67,7 @@ export function useFreeExercises(
       const last = ex.sets[ex.sets.length - 1];
       return {
         ...prev,
-        [exId]: { ...ex, sets: [...ex.sets, { id: nextId('fs'), weight: last.weight, reps: last.reps }] },
+        [exId]: { ...ex, sets: [...ex.sets, { id: nextId('fs'), weight: last.weight, reps: last.reps, status: 'pending' }] },
       };
     });
   }, []);
@@ -98,6 +98,15 @@ export function useFreeExercises(
     [prData, showPR]
   );
 
+  const setSetStatus = useCallback((exId: string, setId: string, status: SetStatus) => {
+    setFreeExercises((prev) => {
+      const ex = prev[exId];
+      if (!ex) return prev;
+      const sets = ex.sets.map((s) => (s.id === setId ? { ...s, status } : s));
+      return { ...prev, [exId]: { ...ex, sets } };
+    });
+  }, []);
+
   const removeFreeEx = useCallback((exId: string) => {
     setExerciseOrder((o) => o.filter((i) => i !== exId));
     setFreeExercises((prev) => {
@@ -113,10 +122,10 @@ export function useFreeExercises(
       const id = benchId ?? nextId('fx');
       const ex = p[id] ?? { icon: '🏋️', name: '벤치프레스', sets: [] };
       const sets: SetRecord[] = [
-        { id: nextId('fs'), weight: 60, reps: 12 },
-        { id: nextId('fs'), weight: 80, reps: 8 },
-        { id: nextId('fs'), weight: 95, reps: 5 },
-        { id: nextId('fs'), weight: 100, reps: 3 },
+        { id: nextId('fs'), weight: 60, reps: 12, status: 'pending' },
+        { id: nextId('fs'), weight: 80, reps: 8, status: 'pending' },
+        { id: nextId('fs'), weight: 95, reps: 5, status: 'pending' },
+        { id: nextId('fs'), weight: 100, reps: 3, status: 'pending' },
       ];
       if (!benchId) setExerciseOrder((o) => [...o, id]);
       return { ...p, [id]: { ...ex, sets } };
@@ -131,6 +140,13 @@ export function useFreeExercises(
 
   const orderedIds = exerciseOrder.filter((id) => id in freeExercises);
 
+  const allSetsChecked =
+    orderedIds.length > 0 &&
+    orderedIds.every((id) => {
+      const ex = freeExercises[id];
+      return ex && ex.sets.length > 0 && ex.sets.every((s) => s.status === 'clear' || s.status === 'fail');
+    });
+
   return {
     freeExercises,
     orderedIds,
@@ -142,8 +158,10 @@ export function useFreeExercises(
     copyLastFreeSet,
     delFreeSet,
     onFSetChange,
+    setSetStatus,
     removeFreeEx,
     copyPrevRecord,
     resetExercises,
+    allSetsChecked,
   };
 }

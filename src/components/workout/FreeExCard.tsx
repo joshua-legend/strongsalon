@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { FreeExercise } from '@/types';
+import type { FreeExercise, SetStatus } from '@/types';
 import SetRow from './SetRow';
 import { FreeExCardHeader } from './FreeExCardHeader';
 
@@ -10,17 +10,19 @@ interface FreeExCardProps {
   index: number;
   exercise: FreeExercise;
   prWeight?: number;
+  isWorkoutActive: boolean;
   onAddSet: (exId: string) => void;
   onCopyLastSet: (exId: string) => void;
   onDeleteSet: (exId: string, setId: string) => void;
   onSetChange: (exId: string, setId: string, weight: number, reps: number) => void;
+  onSetStatusChange: (exId: string, setId: string, status: SetStatus) => void;
   onRemove: (exId: string) => void;
   onCheckPR: (name: string, diff: number) => void;
 }
 
 export default function FreeExCard({
-  id, index, exercise, prWeight,
-  onAddSet, onCopyLastSet, onDeleteSet, onSetChange, onRemove, onCheckPR,
+  id, index, exercise, prWeight, isWorkoutActive,
+  onAddSet, onCopyLastSet, onDeleteSet, onSetChange, onSetStatusChange, onRemove, onCheckPR,
 }: FreeExCardProps) {
   const [open, setOpen] = useState(true);
 
@@ -30,6 +32,9 @@ export default function FreeExCard({
     onSetChange(id, setId, nw, nr);
     if (prWeight != null && nw > prWeight) onCheckPR(exercise.name, nw - prWeight);
   };
+
+  const checkedCount = exercise.sets.filter((s) => s.status === 'clear' || s.status === 'fail').length;
+  const totalSets = exercise.sets.length;
 
   return (
     <div className="border overflow-hidden transition-all rounded-2xl"
@@ -56,14 +61,41 @@ export default function FreeExCard({
               weight={set.weight}
               reps={set.reps}
               volume={set.weight * set.reps}
+              status={set.status}
+              isWorkoutActive={isWorkoutActive}
               onWeightChange={(v) => onSetChange(id, set.id, v, set.reps)}
               onRepsChange={(v) => onSetChange(id, set.id, set.weight, v)}
               onAdjWeight={(d) => handleAdj(set.id, set.weight, set.reps, d, 0)}
               onAdjReps={(d) => handleAdj(set.id, set.weight, set.reps, 0, d)}
               onDelete={() => onDeleteSet(id, set.id)}
+              onStatusChange={(status) => onSetStatusChange(id, set.id, status)}
               accentColor="orange"
             />
           ))}
+
+          {/* Progress bar during workout */}
+          {isWorkoutActive && totalSets > 0 && (
+            <div className="mx-1 mt-2 mb-1">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bebas text-[8px] tracking-wider" style={{ color: 'rgba(255,255,255,.4)' }}>
+                  진행률
+                </span>
+                <span className="font-bebas text-[9px]" style={{ color: checkedCount === totalSets ? '#a3e635' : 'rgba(255,255,255,.5)' }}>
+                  {checkedCount}/{totalSets}
+                </span>
+              </div>
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,.06)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{
+                    width: `${(checkedCount / totalSets) * 100}%`,
+                    background: checkedCount === totalSets ? '#a3e635' : 'rgba(163,230,53,.6)',
+                    boxShadow: checkedCount > 0 ? '0 0 6px rgba(163,230,53,.4)' : 'none',
+                  }}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center gap-2 pt-1.5 mt-1 border-t border-dashed"
             style={{ borderColor: 'rgba(255,255,255,.04)' }}>

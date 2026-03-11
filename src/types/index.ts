@@ -26,6 +26,7 @@ export type {
   WorkoutMode,
   WorkoutCondition,
   SetRecord,
+  SetStatus,
   TrainerExercise,
   FreeExercise,
   TrainerProg,

@@ -71,6 +71,7 @@ export function getStrengthPresetForPurpose(
       id: nextId("fs"),
       weight: 0,
       reps: item.defaultReps,
+      status: 'pending' as const,
     }));
     result[exId] = {
       icon: item.icon,

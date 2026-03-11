@@ -23,10 +23,13 @@ export interface Exercise {
 export type WorkoutMode = 'trainer' | 'free';
 export type WorkoutCondition = '최악' | '나쁨' | '좋음' | '최고' | '불타';
 
+export type SetStatus = 'pending' | 'clear' | 'fail';
+
 export interface SetRecord {
   id: string;
   weight: number;
   reps: number;
+  status: SetStatus;
 }
 
 export interface TrainerExercise {
@@ -56,6 +59,7 @@ export interface CardioEntry {
   type: CardioType;
   distanceKm: number;
   timeMinutes: number;
+  checked: boolean;
 }
 
 export interface InbodyRecord {
