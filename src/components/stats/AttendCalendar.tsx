@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useAttendance } from "@/context/AttendanceContext";
 import { workoutHistory } from "@/data/workoutHistory";
+import { getWorkoutRecordByDate } from "@/context/useWorkoutRecordStorage";
 import { getMonthGrid, getWeekDays, isToday } from "@/utils/calendar";
 import DayWorkoutDetail from "./DayWorkoutDetail";
 
@@ -143,7 +144,7 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
       {selectedDate && (
         <DayWorkoutDetail
           dateKey={selectedDate}
-          record={workoutHistory.find((r) => r.date === selectedDate)}
+          record={getWorkoutRecordByDate(selectedDate, workoutHistory)}
           attendType={attendMap[selectedDate]}
           typeColor={typeColor}
           typeLabel={typeLabel}

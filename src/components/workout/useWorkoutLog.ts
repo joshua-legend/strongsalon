@@ -7,11 +7,20 @@ import { useWorkoutSession } from './useWorkoutSession';
 import { useFreeExercises } from './useFreeExercises';
 import { loadCategorySettings } from '@/context/useCategoryStorage';
 import { appendChartPoint } from '@/context/useChartDataStorage';
+import { useAttendance } from '@/context/AttendanceContext';
+import { appendWorkoutRecord } from '@/context/useWorkoutRecordStorage';
+import type { DayWorkoutRecord } from '@/data/workoutHistory';
 import { estimate1RM } from '@/utils/estimate1RM';
 import type { ChartMetricKey } from '@/types/chartData';
 
 function nextId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+/** YYYY-MM-DD → YYYY-M-D (캘린더 attendMap 키 형식) */
+function toAttendanceDateKey(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${y}-${m}-${d}`;
 }
 
 /** 운동 이름 → 3대 매핑 (한글 이름 기준) */
@@ -36,6 +45,13 @@ const CARDI_TYPE_MAP: Record<CardioType, 'running' | 'rowing' | 'skierg' | null>
   cycle: null,
 };
 
+const CARDI_LABELS: Record<CardioType, string> = {
+  run: '런닝',
+  row: '로잉',
+  skierg: '스키에르그',
+  cycle: '싸이클',
+};
+
 function mapNameToStrength(name: string): 'squat' | 'bench' | 'deadlift' | null {
   const normalized = name.replace(/\s/g, '');
   const entries = Object.entries(STRENGTH_NAME_MAP).sort((a, b) => b[0].length - a[0].length);
@@ -50,23 +66,46 @@ function calcPace(distanceKm: number, timeMin: number): number | null {
   return Math.round((timeMin * 60 / distanceKm / 60) * 100) / 100;
 }
 
+export type WorkoutPhase = 'ready' | 'inProgress' | 'completed';
+
 export function useWorkoutLog() {
   const { showToast } = useToast();
+  const { addAttendance } = useAttendance();
+  const [workoutPhase, setWorkoutPhase] = useState<WorkoutPhase>('ready');
+  const [completedElapsedSec, setCompletedElapsedSec] = useState(0);
   const [workoutDate, setWorkoutDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [condition, setCondition] = useState<WorkoutCondition>('좋음');
   const [cardioEntries, setCardioEntries] = useState<CardioEntry[]>([]);
   const [prData] = useState<Record<string, number>>({});
 
-  const { elapsedSec, prBadge, showPR, resetSession } = useWorkoutSession();
+  const { elapsedSec, prBadge, showPR, resetSession, formatElapsed } = useWorkoutSession(
+    workoutPhase === 'inProgress'
+  );
   const exercises = useFreeExercises(prData, showPR);
+
+  const startWorkout = useCallback(() => {
+    setWorkoutPhase('inProgress');
+  }, []);
 
   const cardioComplete = cardioEntries.some((e) => e.distanceKm > 0 && e.timeMinutes > 0);
   const canComplete = exercises.strengthComplete && cardioComplete;
+
+  const hasAnyExercise = exercises.orderedIds.length > 0 || cardioEntries.length > 0;
+  const allStrengthFilled =
+    exercises.orderedIds.length === 0 ||
+    exercises.orderedIds.every((id) =>
+      (exercises.freeExercises[id]?.sets ?? []).some((s) => s.weight > 0 && s.reps > 0)
+    );
+  const allCardioFilled =
+    cardioEntries.length === 0 ||
+    cardioEntries.every((e) => e.distanceKm > 0 && e.timeMinutes > 0);
+  const isWorkoutReady = hasAnyExercise && allStrengthFilled && allCardioFilled;
 
   const clearAll = useCallback(() => {
     if (!confirm('모든 기록을 초기화할까요?')) return;
     exercises.resetExercises();
     setCardioEntries([]);
+    setWorkoutPhase('ready');
     resetSession();
     showToast('🗑 초기화 완료');
   }, [exercises, resetSession, showToast]);
@@ -137,8 +176,35 @@ export function useWorkoutLog() {
         appendChartPoint('fitness.total', { day: 0, value: totalPace, date }, fitnessConfiguredAt);
     }
 
+    addAttendance(toAttendanceDateKey(date), 'self');
+
+    const workoutRecord: DayWorkoutRecord = {
+      date: toAttendanceDateKey(date),
+      type: 'self',
+      exercises: 근력.map((ex) => ({
+        icon: ex.icon,
+        name: ex.name,
+        sets: ex.sets.map((s) => ({ weight: s.weight, reps: s.reps })),
+      })),
+      durationSec: elapsedSec,
+      condition,
+    };
+    if (유산소.length > 0) {
+      const cardioValues = 유산소.map((e) =>
+        e.distanceKm > 0 ? `${e.distanceKm}km / ${e.timeMinutes}분` : `${e.timeMinutes}분`
+      );
+      workoutRecord.cardio = {
+        type: 유산소[0].type,
+        label: CARDI_LABELS[유산소[0].type],
+        value: cardioValues.join(', '),
+      };
+    }
+    appendWorkoutRecord(workoutRecord);
+
+    setCompletedElapsedSec(elapsedSec);
+    setWorkoutPhase('completed');
     showToast('✅ 오운완! 챌린지 +1회 🥕');
-  }, [exercises.freeExercises, cardioEntries, workoutDate, showToast]);
+  }, [exercises.freeExercises, cardioEntries, workoutDate, showToast, addAttendance, elapsedSec]);
 
   const addCardio = useCallback((type: CardioType) => {
     setCardioEntries((prev) => [
@@ -170,6 +236,11 @@ export function useWorkoutLog() {
     showPR,
     canComplete,
     cardioComplete,
+    isWorkoutReady,
+    workoutPhase,
+    completedElapsedSec,
+    formatElapsed,
+    startWorkout,
     clearAll,
     completeWorkout,
     addCardio,

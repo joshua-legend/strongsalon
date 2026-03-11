@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/context/AppContext";
 import { useUser } from "@/context/UserContext";
 import { useGoal } from "@/context/GoalContext";
 import MyPageModal from "@/components/mypage/MyPageModal";
 import { appendChartPoint } from "@/context/useChartDataStorage";
-import { CYCLE_WEEKS } from "@/utils/chartConstants";
+import { CYCLE_WEEKS, CYCLE_DAYS } from "@/utils/chartConstants";
 import type { CategorySetting } from "@/types/categorySettings";
 
-function getDateForWeek(configuredAt: string, weekIndex: number): string {
+function getDateForDay(configuredAt: string, day: number): string {
   const d = new Date(configuredAt);
-  d.setDate(d.getDate() + weekIndex * 7);
+  d.setDate(d.getDate() + day);
   return d.toISOString().slice(0, 10);
 }
 
@@ -20,7 +19,6 @@ function randomBetween(min: number, max: number): number {
 }
 
 export default function Topbar() {
-  const { theme } = useApp();
   const { user } = useUser();
   const { categorySettings, setCategorySetting } = useGoal();
   const [showMyPage, setShowMyPage] = useState(false);
@@ -64,20 +62,18 @@ export default function Topbar() {
     const minVal = Math.min(startVal, targetVal) - 10;
     const maxVal = Math.max(startVal, targetVal) + 10;
 
-    for (let w = 0; w <= CYCLE_WEEKS; w++) {
-      const date = getDateForWeek(configuredAt!, w);
+    for (let d = 0; d <= CYCLE_DAYS; d++) {
+      const date = getDateForDay(configuredAt!, d);
       const value = randomBetween(minVal, maxVal);
       appendChartPoint(
         "strength.squat",
-        { day: w * 7, value, date },
+        { day: d, value, date },
         configuredAt!
       );
     }
 
     window.dispatchEvent(new CustomEvent("chartRefresh"));
   };
-
-  if (theme === "workout") return null;
 
   return (
     <>

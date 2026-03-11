@@ -5,11 +5,17 @@ export interface DayExercise {
   sets: { weight: number; reps: number }[];
 }
 
+export type WorkoutConditionValue = '최악' | '나쁨' | '좋음' | '최고' | '불타';
+
 export interface DayWorkoutRecord {
   date: string;
   type: 'pt' | 'self' | 'both';
   exercises: DayExercise[];
   cardio?: { type: string; label: string; value: string };
+  /** 운동 시간 (초) - 운동 탭에서 완료 시 기록 */
+  durationSec?: number;
+  /** 당일 컨디션 */
+  condition?: WorkoutConditionValue;
 }
 
 export const workoutHistory: DayWorkoutRecord[] = [

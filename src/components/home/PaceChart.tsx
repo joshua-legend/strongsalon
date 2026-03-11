@@ -38,7 +38,6 @@ export default function PaceChart({
   configuredAt,
 }: PaceChartProps) {
   const useDayMode = dataPoints != null && dataPoints.length > 0;
-  const maxWeeks = CYCLE_WEEKS;
 
   const weekCalc = usePaceChartData(startValue, targetValue, weeklyDelta, history, CYCLE_WEEKS);
   const dayCalc = usePaceChartDataDay(
@@ -46,7 +45,7 @@ export default function PaceChart({
     targetValue,
     weeklyDelta,
     dataPoints ?? [],
-    maxWeeks
+    undefined
   );
 
   const calc = useDayMode ? dayCalc : weekCalc;
@@ -62,7 +61,7 @@ export default function PaceChart({
         yRangeNice,
         toX: (w: number) => dayCalc.toXDay(w * 7),
         toY,
-        dayMode: { maxWeeks: dayCalc.maxWeeks, toXDay: dayCalc.toXDay },
+        dayMode: { maxDays: dayCalc.maxDays, toXDay: dayCalc.toXDay },
         formatValue,
         configuredAt,
       }

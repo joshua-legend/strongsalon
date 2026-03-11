@@ -1,5 +1,6 @@
 import type { WeekRecord } from "@/types/quest";
 import type { ChartDataPoint } from "@/types/chartData";
+import { CYCLE_DAYS } from "@/utils/chartConstants";
 
 export interface PaceChartDimensions {
   width: number;
@@ -89,13 +90,13 @@ export interface PaceChartDayCalculations {
   isAhead: boolean;
 }
 
-/** Day-based X축: startDate 기준 경과 일수, X축 라벨 W1/W2/... */
+/** Day-based X축: startDate 기준 경과 일수, 데이터 기반 adaptive maxDays */
 export function usePaceChartDataDay(
   startValue: number,
   targetValue: number,
   weeklyDelta: number,
   dataPoints: ChartDataPoint[],
-  maxWeeks: number
+  maxDaysOverride?: number
 ): PaceChartDayCalculations {
   const dims: PaceChartDimensions = {
     width: 400,
@@ -108,7 +109,12 @@ export function usePaceChartDataDay(
     chartH: 240 - 24 - 40,
   };
 
-  const maxDays = maxWeeks * 7;
+  const maxDays =
+    maxDaysOverride ??
+    (dataPoints.length > 0
+      ? Math.max(CYCLE_DAYS, Math.max(...dataPoints.map((p) => p.day)) + 7)
+      : CYCLE_DAYS);
+  const maxWeeks = Math.ceil(maxDays / 7);
 
   const allValues = [
     startValue,

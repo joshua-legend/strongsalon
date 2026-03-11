@@ -10,6 +10,16 @@ function formatDateLabel(configuredAt: string | null | undefined, weekIndex: num
   return `${m}-${day}`;
 }
 
+/** configuredAt + 경과 일수(day) → mm-dd */
+function formatDateLabelByDay(configuredAt: string | null | undefined, day: number): string {
+  if (!configuredAt) return day === 0 ? "시작" : `D${day}`;
+  const d = new Date(configuredAt);
+  d.setDate(d.getDate() + day);
+  const m = (d.getMonth() + 1).toString().padStart(2, "0");
+  const dayNum = d.getDate().toString().padStart(2, "0");
+  return `${m}-${dayNum}`;
+}
+
 interface PaceChartAxesProps {
   dims: PaceChartDimensions;
   maxWeek: number;
@@ -17,8 +27,8 @@ interface PaceChartAxesProps {
   yRangeNice: number;
   toX: (week: number) => number;
   toY: (val: number) => number;
-  /** Day-based mode: X축 W1, W2, ... (maxWeeks, toXDay 사용) */
-  dayMode?: { maxWeeks: number; toXDay: (day: number) => number };
+  /** Day-based mode: adaptive X축 (maxDays, toXDay 사용) */
+  dayMode?: { maxDays: number; toXDay: (day: number) => number };
   formatValue?: (v: number) => string;
   /** 목표 설정일 기준 mm-dd X축 라벨 */
   configuredAt?: string | null;
@@ -37,15 +47,36 @@ export default function PaceChartAxes({
 }: PaceChartAxesProps) {
   const { padLeft, padTop, chartW, chartH } = dims;
 
+  const tickInterval = dayMode
+    ? Math.max(1, Math.ceil(dayMode.maxDays / 6))
+    : 1;
   const xTicks = dayMode
-    ? Array.from({ length: dayMode.maxWeeks + 1 }, (_, i) => ({
-        x: dayMode.toXDay(i * 7),
-        label: formatDateLabel(configuredAt, i),
-      }))
+    ? (() => {
+        const ticks: { x: number; label: string }[] = [];
+        for (let day = 0; day <= dayMode.maxDays; day += tickInterval) {
+          const clampedDay = Math.min(day, dayMode.maxDays);
+          ticks.push({
+            x: dayMode.toXDay(clampedDay),
+            label: formatDateLabelByDay(configuredAt, clampedDay),
+          });
+          if (clampedDay >= dayMode.maxDays) break;
+        }
+        if (ticks.length > 0 && ticks[ticks.length - 1]!.x !== dayMode.toXDay(dayMode.maxDays)) {
+          ticks.push({
+            x: dayMode.toXDay(dayMode.maxDays),
+            label: formatDateLabelByDay(configuredAt, dayMode.maxDays),
+          });
+        }
+        return ticks;
+      })()
     : Array.from({ length: maxWeek + 1 }, (_, i) => ({
         x: toX(i),
         label: formatDateLabel(configuredAt, i),
       }));
+
+  const verticalGridSource = dayMode
+    ? xTicks.map((t) => t.x)
+    : Array.from({ length: maxWeek + 1 }, (_, i) => toX(i));
 
   return (
     <>
@@ -62,11 +93,10 @@ export default function PaceChartAxes({
       })}
 
       {/* Vertical grid lines */}
-      {Array.from({ length: maxWeek + 1 }, (_, i) => {
-        const x = toX(i);
-        return <line key={`v-${i}`} x1={x} y1={padTop} x2={x} y2={padTop + chartH}
-          stroke="#1f1f1f" strokeWidth={0.5} />;
-      })}
+      {verticalGridSource.map((x, i) => (
+        <line key={`v-${i}`} x1={x} y1={padTop} x2={x} y2={padTop + chartH}
+          stroke="#1f1f1f" strokeWidth={0.5} />
+      ))}
 
       {/* Y-axis ticks */}
       {Array.from({ length: 5 }, (_, i) => {
