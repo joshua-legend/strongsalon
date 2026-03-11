@@ -30,7 +30,7 @@ export function FreeExCardHeader({ id, index, exercise, prWeight, open, onToggle
         {index + 1}
       </div>
 
-      <div className="flex-1 min-w-0 font-bebas text-[15px] leading-none truncate tracking-wider text-white"
+      <div className="flex-1 min-w-0 font-bebas text-[15px] leading-tight truncate tracking-wider text-white"
         style={{ textShadow: '0 0 8px rgba(255,255,255,.15)' }}>
         {exercise.icon} {exercise.name}
       </div>

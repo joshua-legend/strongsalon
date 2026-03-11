@@ -3,12 +3,79 @@
 import { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { useUser } from "@/context/UserContext";
+import { useGoal } from "@/context/GoalContext";
 import MyPageModal from "@/components/mypage/MyPageModal";
+import { appendChartPoint } from "@/context/useChartDataStorage";
+import { CYCLE_WEEKS } from "@/utils/chartConstants";
+import type { CategorySetting } from "@/types/categorySettings";
+
+function getDateForWeek(configuredAt: string, weekIndex: number): string {
+  const d = new Date(configuredAt);
+  d.setDate(d.getDate() + weekIndex * 7);
+  return d.toISOString().slice(0, 10);
+}
+
+function randomBetween(min: number, max: number): number {
+  return Math.round((min + Math.random() * (max - min)) * 10) / 10;
+}
 
 export default function Topbar() {
   const { theme } = useApp();
   const { user } = useUser();
+  const { categorySettings, setCategorySetting } = useGoal();
   const [showMyPage, setShowMyPage] = useState(false);
+
+  const handleTestClick = () => {
+    const strength = categorySettings.strength;
+    let configuredAt = strength?.configuredAt ?? null;
+
+    if (!configuredAt) {
+      const today = new Date().toISOString().slice(0, 10);
+      const endDate = new Date(today);
+      endDate.setDate(endDate.getDate() + 28);
+      const startVal = 100;
+      const targetVal = 120;
+      const newSetting: CategorySetting = {
+        isConfigured: true,
+        configuredAt: today,
+        startValues: { squat: startVal, bench: 90, deadlift: 120, total: 310 },
+        goal: {
+          metric: "squat",
+          startValue: startVal,
+          targetValue: targetVal,
+          weeklyDelta: (targetVal - startVal) / CYCLE_WEEKS,
+          estimatedWeeks: CYCLE_WEEKS,
+          totalWeeks: CYCLE_WEEKS,
+        },
+        autoPaces: {
+          squat: { start: startVal, target: targetVal, weeklyDelta: 5 },
+          bench: { start: 90, target: 100, weeklyDelta: 2.5 },
+          deadlift: { start: 120, target: 135, weeklyDelta: 3.75 },
+        },
+        cycleWeeks: CYCLE_WEEKS,
+        cycleEndDate: endDate.toISOString().slice(0, 10),
+      };
+      setCategorySetting("strength", newSetting);
+      configuredAt = today;
+    }
+
+    const startVal = strength?.autoPaces?.squat?.start ?? strength?.startValues?.squat ?? 100;
+    const targetVal = strength?.autoPaces?.squat?.target ?? strength?.goal?.targetValue ?? 120;
+    const minVal = Math.min(startVal, targetVal) - 10;
+    const maxVal = Math.max(startVal, targetVal) + 10;
+
+    for (let w = 0; w <= CYCLE_WEEKS; w++) {
+      const date = getDateForWeek(configuredAt!, w);
+      const value = randomBetween(minVal, maxVal);
+      appendChartPoint(
+        "strength.squat",
+        { day: w * 7, value, date },
+        configuredAt!
+      );
+    }
+
+    window.dispatchEvent(new CustomEvent("chartRefresh"));
+  };
 
   if (theme === "workout") return null;
 
@@ -18,6 +85,15 @@ export default function Topbar() {
         className="flex items-center justify-between px-5 shrink-0 h-[60px] bg-black border-b border-lime-500/25"
         style={{ boxShadow: "0 0 30px rgba(163,230,53,.06), 0 1px 0 rgba(163,230,53,.18)" }}
       >
+        {/* 테스트 버튼 */}
+        <button
+          type="button"
+          onClick={handleTestClick}
+          className="px-3 py-1.5 rounded-lg text-xs font-bold text-neutral-400 hover:text-white bg-neutral-800/80 hover:bg-neutral-700 border border-neutral-700 transition-colors"
+        >
+          테스트
+        </button>
+
         {/* Logo */}
         <div className="font-bebas text-[24px] tracking-wide leading-none">
           <span

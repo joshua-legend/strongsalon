@@ -403,12 +403,15 @@ function InbodySingleChart({
           const isCurrent = i === pointsToRender.length - 1;
           const x = toX(p.day / 7);
           const y = toY(p.value);
-          const boxH = 22;
-          const boxTop = y - 32;
+          const boxH = 24;
+          const boxTop = y - 36;
           const showAbove = boxTop >= padTop + 4;
-          const labelY = showAbove ? y - 18 : y + boxH - 6;
-          const rectY = showAbove ? y - 32 : y + 10;
           if (isCurrent) {
+            const labelText = `${Number(p.value)}${unit}`;
+            const boxW = 96;
+            const rectX = x - boxW / 2;
+            const rectY = showAbove ? y - 36 : y + 10;
+            const labelY = rectY + boxH / 2 + 4;
             return (
               <g key={`dot-${i}`}>
                 <circle
@@ -420,9 +423,9 @@ function InbodySingleChart({
                 />
                 <circle cx={x} cy={y} r={3} fill="#0a0a0a" />
                 <rect
-                  x={x - 28}
+                  x={rectX}
                   y={rectY}
-                  width={56}
+                  width={boxW}
                   height={boxH}
                   rx={6}
                   fill="#0a0a0a"
@@ -438,8 +441,7 @@ function InbodySingleChart({
                   fontWeight="bold"
                   fill={lineColor}
                 >
-                  {p.value}
-                  {unit}
+                  {labelText}
                 </text>
               </g>
             );

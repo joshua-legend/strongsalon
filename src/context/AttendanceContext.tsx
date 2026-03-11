@@ -4,33 +4,10 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
   useCallback,
 } from "react";
 import type { AttendanceRecord, AttendType } from "@/types";
 import { attendance as staticAttendance } from "@/data/attendance";
-
-const STORAGE_KEY = "fitlog-attendance";
-
-function loadUserCheckIns(): AttendanceRecord[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
-}
-
-function saveUserCheckIns(records: AttendanceRecord[]) {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-  } catch {
-    // ignore
-  }
-}
 
 function mergeAttendance(
   staticData: AttendanceRecord[],
@@ -59,17 +36,11 @@ const AttendanceContext = createContext<AttendanceContextValue | null>(null);
 export function AttendanceProvider({ children }: { children: React.ReactNode }) {
   const [userCheckIns, setUserCheckIns] = useState<AttendanceRecord[]>([]);
 
-  useEffect(() => {
-    setUserCheckIns(loadUserCheckIns());
-  }, []);
-
   const addAttendance = useCallback((date: string, type: AttendType = "self") => {
     setUserCheckIns((prev) => {
       const exists = prev.some((a) => a.date === date);
       if (exists) return prev;
-      const next = [...prev, { date, type }];
-      saveUserCheckIns(next);
-      return next;
+      return [...prev, { date, type }];
     });
   }, []);
 

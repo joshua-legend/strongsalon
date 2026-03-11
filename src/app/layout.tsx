@@ -7,7 +7,6 @@ import { ProfileProvider } from "@/context/ProfileContext";
 import { GoalProvider } from "@/context/GoalContext";
 import { AttendanceProvider } from "@/context/AttendanceContext";
 import { InbodyProvider } from "@/context/InbodyContext";
-import MockGoalTrackerSeeder from "@/components/dev/MockGoalTrackerSeeder";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -50,7 +49,6 @@ export default function RootLayout({
             <GoalProvider>
               <AttendanceProvider>
                 <InbodyProvider>
-                  <MockGoalTrackerSeeder />
                   {children}
                 </InbodyProvider>
               </AttendanceProvider>

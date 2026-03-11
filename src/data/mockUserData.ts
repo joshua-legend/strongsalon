@@ -1,17 +1,16 @@
 /**
  * 목업용 유저 데이터 (1인)
- * 홈탭·마이페이지·골트래커·출석 관련 타입에 의존
- * 데이터 바인딩은 보류
+ * 리로딩 시 항상 이 데이터로 초기화됨 (localStorage 미사용)
  */
 
 import type { User } from "@/types/user";
 import type { UserProfile } from "@/types/profile";
 import type { AttendanceRecord } from "@/types/attendance";
-import type { GoalSetting } from "@/types/goalSetting";
+import type { GoalSetting, GoalId } from "@/types/goalSetting";
 import type { ActiveQuest } from "@/types/quest";
-import type { CategorySettings } from "@/types/categorySettings";
+import { DEFAULT_CATEGORY_SETTINGS, type CategorySettings } from "@/types/categorySettings";
 import type { InbodyRecord } from "@/types/workout";
-import type { ChartDataPoint } from "@/types/chartData";
+import type { ChartDataPoint, ChartMetricKey } from "@/types/chartData";
 
 // ─── 1. User (유저 프로필) ────────────────────────────────────────────────
 export const mockUser: User = {
@@ -33,6 +32,7 @@ export const mockUser: User = {
   remainingSessions: 8,
   totalSessions: 20,
   nextPtDate: "2026-03-01",
+  nextPtTime: "14:00",
 
   level: "INTERMEDIATE",
   liftTotal: 360,
@@ -155,88 +155,33 @@ export const mockActiveQuest: ActiveQuest = {
 };
 
 // ─── 6. CategorySettings (인바디/스트렝스/체력 카테고리 설정) ─────────────
-export const mockCategorySettings: CategorySettings = {
-  inbody: {
-    isConfigured: true,
-    configuredAt: "2026-02-10",
-    startValues: { fatPercent: 18, weight: 74, muscleMass: 33 },
-    goal: {
-      metric: "fatPercent",
-      startValue: 18,
-      targetValue: 14,
-      weeklyDelta: -0.5,
-      estimatedWeeks: 8,
-      totalWeeks: 4,
-    },
-    autoPaces: {
-      fatPercent: { start: 18, target: 18, weeklyDelta: -0.5 },
-      weight: { start: 74, target: 72, weeklyDelta: -0.25 },
-      muscleMass: { start: 33, target: 34, weeklyDelta: 0.25 },
-    },
-    cycleWeeks: 4,
-    cycleEndDate: "2026-03-10",
-  },
-  strength: {
-    isConfigured: true,
-    configuredAt: "2026-02-10",
-    startValues: { total: 340, squat: 110, bench: 95, deadlift: 135 },
-    goal: {
-      metric: "total",
-      startValue: 340,
-      targetValue: 365,
-      weeklyDelta: 6.25,
-      estimatedWeeks: 4,
-      totalWeeks: 4,
-    },
-    autoPaces: {
-      squat: { start: 110, target: 120, weeklyDelta: 2.5 },
-      bench: { start: 95, target: 105, weeklyDelta: 2.5 },
-      deadlift: { start: 135, target: 140, weeklyDelta: 1.25 },
-    },
-    cycleWeeks: 4,
-    cycleEndDate: "2026-03-10",
-  },
-  fitness: {
-    isConfigured: false,
-    configuredAt: null,
-    startValues: null,
-    goal: null,
-    autoPaces: null,
-  },
-};
+// 새로고침 시 디폴트 없음, 이벤트 기반으로 데이터 쌓임
+export const mockCategorySettings: CategorySettings = structuredClone(DEFAULT_CATEGORY_SETTINGS);
 
 // ─── 7. InbodyRecord[] (인바디 측정 이력) ─────────────────────────────────
-export const mockInbodyHistory: InbodyRecord[] = [
-  { date: "2026-02-10", weight: 74, muscleMass: 33, fatMass: 12.4, fatPercent: 18, bmi: 23.4 },
-  { date: "2026-02-17", weight: 73.6, muscleMass: 33.2, fatMass: 11.8, fatPercent: 17.5, bmi: 23.2 },
-  { date: "2026-02-24", weight: 73.4, muscleMass: 33.2, fatMass: 11.5, fatPercent: 16.5, bmi: 23.1 },
-];
+// 새로고침 시 디폴트 없음, 이벤트 기반으로 데이터 쌓임
+export const mockInbodyHistory: InbodyRecord[] = [];
 
-// ─── 8. ChartDataPoint (차트 포인트 예시, metricKey별) ────────────────────
-export const mockChartDataPoints: Record<string, ChartDataPoint[]> = {
-  "inbody.fatPercent": [
-    { day: 0, value: 18, date: "2026-02-10" },
-    { day: 7, value: 17.5, date: "2026-02-17" },
-    { day: 14, value: 16.5, date: "2026-02-24" },
-  ],
-  "inbody.weight": [
-    { day: 0, value: 74, date: "2026-02-10" },
-    { day: 7, value: 73.6, date: "2026-02-17" },
-    { day: 14, value: 73.4, date: "2026-02-24" },
-  ],
-  "inbody.muscleMass": [
-    { day: 0, value: 33, date: "2026-02-10" },
-    { day: 7, value: 33.2, date: "2026-02-17" },
-    { day: 14, value: 33.2, date: "2026-02-24" },
-  ],
-  "strength.total": [
-    { day: 0, value: 340, date: "2026-02-10" },
-    { day: 7, value: 345, date: "2026-02-17" },
-    { day: 14, value: 350, date: "2026-02-24" },
-  ],
+// ─── 8. PrimaryGoal ──────────────────────────────────────────────────────
+export const mockPrimaryGoal: GoalId = "diet";
+
+// ─── 9. ChartDataPoints (차트 포인트, metricKey별) ───────────────────────
+// 새로고침 시 디폴트 없음, 이벤트 기반으로 데이터 쌓임
+export const mockChartDataPoints: Record<ChartMetricKey, ChartDataPoint[]> = {
+  "inbody.fatPercent": [],
+  "inbody.weight": [],
+  "inbody.muscleMass": [],
+  "strength.squat": [],
+  "strength.bench": [],
+  "strength.deadlift": [],
+  "strength.total": [],
+  "fitness.running": [],
+  "fitness.rowing": [],
+  "fitness.skierg": [],
+  "fitness.total": [],
 };
 
-// ─── 9. 통합 목업 객체 (모든 데이터 한 번에) ──────────────────────────────
+// ─── 10. 통합 목업 객체 (모든 데이터 한 번에) ─────────────────────────────
 export const mockUserData = {
   user: mockUser,
   profile: mockProfile,
@@ -244,6 +189,7 @@ export const mockUserData = {
   goalSetting: mockGoalSetting,
   activeQuest: mockActiveQuest,
   categorySettings: mockCategorySettings,
+  primaryGoal: mockPrimaryGoal,
   inbodyHistory: mockInbodyHistory,
   chartDataPoints: mockChartDataPoints,
 } as const;

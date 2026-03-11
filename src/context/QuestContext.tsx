@@ -4,7 +4,6 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
   useCallback,
 } from "react";
 import type { UserProfile, ActiveQuest } from "@/types/quest";
@@ -24,13 +23,8 @@ interface QuestContextValue {
 const QuestContext = createContext<QuestContextValue | null>(null);
 
 export function QuestProvider({ children }: { children: React.ReactNode }) {
-  const [userProfile, setUserProfileState] = useState<UserProfile | null>(null);
-  const [activeQuest, setActiveQuestState] = useState<ActiveQuest | null>(null);
-
-  useEffect(() => {
-    setUserProfileState(loadProfile());
-    setActiveQuestState(loadQuest());
-  }, []);
+  const [userProfile, setUserProfileState] = useState<UserProfile | null>(() => loadProfile());
+  const [activeQuest, setActiveQuestState] = useState<ActiveQuest | null>(() => loadQuest());
 
   const setUserProfile = useCallback((p: UserProfile | null) => {
     setUserProfileState(p);

@@ -95,8 +95,6 @@ export function calcBalanceScore(
   return Math.max(0, Math.round(50 - deviation * 2));
 }
 
-const STORAGE_KEY = "fitlog-ability-results";
-
 export const DEFAULT_ABILITY_RESULTS: AbilityResults = {
   lowerStrength: null,
   upperPush: null,
@@ -105,39 +103,12 @@ export const DEFAULT_ABILITY_RESULTS: AbilityResults = {
   endurance: null,
 };
 
+let abilityResultsData: AbilityResults = { ...DEFAULT_ABILITY_RESULTS };
+
 export function loadAbilityResults(): AbilityResults {
-  if (typeof window === "undefined") return DEFAULT_ABILITY_RESULTS;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Record<string, unknown>;
-      const keys: (keyof AbilityResults)[] = [
-        "lowerStrength",
-        "upperPush",
-        "upperPull",
-        "lowerBalance",
-        "endurance",
-      ];
-      const result: AbilityResults = { ...DEFAULT_ABILITY_RESULTS };
-      for (const k of keys) {
-        const v = parsed[k];
-        if (v != null && typeof v === "object") {
-          (result as Record<string, unknown>)[k] = v;
-        }
-      }
-      return result;
-    }
-  } catch {
-    // ignore
-  }
-  return DEFAULT_ABILITY_RESULTS;
+  return abilityResultsData;
 }
 
 export function saveAbilityResults(results: AbilityResults): void {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-  } catch {
-    // ignore
-  }
+  abilityResultsData = { ...results };
 }

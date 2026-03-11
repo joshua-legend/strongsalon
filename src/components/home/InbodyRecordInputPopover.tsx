@@ -122,7 +122,7 @@ export default function InbodyRecordInputPopover({
             {Array.from({ length: CYCLE_WEEKS + 1 }, (_, i) => (
               <div key={i} className="flex items-center gap-2">
                 <label className="flex-1 min-w-0 px-2 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-[11px] font-mono text-neutral-400 flex items-center">
-                  {i === 0 ? "시작" : `주 ${i}`} ({formatDateLabel(configuredAt, i)})
+                  {formatDateLabel(configuredAt, i)}
                 </label>
                 <input
                   type="number"

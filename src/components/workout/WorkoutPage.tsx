@@ -8,7 +8,6 @@ import WorkoutTopbar from "./WorkoutTopbar";
 import DateBox from "./DateBox";
 import CondBox from "./CondBox";
 import FreeArea from "./FreeArea";
-import CardioArea from "./CardioArea";
 
 export default function WorkoutPage() {
   const log = useWorkoutLog();
@@ -32,7 +31,7 @@ export default function WorkoutPage() {
     <div
       className="min-h-full flex flex-col"
       style={{
-        background: '#000',
+        background: "#000",
       }}
     >
       <WorkoutTopbar elapsedSec={log.elapsedSec} />
@@ -42,9 +41,12 @@ export default function WorkoutPage() {
           <div className="flex flex-col gap-3.5">
             <DateBox value={log.workoutDate} onChange={log.setWorkoutDate} />
             <CondBox value={log.condition} onChange={log.setCondition} />
-
             <FreeArea
               freeExercises={log.freeExercises}
+              orderedIds={log.orderedIds}
+              cardioEntries={log.cardioEntries}
+              onUpdateCardio={log.updateCardio}
+              onRemoveCardio={log.removeCardio}
               prData={log.prData}
               selectedFavNames={log.selectedFavNames}
               onToggleFav={log.toggleFav}
@@ -56,26 +58,21 @@ export default function WorkoutPage() {
               onRemove={log.removeFreeEx}
               onCheckPR={log.showPR}
             />
-            <CardioArea
-              entries={log.cardioEntries}
-              onUpdate={log.updateCardio}
-              onRemove={log.removeCardio}
-            />
-
             <button
               type="button"
               onClick={handleComplete}
               className="group relative w-full px-6 py-4 rounded-2xl font-black text-base uppercase italic -skew-x-12 text-white transition-all duration-300 ease-out hover:scale-[1.02] hover:brightness-110 hover:shadow-[0_0_28px_rgba(163,230,53,.6)] active:scale-[0.97] mt-2 flex items-center justify-center"
               style={{
-                background: '#a3e635',
-                boxShadow: '0 0 20px rgba(163,230,53,.55), 0 0 40px rgba(163,230,53,.2)',
-                textShadow: '0 1px 2px rgba(0,0,0,.2)',
+                background: "#a3e635",
+                boxShadow:
+                  "0 0 20px rgba(163,230,53,.55), 0 0 40px rgba(163,230,53,.2)",
+                textShadow: "0 1px 2px rgba(0,0,0,.2)",
               }}
             >
               <div className="absolute inset-0 bg-stripes opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-30" />
               <span className="skew-x-12 flex items-center gap-2">
                 <span>🔥</span>
-                <span>오늘도 끝냈다</span>
+                <span>Crushed it.</span>
               </span>
             </button>
           </div>

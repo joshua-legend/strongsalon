@@ -14,6 +14,7 @@ export function useFreeExercises(
 ) {
   const { showToast } = useToast();
   const [freeExercises, setFreeExercises] = useState<Record<string, FreeExercise>>({});
+  const [exerciseOrder, setExerciseOrder] = useState<string[]>([]);
 
   const selectedFavNames = new Set(Object.values(freeExercises).map((e) => e.name));
   const strengthComplete =
@@ -24,13 +25,18 @@ export function useFreeExercises(
     setFreeExercises((prev) => {
       const has = Object.values(prev).some((e) => e.name === name);
       if (has) {
-        const next = { ...prev };
-        const id = Object.keys(next).find((k) => next[k].name === name);
-        if (id) delete next[id];
-        return next;
+        const id = Object.keys(prev).find((k) => prev[k].name === name);
+        if (id) {
+          setExerciseOrder((o) => o.filter((i) => i !== id));
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        }
+        return prev;
       }
       const id = nextId('fx');
       const newSet: SetRecord = { id: nextId('fs'), weight: 0, reps: 0 };
+      setExerciseOrder((o) => [...o, id]);
       return { ...prev, [id]: { icon, name, sets: [newSet] } };
     });
   }, []);
@@ -40,6 +46,7 @@ export function useFreeExercises(
       if (Object.values(prev).some((e) => e.name === name)) return prev;
       const id = nextId('fx');
       const newSet: SetRecord = { id: nextId('fs'), weight: 0, reps: 0 };
+      setExerciseOrder((o) => [...o, id]);
       return { ...prev, [id]: { icon: '💪', name, sets: [newSet] } };
     });
   }, []);
@@ -92,6 +99,7 @@ export function useFreeExercises(
   );
 
   const removeFreeEx = useCallback((exId: string) => {
+    setExerciseOrder((o) => o.filter((i) => i !== exId));
     setFreeExercises((prev) => {
       const next = { ...prev };
       delete next[exId];
@@ -110,6 +118,7 @@ export function useFreeExercises(
         { id: nextId('fs'), weight: 95, reps: 5 },
         { id: nextId('fs'), weight: 100, reps: 3 },
       ];
+      if (!benchId) setExerciseOrder((o) => [...o, id]);
       return { ...p, [id]: { ...ex, sets } };
     });
     showToast('📋 이전 기록 복사 완료!');
@@ -117,10 +126,14 @@ export function useFreeExercises(
 
   const resetExercises = useCallback(() => {
     setFreeExercises({});
+    setExerciseOrder([]);
   }, []);
+
+  const orderedIds = exerciseOrder.filter((id) => id in freeExercises);
 
   return {
     freeExercises,
+    orderedIds,
     selectedFavNames,
     strengthComplete,
     toggleFav,

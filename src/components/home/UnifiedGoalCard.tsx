@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGoal } from "@/context/GoalContext";
 import { useInbody } from "@/context/InbodyContext";
 import type { CategoryId } from "@/types/categorySettings";
@@ -98,6 +98,12 @@ export default function UnifiedGoalCard() {
   const [showSetupSheet, setShowSetupSheet] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [chartDataVersion, setChartDataVersion] = useState(0);
+
+  useEffect(() => {
+    const handler = () => setChartDataVersion((v) => v + 1);
+    window.addEventListener("chartRefresh", handler);
+    return () => window.removeEventListener("chartRefresh", handler);
+  }, []);
 
   const defaultMainTab: MainTabId = goalSetting
     ? getMainTabFromGoalId(goalSetting.goalId)
@@ -281,32 +287,7 @@ export default function UnifiedGoalCard() {
     <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950 border border-neutral-800 relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-lime-500 opacity-5 blur-3xl rounded-full" />
       <div className="relative z-10 p-5 space-y-4">
-        {/* 1. 상단: 골 트래커 요약 */}
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-2">
-            <span className="font-bebas text-lg text-lime-400">
-              {Math.round(displayStats?.progressPct ?? progressPct)}%
-            </span>
-            <span className="text-[10px] text-neutral-500">진행</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            {comeback && (
-              <span className="px-2 py-0.5 rounded-lg bg-sky-400/20 text-sky-400 text-[10px] font-bold">
-                복귀!
-              </span>
-            )}
-            {streak >= 2 && (
-              <span className="px-2 py-0.5 rounded-lg bg-lime-400/20 text-lime-400 text-[10px] font-bold">
-                {streak}주 연속
-              </span>
-            )}
-            <span className="px-2 py-0.5 rounded-lg bg-neutral-800 text-neutral-400 text-[10px] font-bold">
-              W{currentWeek}
-            </span>
-          </div>
-        </div>
-
-        {/* 2. 메인 탭: 인바디 | 스트렝스 | 체력 */}
+        {/* 1. 메인 탭: 인바디 | 스트렝스 | 체력 */}
         <div className="rounded-full p-1 bg-neutral-900/80 border border-neutral-800 flex">
           {MAIN_TABS.map((tab) => (
             <button

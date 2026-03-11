@@ -32,7 +32,7 @@ export default function FreeExCard({
   };
 
   return (
-    <div className="rounded-2xl border overflow-hidden transition-all"
+    <div className="border overflow-hidden transition-all rounded-2xl"
       style={{ background: '#050505', borderColor: 'rgba(163,230,53,.35)', boxShadow: '0 0 12px rgba(163,230,53,.2)' }}>
       <FreeExCardHeader
         id={id} index={index} exercise={exercise} prWeight={prWeight}

@@ -9,13 +9,11 @@ import DayWorkoutDetail from "./DayWorkoutDetail";
 const typeColor: Record<string, string> = {
   pt: "rgb(249,115,22)",
   self: "rgb(163,230,53)",
-  both: "rgb(168,85,247)",
 };
 
 const typeLabel: Record<string, string> = {
   pt: "PT",
   self: "개인",
-  both: "PT+개인",
 };
 
 function formatDateKey(year: number, month: number, day: number): string {
@@ -39,10 +37,16 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
   const attendMap = useMemo(() => {
     const map: Record<string, string> = {};
     attendance.forEach((a) => {
-      map[a.date] = a.type;
+      if (a.type === "both") {
+        map[a.date] = "pt";
+      } else {
+        map[a.date] = a.type;
+      }
     });
     return map;
   }, [attendance]);
+
+  const selectedColor = "rgb(249,115,22)";
 
   return (
     <div className="card">
@@ -90,26 +94,40 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
           if (day === null) return <div key={i} className="h-9" />;
           const dateKey = formatDateKey(year, month, day);
           const type = attendMap[dateKey];
+          const color = type ? typeColor[type] : undefined;
           const today = isToday(year, month, day);
           const isSelected = selectedDate === dateKey;
+          const showTodayBorder = !selectedDate && today;
+
+          let bg: string;
+          let border: string;
+          let textColor: string;
+
+          if (isSelected) {
+            bg = color ? `${color}15` : "transparent";
+            border = `2px solid ${selectedColor}`;
+            textColor = color ?? "rgb(163,163,163)";
+          } else if (showTodayBorder) {
+            bg = color ? `${color}15` : "transparent";
+            border = `1.5px solid ${selectedColor}`;
+            textColor = color ?? "rgb(163,163,163)";
+          } else if (color) {
+            bg = `${color}15`;
+            border = "1px solid transparent";
+            textColor = color;
+          } else {
+            bg = "transparent";
+            border = "1px solid transparent";
+            textColor = "rgb(163,163,163)";
+          }
 
           return (
             <button
               key={i}
               type="button"
-              onClick={() => setSelectedDate((prev) => (prev === dateKey ? null : dateKey))}
+              onClick={() => setSelectedDate(dateKey)}
               className="h-9 rounded-lg flex flex-col items-center justify-center gap-0.5 text-[11px] relative w-full cursor-pointer active:scale-[0.97] transition-transform"
-              style={{
-                background: type ? `${typeColor[type]}15` : "transparent",
-                border: isSelected
-                  ? "2px solid rgb(249,115,22)"
-                  : today
-                    ? "1.5px solid rgb(249,115,22)"
-                    : type
-                      ? `1px solid ${typeColor[type]}30`
-                      : "1px solid transparent",
-                color: type ? typeColor[type] : "rgb(163,163,163)",
-              }}
+              style={{ background: bg, border, color: textColor }}
             >
               <span className="leading-none">{day}</span>
               {type && (

@@ -4,11 +4,10 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
   useCallback,
 } from "react";
 import type { UserProfile } from "@/types/profile";
-import { loadProfile, saveProfile } from "./useProfileStorage";
+import { mockProfile } from "@/data/mockUserData";
 
 interface ProfileContextValue {
   profile: UserProfile | null;
@@ -18,15 +17,12 @@ interface ProfileContextValue {
 const ProfileContext = createContext<ProfileContextValue | null>(null);
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const [profile, setProfileState] = useState<UserProfile | null>(null);
-
-  useEffect(() => {
-    setProfileState(loadProfile());
-  }, []);
+  const [profile, setProfileState] = useState<UserProfile | null>(
+    () => structuredClone(mockProfile)
+  );
 
   const setProfile = useCallback((p: UserProfile | null) => {
     setProfileState(p);
-    saveProfile(p);
   }, []);
 
   return (

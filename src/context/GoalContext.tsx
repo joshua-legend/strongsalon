@@ -4,13 +4,11 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
   useCallback,
 } from "react";
 import type { GoalSetting, GoalId } from "@/types/goalSetting";
 import type { ActiveQuest, WeekRecord } from "@/types/quest";
 import {
-  DEFAULT_CATEGORY_SETTINGS,
   DEFAULT_CATEGORY_SETTING,
   type CategoryId,
   type CategorySetting,
@@ -72,47 +70,10 @@ interface GoalContextValue {
 const GoalContext = createContext<GoalContextValue | null>(null);
 
 export function GoalProvider({ children }: { children: React.ReactNode }) {
-  const [goalSetting, setGoalSettingState] = useState<GoalSetting | null>(null);
-  const [activeQuest, setActiveQuestState] = useState<ActiveQuest | null>(null);
-  const [categorySettings, setCategorySettingsState] = useState<CategorySettings>(
-    () => (typeof window !== "undefined" ? loadCategorySettings() : DEFAULT_CATEGORY_SETTINGS)
-  );
-  const [primaryGoal, setPrimaryGoalState] = useState<GoalId | null>(() =>
-    typeof window !== "undefined" ? loadPrimaryGoal() : null
-  );
-
-  useEffect(() => {
-    const gs = loadGoalSetting();
-    const q = loadQuest();
-    let cats = loadCategorySettings();
-    let prim = loadPrimaryGoal();
-
-    if (gs && !prim) {
-      savePrimaryGoal(gs.goalId);
-      prim = gs.goalId;
-    }
-    if (gs && prim) {
-      const catId = goalIdToCategoryId(gs.goalId);
-      const existing = cats[catId];
-      if (!existing.isConfigured) {
-        const today = new Date().toISOString().slice(0, 10);
-        const migrated: CategorySetting = {
-          isConfigured: true,
-          configuredAt: today,
-          startValues: gs.startValues,
-          goal: gs.target,
-          autoPaces: gs.autoPaces,
-        };
-        saveCategorySetting(catId, migrated);
-        cats = loadCategorySettings();
-      }
-    }
-
-    setGoalSettingState(gs);
-    setActiveQuestState(q);
-    setCategorySettingsState(cats);
-    setPrimaryGoalState(prim);
-  }, []);
+  const [goalSetting, setGoalSettingState] = useState<GoalSetting | null>(() => loadGoalSetting());
+  const [activeQuest, setActiveQuestState] = useState<ActiveQuest | null>(() => loadQuest());
+  const [categorySettings, setCategorySettingsState] = useState<CategorySettings>(() => loadCategorySettings());
+  const [primaryGoal, setPrimaryGoalState] = useState<GoalId | null>(() => loadPrimaryGoal());
 
   const setGoalSetting = useCallback((g: GoalSetting | null) => {
     setGoalSettingState(g);

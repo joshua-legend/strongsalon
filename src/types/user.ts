@@ -21,6 +21,8 @@ export interface User {
   remainingSessions?: number;
   totalSessions?: number;
   nextPtDate?: string | null;
+  /** 다음 PT 예정 시간 (예: "14:00", "오후 2시") */
+  nextPtTime?: string | null;
 
   /** 퍼포먼스용 */
   level?: "NOVICE" | "INTERMEDIATE" | "ADVANCED";

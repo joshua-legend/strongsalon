@@ -34,6 +34,7 @@ export default function HomeTab() {
           remaining={ptRemaining}
           total={ptTotal}
           nextPtDate={user?.nextPtDate}
+          nextPtTime={user?.nextPtTime}
           trainerName={user?.trainerName}
         />
         <GymTicketCard daysLeft={membershipDaysLeft} expiryFormatted={membershipExpiryFmt} />

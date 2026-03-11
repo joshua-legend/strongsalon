@@ -65,6 +65,10 @@ export const FAV_CHIPS: { icon: string; name: string }[] = [
   { icon: '🦿', name: '아웃타이' },
   { icon: '🏋️', name: '파워레그프레스' },
   { icon: '🔥', name: '퍼팩트스쿼트' },
+  { icon: '🏋️', name: '스쿼트' },
+  { icon: '🏋️', name: '일반 스쿼트' },
+  { icon: '🏋️', name: '벤치프레스' },
+  { icon: '🏋️', name: '데드리프트' },
   { icon: '⬇️', name: '랫풀다운' },
   { icon: '💪', name: '롱풀' },
   { icon: '🚣', name: '시티드로우' },
@@ -82,11 +86,28 @@ export const FAV_CHIPS: { icon: string; name: string }[] = [
 ];
 
 /** 종류별 그룹 (토글용) */
-type ExerciseGroup =
-  | { label: string; icon: string; chips: { icon: string; name: string }[] }
-  | { label: string; icon: string; cardio: { type: 'run' | 'cycle' | 'row' | 'skierg'; label: string; emoji: string }[] };
+type ExerciseGroup = {
+  label: string;
+  icon: string;
+  chips?: { icon: string; name: string }[];
+  cardio?: { type: 'run' | 'cycle' | 'row' | 'skierg'; label: string; emoji: string }[];
+};
 
 export const EXERCISE_GROUPS: ExerciseGroup[] = [
+  {
+    label: '목표 종목',
+    icon: '🎯',
+    chips: [
+      { icon: '🏋️', name: '스쿼트' },
+      { icon: '🏋️', name: '벤치프레스' },
+      { icon: '🏋️', name: '데드리프트' },
+    ],
+    cardio: [
+      { type: 'run' as const, label: '런닝', emoji: '🏃' },
+      { type: 'row' as const, label: '로잉', emoji: '🚣' },
+      { type: 'skierg' as const, label: '스키에르그', emoji: '⛷️' },
+    ],
+  },
   {
     label: '하체',
     icon: '🦵',
@@ -98,6 +119,7 @@ export const EXERCISE_GROUPS: ExerciseGroup[] = [
       { icon: '🦿', name: '아웃타이' },
       { icon: '🏋️', name: '파워레그프레스' },
       { icon: '🔥', name: '퍼팩트스쿼트' },
+      { icon: '🏋️', name: '일반 스쿼트' },
     ],
   },
   {

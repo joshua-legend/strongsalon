@@ -4,34 +4,13 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
   useCallback,
   useMemo,
 } from "react";
 import type { InbodyRecord } from "@/types/workout";
+import { mockInbodyHistory } from "@/data/mockUserData";
 import { loadCategorySettings } from "./useCategoryStorage";
 import { appendChartPoint } from "./useChartDataStorage";
-
-const INBODY_HISTORY_KEY = "fitlog-inbody-history";
-
-function loadInbodyHistory(): InbodyRecord[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(INBODY_HISTORY_KEY);
-    if (raw) return JSON.parse(raw) as InbodyRecord[];
-  } catch {
-    // ignore
-  }
-  return [];
-}
-
-function saveInbodyHistory(records: InbodyRecord[]): void {
-  try {
-    localStorage.setItem(INBODY_HISTORY_KEY, JSON.stringify(records));
-  } catch {
-    // ignore
-  }
-}
 
 interface InbodyContextValue {
   inbodyHistory: InbodyRecord[];
@@ -42,22 +21,18 @@ interface InbodyContextValue {
 const InbodyContext = createContext<InbodyContextValue | null>(null);
 
 export function InbodyProvider({ children }: { children: React.ReactNode }) {
-  const [inbodyHistory, setInbodyHistory] = useState<InbodyRecord[]>([]);
+  const [inbodyHistory, setInbodyHistory] = useState<InbodyRecord[]>(
+    () => structuredClone(mockInbodyHistory)
+  );
 
   const load = useCallback(() => {
-    setInbodyHistory(loadInbodyHistory());
+    setInbodyHistory(structuredClone(mockInbodyHistory));
   }, []);
-
-  useEffect(() => {
-    load();
-  }, [load]);
 
   const addInbodyRecord = useCallback((record: InbodyRecord) => {
     setInbodyHistory((prev) => {
       const filtered = prev.filter((r) => r.date !== record.date);
-      const next = [...filtered, record].sort((a, b) => b.date.localeCompare(a.date));
-      saveInbodyHistory(next);
-      return next;
+      return [...filtered, record].sort((a, b) => b.date.localeCompare(a.date));
     });
 
     const categorySettings = loadCategorySettings();

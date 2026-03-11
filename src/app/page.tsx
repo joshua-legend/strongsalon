@@ -45,13 +45,15 @@ function TabContent() {
       <div style={{ display: activeTab === "home" ? "block" : "none" }}>
         <HomeTab />
       </div>
-      <div style={{ display: activeTab === "performance" ? "block" : "none" }}>
-        <PerformanceTab />
-      </div>
       <div style={{ display: activeTab === "stats" ? "block" : "none" }}>
         <StatsTab />
       </div>
-      <div style={{ display: activeTab === "exercise-info" ? "block" : "none" }}>
+      <div style={{ display: activeTab === "performance" ? "block" : "none" }}>
+        <PerformanceTab />
+      </div>
+      <div
+        style={{ display: activeTab === "exercise-info" ? "block" : "none" }}
+      >
         <ExerciseInfoTab />
       </div>
     </>

@@ -48,9 +48,6 @@ export default function StatGrid({ year, month }: StatGridProps) {
     <div className="grid grid-cols-2 gap-3">
       {cards.map((s, i) => (
         <div key={i} className="card relative overflow-hidden group">
-          <div className="absolute top-3 right-3 text-[20px] opacity-10 group-hover:opacity-20 transition-opacity">
-            {s.icon}
-          </div>
           <p className="card-label mb-2">
             {s.icon} {s.label}
           </p>

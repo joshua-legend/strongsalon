@@ -1,27 +1,21 @@
 import type { ChartDataPoint, ChartMetricKey } from "@/types/chartData";
 import type { CategoryId } from "@/types/categorySettings";
-
-const CHART_DATA_KEY = "fitlog-chart-data-history-v1";
+import { mockChartDataPoints } from "@/data/mockUserData";
 
 export type ChartDataHistory = Record<ChartMetricKey, ChartDataPoint[]>;
 
+let chartData: ChartDataHistory = structuredClone(mockChartDataPoints);
+
+export function resetChartData(): void {
+  chartData = structuredClone(mockChartDataPoints);
+}
+
 function loadChartDataHistory(): ChartDataHistory {
-  if (typeof window === "undefined") return {} as ChartDataHistory;
-  try {
-    const raw = localStorage.getItem(CHART_DATA_KEY);
-    if (!raw) return {} as ChartDataHistory;
-    return JSON.parse(raw) as ChartDataHistory;
-  } catch {
-    return {} as ChartDataHistory;
-  }
+  return chartData;
 }
 
 export function saveChartDataHistory(history: ChartDataHistory): void {
-  try {
-    localStorage.setItem(CHART_DATA_KEY, JSON.stringify(history));
-  } catch {
-    // ignore
-  }
+  chartData = history;
 }
 
 function daysSince(startDate: string, targetDate: string): number {

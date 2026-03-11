@@ -7,10 +7,11 @@ interface PtTicketCardProps {
   remaining: number;
   total: number;
   nextPtDate?: string | null;
+  nextPtTime?: string | null;
   trainerName?: string;
 }
 
-export default function PtTicketCard({ remaining, total, nextPtDate, trainerName }: PtTicketCardProps) {
+export default function PtTicketCard({ remaining, total, nextPtDate, nextPtTime, trainerName }: PtTicketCardProps) {
   return (
     <div
       className="rounded-2xl flex overflow-hidden relative group transition-all hover:shadow-[0_0_30px_rgba(0,229,255,.2)]"
@@ -69,7 +70,9 @@ export default function PtTicketCard({ remaining, total, nextPtDate, trainerName
                 Next Session
               </span>
               <span className="text-xs font-bold leading-none text-white">
-                {formatPtDate(nextPtDate)} · {trainerName ?? ""}
+                {formatPtDate(nextPtDate)}
+                {nextPtTime ? ` ${nextPtTime}` : ""}
+                {trainerName ? ` · ${trainerName}` : ""}
               </span>
             </div>
           </div>

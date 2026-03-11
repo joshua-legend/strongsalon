@@ -76,7 +76,7 @@ export default function CycleCompleteCard({
           className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-lime-400 text-black hover:brightness-110 transition-all"
         >
           <Plus className="w-4 h-4" />
-          같은 방향으로 4주 더
+          4주 연장
         </button>
         <button
           type="button"

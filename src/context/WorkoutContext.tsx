@@ -13,7 +13,6 @@ import type {
   DayPlan,
   PrescriptionDailyLog,
   WeeklyProgress,
-  PrescribedExercise,
   ExerciseLog,
   DayType,
 } from "@/types";
@@ -24,10 +23,6 @@ import {
   getSplitForTrainingDays,
   generateWorkout,
 } from "@/config/workoutPrescription";
-
-const DAILY_LOGS_KEY = "fitlog-daily-logs";
-const WEEKLY_PLAN_KEY = "fitlog-weekly-plan";
-const WEEKLY_PROGRESS_KEY = "fitlog-weekly-progress";
 
 function getWeekStart(date: Date): Date {
   const d = new Date(date);
@@ -43,46 +38,6 @@ function getWeekNumber(date: Date): number {
   const startOfYear = new Date(start.getFullYear(), 0, 1);
   const diff = start.getTime() - startOfYear.getTime();
   return Math.ceil(diff / (7 * 24 * 60 * 60 * 1000));
-}
-
-function loadDailyLogs(): Record<string, PrescriptionDailyLog> {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = localStorage.getItem(DAILY_LOGS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Record<string, PrescriptionDailyLog>;
-      return parsed;
-    }
-  } catch {
-    // ignore
-  }
-  return {};
-}
-
-function loadWeeklyPlan(): WeeklyPlan | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(WEEKLY_PLAN_KEY);
-    if (raw) {
-      return JSON.parse(raw) as WeeklyPlan;
-    }
-  } catch {
-    // ignore
-  }
-  return null;
-}
-
-function loadWeeklyProgress(): WeeklyProgress | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(WEEKLY_PROGRESS_KEY);
-    if (raw) {
-      return JSON.parse(raw) as WeeklyProgress;
-    }
-  } catch {
-    // ignore
-  }
-  return null;
 }
 
 function buildAbility1RMs(): Record<string, number> {
@@ -128,53 +83,16 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
   const [dailyLogs, setDailyLogsState] = useState<Record<string, PrescriptionDailyLog>>({});
   const [weeklyProgress, setWeeklyProgress] = useState<WeeklyProgress | null>(null);
 
-  useEffect(() => {
-    setDailyLogsState(loadDailyLogs());
-    setWeeklyPlan(loadWeeklyPlan());
-    setWeeklyProgress(loadWeeklyProgress());
-  }, []);
-
   const saveDailyLogs = useCallback((logs: Record<string, PrescriptionDailyLog>) => {
     setDailyLogsState(logs);
-    try {
-      localStorage.setItem(DAILY_LOGS_KEY, JSON.stringify(logs));
-    } catch {
-      // ignore
-    }
   }, []);
 
   const saveWeeklyPlan = useCallback((plan: WeeklyPlan | null) => {
     setWeeklyPlan(plan);
-    if (plan) {
-      try {
-        localStorage.setItem(WEEKLY_PLAN_KEY, JSON.stringify(plan));
-      } catch {
-        // ignore
-      }
-    } else {
-      try {
-        localStorage.removeItem(WEEKLY_PLAN_KEY);
-      } catch {
-        // ignore
-      }
-    }
   }, []);
 
   const saveWeeklyProgress = useCallback((progress: WeeklyProgress | null) => {
     setWeeklyProgress(progress);
-    if (progress) {
-      try {
-        localStorage.setItem(WEEKLY_PROGRESS_KEY, JSON.stringify(progress));
-      } catch {
-        // ignore
-      }
-    } else {
-      try {
-        localStorage.removeItem(WEEKLY_PROGRESS_KEY);
-      } catch {
-        // ignore
-      }
-    }
   }, []);
 
   const regenerateWeeklyPlan = useCallback(() => {
@@ -231,46 +149,10 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!profile || !goalSetting) return;
-    const trainingDays = [1, 3, 5];
-    const today = new Date();
-    const weekStart = getWeekStart(today);
-    const weekStartStr = weekStart.toISOString().split("T")[0];
-
-    const stored = loadWeeklyPlan();
-    const storedProgress = loadWeeklyProgress();
-
-    if (!stored || stored.startDate !== weekStartStr) {
+    if (!weeklyPlan) {
       regenerateWeeklyPlan();
-      return;
     }
-    if (!storedProgress || storedProgress.weekNumber !== stored.weekNumber) {
-      const totalTargetSets = stored.days.reduce(
-        (sum, d) =>
-          sum + d.exercises.reduce((s, e) => s + e.targetSets, 0),
-        0
-      );
-      const logs = loadDailyLogs();
-      const completedDays: number[] = [];
-      let totalCompletedSets = 0;
-      for (const [dateStr, log] of Object.entries(logs)) {
-        const d = new Date(dateStr);
-        if (d >= weekStart && d < new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000)) {
-          completedDays.push(d.getDay() || 7);
-          totalCompletedSets += log.totalCompletedSets;
-        }
-      }
-      const progress: WeeklyProgress = {
-        weekNumber: stored.weekNumber,
-        trainingDays,
-        completedDays,
-        totalTargetSets,
-        totalCompletedSets,
-        dayCompletionRate: trainingDays.length > 0 ? completedDays.length / trainingDays.length : 0,
-        setCompletionRate: totalTargetSets > 0 ? totalCompletedSets / totalTargetSets : 0,
-      };
-      saveWeeklyProgress(progress);
-    }
-  }, [profile, goalSetting, regenerateWeeklyPlan, saveWeeklyProgress]);
+  }, [profile, goalSetting, weeklyPlan, regenerateWeeklyPlan]);
 
   const getTodayPlan = useCallback((): DayPlan | null => {
     if (!profile || !weeklyPlan) return null;
