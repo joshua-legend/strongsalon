@@ -4,18 +4,39 @@ import { mockChartDataPoints } from "@/data/mockUserData";
 
 export type ChartDataHistory = Record<ChartMetricKey, ChartDataPoint[]>;
 
-let chartData: ChartDataHistory = structuredClone(mockChartDataPoints);
+const KEY_CHART = "strongsalon_chartData";
+
+function loadFromStorage(): ChartDataHistory {
+  if (typeof window === "undefined") return structuredClone(mockChartDataPoints);
+  try {
+    const raw = localStorage.getItem(KEY_CHART);
+    if (!raw) return structuredClone(mockChartDataPoints);
+    const parsed = JSON.parse(raw) as ChartDataHistory;
+    return parsed && typeof parsed === "object" ? parsed : structuredClone(mockChartDataPoints);
+  } catch {
+    return structuredClone(mockChartDataPoints);
+  }
+}
+
+function saveToStorage(history: ChartDataHistory): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(KEY_CHART, JSON.stringify(history));
+  } catch {
+    /* ignore */
+  }
+}
 
 export function resetChartData(): void {
-  chartData = structuredClone(mockChartDataPoints);
+  saveToStorage(structuredClone(mockChartDataPoints));
 }
 
 function loadChartDataHistory(): ChartDataHistory {
-  return chartData;
+  return loadFromStorage();
 }
 
 export function saveChartDataHistory(history: ChartDataHistory): void {
-  chartData = history;
+  saveToStorage(history);
 }
 
 function daysSince(startDate: string, targetDate: string): number {

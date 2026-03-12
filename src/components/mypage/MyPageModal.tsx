@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import { useProfile } from "@/context/ProfileContext";
+import { useAuth } from "@/context/AuthContext";
 
 interface MyPageModalProps {
   open: boolean;
@@ -19,8 +21,10 @@ function formatDate(iso: string): string {
 }
 
 export default function MyPageModal({ open, onClose }: MyPageModalProps) {
+  const router = useRouter();
   const { user, setUser } = useUser();
   const { profile, setProfile } = useProfile();
+  const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editHeight, setEditHeight] = useState("");
@@ -183,6 +187,17 @@ export default function MyPageModal({ open, onClose }: MyPageModalProps) {
               className="w-full mt-6 py-2.5 rounded-lg bg-lime-500 text-black font-bold text-sm hover:bg-lime-400 transition-colors"
             >
               수정하기
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                logout();
+                router.replace("/login");
+              }}
+              className="w-full mt-3 py-2.5 rounded-lg border border-neutral-600 text-neutral-400 text-sm hover:bg-neutral-800 transition-colors"
+            >
+              로그아웃
             </button>
           </>
         )}

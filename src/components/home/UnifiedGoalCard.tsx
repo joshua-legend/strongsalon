@@ -11,7 +11,7 @@ import CategorySetupSheet from "./CategorySetupSheet";
 import CycleCompleteCard from "./CycleCompleteCard";
 import CategoryResetConfirmModal from "./CategoryResetConfirmModal";
 import InbodyRecordInputPopover from "./InbodyRecordInputPopover";
-import { getChartPoints } from "@/context/useChartDataStorage";
+import { useChartData } from "@/context/ChartDataContext";
 import {
   getInbodyChartData,
   goalSettingToInbodyGoal,
@@ -95,10 +95,13 @@ export default function UnifiedGoalCard() {
     resetCategory,
   } = useGoal();
   const { inbodyHistory } = useInbody();
+  const { getChartPoints } = useChartData();
   const [showSetupSheet, setShowSetupSheet] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [chartDataVersion, setChartDataVersion] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => setMounted(true), []);
   useEffect(() => {
     const handler = () => setChartDataVersion((v) => v + 1);
     window.addEventListener("chartRefresh", handler);
@@ -376,7 +379,11 @@ export default function UnifiedGoalCard() {
 
         {/* 3. 탭별 PaceChart, CycleCompleteCard 또는 CategoryNotConfigured */}
         <div className="pt-2">
-          {isCycleComplete && catSetting?.goal ? (
+          {!mounted ? (
+            <div className="py-12 px-4 text-center">
+              <p className="text-sm text-neutral-500 mb-4">로딩 중...</p>
+            </div>
+          ) : isCycleComplete && catSetting?.goal ? (
             <CycleCompleteCard
               categoryId={categoryId}
               startValue={

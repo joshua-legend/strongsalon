@@ -1,7 +1,6 @@
 import type { AttendanceRecord } from "@/types";
 import { workoutHistory } from "@/data/workoutHistory";
 import type { DayWorkoutRecord } from "@/data/workoutHistory";
-import { getWorkoutRecordByDate } from "@/context/useWorkoutRecordStorage";
 
 const TARGET_DAYS = 22;
 
@@ -24,8 +23,10 @@ function parseCardioMinutes(value: string): number {
   return match ? safeNum(match[1]) : 0;
 }
 
-function getRecordForDate(date: string): DayWorkoutRecord | undefined {
-  return getWorkoutRecordByDate(date, workoutHistory);
+function getRecordForDate(date: string, userRecords: DayWorkoutRecord[]): DayWorkoutRecord | undefined {
+  const userRecord = userRecords.find((r) => r.date === date);
+  if (userRecord) return userRecord;
+  return workoutHistory.find((r) => r.date === date);
 }
 
 function calcVolume(record: DayWorkoutRecord): number {
@@ -62,7 +63,8 @@ export interface MonthlyStats {
 export function getMonthlyStats(
   year: number,
   month: number,
-  attendance: AttendanceRecord[]
+  attendance: AttendanceRecord[],
+  userRecords: DayWorkoutRecord[] = []
 ): MonthlyStats {
   const y = safeNum(year);
   const monthNum = safeNum(month) + 1;
@@ -80,7 +82,7 @@ export function getMonthlyStats(
   let totalVolume = 0;
   let totalMinutes = 0;
   monthRecords.forEach((r) => {
-    const record = getRecordForDate(r.date);
+    const record = getRecordForDate(r.date, userRecords);
     if (record) {
       totalVolume += calcVolume(record);
       totalMinutes += calcDurationMinutes(record);

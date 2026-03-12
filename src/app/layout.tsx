@@ -1,12 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Space_Mono } from "next/font/google";
 import "./globals.css";
-import { AppProvider } from "@/context/AppContext";
-import { UserProvider } from "@/context/UserContext";
-import { ProfileProvider } from "@/context/ProfileContext";
-import { GoalProvider } from "@/context/GoalContext";
-import { AttendanceProvider } from "@/context/AttendanceContext";
-import { InbodyProvider } from "@/context/InbodyContext";
+import Providers from "@/components/Providers";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -43,19 +38,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${bebasNeue.variable} ${spaceMono.variable}`}>
-        <AppProvider>
-          <UserProvider>
-          <ProfileProvider>
-            <GoalProvider>
-              <AttendanceProvider>
-                <InbodyProvider>
-                  {children}
-                </InbodyProvider>
-              </AttendanceProvider>
-            </GoalProvider>
-          </ProfileProvider>
-          </UserProvider>
-        </AppProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

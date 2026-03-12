@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AppShell from "@/components/shell/AppShell";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
 import { useProfile } from "@/context/ProfileContext";
 import { ToastProvider } from "@/components/ui/Toast";
 import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
@@ -9,7 +12,7 @@ import HomeTab from "@/components/home/HomeTab";
 import StatsTab from "@/components/stats/StatsTab";
 import PerformanceTab from "@/components/performance/PerformanceTab";
 import ExerciseInfoTab from "@/components/exercise-info/ExerciseInfoTab";
-import WorkoutPage from "@/components/workout/WorkoutPage";
+import WorkoutTabContent from "@/components/workout/WorkoutTabContent";
 
 export default function Page() {
   return (
@@ -20,7 +23,19 @@ export default function Page() {
 }
 
 function PageContent() {
+  const router = useRouter();
+  const { currentAccountId, ready } = useAuth();
   const { profile } = useProfile();
+
+  useEffect(() => {
+    if (ready && !currentAccountId) {
+      router.replace("/login");
+    }
+  }, [ready, currentAccountId, router]);
+
+  if (!ready || !currentAccountId) {
+    return null;
+  }
 
   const needsOnboarding = !profile;
   if (needsOnboarding) {
@@ -37,7 +52,7 @@ function TabContent() {
   const { activeTab, theme } = useApp();
 
   if (theme === "workout") {
-    return <WorkoutPage />;
+    return <WorkoutTabContent />;
   }
 
   return (

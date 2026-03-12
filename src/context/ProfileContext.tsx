@@ -1,13 +1,8 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useCallback } from "react";
 import type { UserProfile } from "@/types/profile";
-import { mockProfile } from "@/data/mockUserData";
+import { useAuth } from "./AuthContext";
 
 interface ProfileContextValue {
   profile: UserProfile | null;
@@ -17,12 +12,11 @@ interface ProfileContextValue {
 const ProfileContext = createContext<ProfileContextValue | null>(null);
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const [profile, setProfileState] = useState<UserProfile | null>(
-    () => structuredClone(mockProfile)
-  );
+  const { accountData } = useAuth();
+  const profile = accountData?.profile ?? null;
 
-  const setProfile = useCallback((p: UserProfile | null) => {
-    setProfileState(p);
+  const setProfile = useCallback((_p: UserProfile | null) => {
+    // 읽기 전용: accountData에서 제공
   }, []);
 
   return (

@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import type { AttendanceRecord, AttendType } from "@/types";
 import { attendance as staticAttendance } from "@/data/attendance";
+import { useAuth } from "./AuthContext";
 
 function mergeAttendance(
   staticData: AttendanceRecord[],
@@ -34,7 +35,10 @@ interface AttendanceContextValue {
 const AttendanceContext = createContext<AttendanceContextValue | null>(null);
 
 export function AttendanceProvider({ children }: { children: React.ReactNode }) {
+  const { accountData } = useAuth();
   const [userCheckIns, setUserCheckIns] = useState<AttendanceRecord[]>([]);
+
+  const baseAttendance = accountData?.attendance ?? staticAttendance;
 
   const addAttendance = useCallback((date: string, type: AttendType = "self") => {
     setUserCheckIns((prev) => {
@@ -46,13 +50,13 @@ export function AttendanceProvider({ children }: { children: React.ReactNode }) 
 
   const isCheckedIn = useCallback(
     (date: string) => {
-      const merged = mergeAttendance(staticAttendance, userCheckIns);
+      const merged = mergeAttendance(baseAttendance, userCheckIns);
       return merged.some((a) => a.date === date);
     },
-    [userCheckIns]
+    [baseAttendance, userCheckIns]
   );
 
-  const attendance = mergeAttendance(staticAttendance, userCheckIns);
+  const attendance = mergeAttendance(baseAttendance, userCheckIns);
 
   return (
     <AttendanceContext.Provider

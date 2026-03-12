@@ -2,16 +2,36 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Hand } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { useWorkoutLog } from "./useWorkoutLog";
-import DateBox from "./DateBox";
 import CondBox from "./CondBox";
+import DateBox from "./DateBox";
 import FreeArea from "./FreeArea";
+import { getMockRecommendation } from "@/data/workoutRecommendation";
 
 export default function WorkoutPage() {
   const log = useWorkoutLog();
-  const { exitWorkout } = useApp();
+  const { exitWorkout, setSelectedSplit } = useApp();
   const [overlayExiting, setOverlayExiting] = useState(false);
+  const [mode, setMode] = useState<"recommended" | "free">("free");
+
+  const [recommendationReason, setRecommendationReason] = useState<string | null>(null);
+
+  const handleModeSelect = (m: "recommended" | "free") => {
+    if (m === mode) return;
+    setMode(m);
+    if (m === "free") {
+      setSelectedSplit(null);
+      log.resetExercises();
+      setRecommendationReason(null);
+    } else {
+      setSelectedSplit(null);
+      const rec = getMockRecommendation();
+      log.loadFromRecommendation(rec);
+      setRecommendationReason(rec.reason ?? null);
+    }
+  };
 
   const handleButtonClick = () => {
     if (log.workoutPhase === "ready") {
@@ -43,7 +63,124 @@ export default function WorkoutPage() {
       <div className="flex-1 overflow-auto px-4 py-4">
         <div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
           <div className="flex flex-col gap-3.5">
+            {/* 운동 날짜 선택 */}
             <DateBox value={log.workoutDate} onChange={log.setWorkoutDate} />
+
+            {/* 모드 선택: 추천 / 자유 */}
+            <div className="relative flex gap-2.5">
+              <motion.button
+                type="button"
+                onClick={() => handleModeSelect("recommended")}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`relative flex-1 py-4 px-5 rounded-2xl overflow-hidden flex items-center justify-center gap-2 transition-all duration-300 ${
+                  mode === "recommended"
+                    ? "text-black"
+                    : "text-neutral-500 hover:text-neutral-300"
+                }`}
+                style={
+                  mode === "recommended"
+                    ? {
+                        background: "linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%)",
+                        border: "1px solid rgba(251,146,60,.8)",
+                        boxShadow:
+                          "0 0 30px rgba(249,115,22,.5), 0 0 60px rgba(249,115,22,.2), inset 0 1px 0 rgba(255,255,255,.4)",
+                      }
+                    : {
+                        background: "rgba(255,255,255,.03)",
+                        border: "1px solid rgba(255,255,255,.08)",
+                      }
+                }
+              >
+                {mode === "recommended" && (
+                  <motion.div
+                    className="absolute inset-0"
+                    initial={false}
+                    animate={{
+                      background: [
+                        "radial-gradient(circle at 20% 30%, rgba(255,255,255,.5) 0%, transparent 50%)",
+                        "radial-gradient(circle at 80% 70%, rgba(255,255,255,.3) 0%, transparent 50%)",
+                        "radial-gradient(circle at 20% 30%, rgba(255,255,255,.5) 0%, transparent 50%)",
+                      ],
+                    }}
+                    transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+                  />
+                )}
+                <span className="relative z-10 text-xl leading-none">✨</span>
+                <span className="relative z-10 font-semibold text-[15px] tracking-tight">추천</span>
+              </motion.button>
+
+              <motion.button
+                type="button"
+                onClick={() => handleModeSelect("free")}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`relative flex-1 py-4 px-5 rounded-2xl overflow-hidden flex items-center justify-center gap-2 transition-all duration-300 ${
+                  mode === "free"
+                    ? "text-white"
+                    : "text-neutral-500 hover:text-neutral-300"
+                }`}
+                style={
+                  mode === "free"
+                    ? {
+                        background: "linear-gradient(135deg, rgba(34,211,238,.25) 0%, rgba(6,182,212,.2) 50%, rgba(8,145,178,.15) 100%)",
+                        border: "1px solid rgba(34,211,238,.5)",
+                        boxShadow:
+                          "0 0 25px rgba(34,211,238,.25), 0 0 50px rgba(34,211,238,.1), inset 0 1px 0 rgba(255,255,255,.15)",
+                      }
+                    : {
+                        background: "rgba(255,255,255,.03)",
+                        border: "1px solid rgba(255,255,255,.08)",
+                      }
+                }
+              >
+                {mode === "free" && (
+                  <motion.div
+                    className="absolute inset-0 opacity-60"
+                    initial={false}
+                    animate={{
+                      opacity: [0.4, 0.7, 0.4],
+                    }}
+                    transition={{ duration: 2.5, repeat: Infinity, repeatType: "reverse" }}
+                    style={{
+                      background: "radial-gradient(circle at 50% 50%, rgba(34,211,238,.2) 0%, transparent 70%)",
+                    }}
+                  />
+                )}
+                <Hand
+                  className={`relative z-10 w-5 h-5 shrink-0 ${mode === "free" ? "text-cyan-300" : "text-neutral-500"}`}
+                  strokeWidth={2}
+                />
+                <span className="relative z-10 font-semibold text-[15px] tracking-tight">자유</span>
+              </motion.button>
+            </div>
+
+            {/* 추천 모드 시 추천 이유 */}
+            <AnimatePresence mode="wait">
+              {mode === "recommended" && recommendationReason && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div
+                    className="rounded-2xl px-4 py-3 mt-1"
+                    style={{
+                      background: "linear-gradient(180deg, rgba(249,115,22,.06) 0%, rgba(249,115,22,.02) 50%, transparent 100%)",
+                      border: "1px solid rgba(249,115,22,.2)",
+                      boxShadow: "0 0 30px rgba(249,115,22,.08)",
+                    }}
+                  >
+                    <p className="text-[12px] text-orange-300/90">
+                      ✨ {recommendationReason}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <CondBox value={log.condition} onChange={log.setCondition} />
             <FreeArea
               freeExercises={log.freeExercises}

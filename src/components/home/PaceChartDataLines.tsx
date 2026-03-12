@@ -1,5 +1,6 @@
 import type { WeekRecord } from "@/types/quest";
 import type { ChartDataPoint } from "@/types/chartData";
+import { pointsToSmoothPath } from "@/utils/chartPathUtils";
 
 interface PaceChartDataLinesProps {
   startValue: number;
@@ -39,32 +40,35 @@ export default function PaceChartDataLines({
   const x0 = useDayMode ? toXDay(0) : toX(0);
   const xEnd = useDayMode ? toXDay(maxDays) : toX(maxWeek);
 
-  const idealPacePoints = useDayMode
+  const idealPacePoints: { x: number; y: number }[] = useDayMode
     ? Array.from({ length: Math.ceil(maxDays / 7) + 1 }, (_, i) => {
         const day = Math.min(i * 7, maxDays);
         const val = startValue + (targetValue - startValue) * (day / maxDays);
-        return `${toXDay(day)},${toY(val)}`;
-      }).join(" ")
+        return { x: toXDay(day), y: toY(val) };
+      })
     : Array.from({ length: maxWeek + 1 }, (_, i) => {
         const val = startValue + (targetValue - startValue) * (i / maxWeek);
-        return `${toX(i)},${toY(val)}`;
-      }).join(" ");
+        return { x: toX(i), y: toY(val) };
+      });
 
-  const actualPoints = useDayMode
+  const actualPoints: { x: number; y: number }[] | null = useDayMode
     ? dataPoints!.length > 0
       ? [
-          `${toXDay(0)},${toY(startValue)}`,
+          { x: toXDay(0), y: toY(startValue) },
           ...dataPoints!
             .sort((a, b) => a.day - b.day)
-            .map((p) => `${toXDay(p.day)},${toY(p.value)}`),
-        ].join(" ")
+            .map((p) => ({ x: toXDay(p.day), y: toY(p.value) })),
+        ]
       : null
     : history.length > 0
       ? [
-          `${toX(0)},${toY(startValue)}`,
-          ...history.map((h) => `${toX(h.week)},${toY(h.recorded)}`),
-        ].join(" ")
+          { x: toX(0), y: toY(startValue) },
+          ...history.map((h) => ({ x: toX(h.week), y: toY(h.recorded) })),
+        ]
       : null;
+
+  const idealPathD = pointsToSmoothPath(idealPacePoints);
+  const actualPathD = actualPoints ? pointsToSmoothPath(actualPoints) : null;
 
   const pointsToRender = useDayMode ? dataPoints! : history;
   const getPointCoords = useDayMode
@@ -136,17 +140,25 @@ export default function PaceChartDataLines({
         );
       })()}
 
-      {/* Ideal pace line (dashed) */}
-      <polyline
-        points={idealPacePoints}
-        fill="none" stroke={lineRgb} strokeWidth={2} strokeDasharray="6 4" opacity={0.9}
+      {/* Ideal pace line (dashed, smooth curve) */}
+      <path
+        d={idealPathD}
+        fill="none"
+        stroke={lineRgb}
+        strokeWidth={2}
+        strokeDasharray="6 4"
+        opacity={0.9}
       />
 
-      {/* Actual recorded line */}
-      {actualPoints && (
-        <polyline
-          points={actualPoints}
-          fill="none" stroke={lineColor} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
+      {/* Actual recorded line (smooth curve) */}
+      {actualPathD && (
+        <path
+          d={actualPathD}
+          fill="none"
+          stroke={lineColor}
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       )}
 

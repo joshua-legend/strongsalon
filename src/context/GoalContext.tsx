@@ -5,6 +5,7 @@ import React, {
   useContext,
   useState,
   useCallback,
+  useEffect,
 } from "react";
 import type { GoalSetting, GoalId } from "@/types/goalSetting";
 import type { ActiveQuest, WeekRecord } from "@/types/quest";
@@ -15,15 +16,9 @@ import {
   type CategorySettings,
 } from "@/types/categorySettings";
 import type { ChartMetricKey } from "@/types/chartData";
-import { loadGoalSetting, saveGoalSetting, loadQuest, saveQuest } from "./useGoalStorage";
-import {
-  loadCategorySettings,
-  saveCategorySetting,
-  loadPrimaryGoal,
-  savePrimaryGoal,
-} from "./useCategoryStorage";
-import { appendChartPoint, addStartPoint, clearChartDataForCategory } from "./useChartDataStorage";
-import { appendCycleRecord } from "./useCycleHistoryStorage";
+import { useChartData } from "./ChartDataContext";
+import { useAuth } from "./AuthContext";
+import { DEFAULT_CATEGORY_SETTINGS } from "@/types/categorySettings";
 
 function goalIdToCategoryId(goalId: GoalId): CategoryId {
   if (goalId === "diet") return "inbody";
@@ -70,30 +65,63 @@ interface GoalContextValue {
 const GoalContext = createContext<GoalContextValue | null>(null);
 
 export function GoalProvider({ children }: { children: React.ReactNode }) {
-  const [goalSetting, setGoalSettingState] = useState<GoalSetting | null>(() => loadGoalSetting());
-  const [activeQuest, setActiveQuestState] = useState<ActiveQuest | null>(() => loadQuest());
-  const [categorySettings, setCategorySettingsState] = useState<CategorySettings>(() => loadCategorySettings());
-  const [primaryGoal, setPrimaryGoalState] = useState<GoalId | null>(() => loadPrimaryGoal());
+  const { accountData, updateAccountData } = useAuth();
+  const { appendChartPoint, addStartPoint, clearChartDataForCategory } = useChartData();
+  const [goalSetting, setGoalSettingState] = useState<GoalSetting | null>(null);
+  const [activeQuest, setActiveQuestState] = useState<ActiveQuest | null>(null);
+  const [categorySettings, setCategorySettingsState] = useState<CategorySettings>(() =>
+    structuredClone(DEFAULT_CATEGORY_SETTINGS)
+  );
+  const [primaryGoal, setPrimaryGoalState] = useState<GoalId | null>(null);
 
-  const setGoalSetting = useCallback((g: GoalSetting | null) => {
-    setGoalSettingState(g);
-    saveGoalSetting(g);
-  }, []);
+  useEffect(() => {
+    if (accountData) {
+      setGoalSettingState(accountData.goalSetting);
+      setActiveQuestState(accountData.activeQuest);
+      setCategorySettingsState(structuredClone(accountData.categorySettings));
+      setPrimaryGoalState(accountData.primaryGoal);
+    } else {
+      setGoalSettingState(null);
+      setActiveQuestState(null);
+      setCategorySettingsState(structuredClone(DEFAULT_CATEGORY_SETTINGS));
+      setPrimaryGoalState(null);
+    }
+  }, [accountData]);
 
-  const setActiveQuest = useCallback((q: ActiveQuest | null) => {
-    setActiveQuestState(q);
-    saveQuest(q);
-  }, []);
+  const setGoalSetting = useCallback(
+    (g: GoalSetting | null) => {
+      setGoalSettingState(g);
+      updateAccountData((prev) => ({ ...prev, goalSetting: g }));
+    },
+    [updateAccountData]
+  );
 
-  const setCategorySetting = useCallback((id: CategoryId, setting: CategorySetting) => {
-    saveCategorySetting(id, setting);
-    setCategorySettingsState(loadCategorySettings());
-  }, []);
+  const setActiveQuest = useCallback(
+    (q: ActiveQuest | null) => {
+      setActiveQuestState(q);
+      updateAccountData((prev) => ({ ...prev, activeQuest: q }));
+    },
+    [updateAccountData]
+  );
 
-  const setPrimaryGoal = useCallback((g: GoalId | null) => {
-    setPrimaryGoalState(g);
-    savePrimaryGoal(g);
-  }, []);
+  const setCategorySetting = useCallback(
+    (id: CategoryId, setting: CategorySetting) => {
+      setCategorySettingsState((prev) => ({ ...prev, [id]: setting }));
+      updateAccountData((prev) => ({
+        ...prev,
+        categorySettings: { ...prev.categorySettings, [id]: setting },
+      }));
+    },
+    [updateAccountData]
+  );
+
+  const setPrimaryGoal = useCallback(
+    (g: GoalId | null) => {
+      setPrimaryGoalState(g);
+      updateAccountData((prev) => ({ ...prev, primaryGoal: g }));
+    },
+    [updateAccountData]
+  );
 
   const isGoalReached = (() => {
     if (!goalSetting || !activeQuest) return false;
@@ -262,13 +290,20 @@ export function GoalProvider({ children }: { children: React.ReactNode }) {
       const cat = categorySettings[categoryId];
       if (cat?.isConfigured && cycleRecord && cat.configuredAt) {
         const endedAt = new Date().toISOString().slice(0, 10);
-        appendCycleRecord(categoryId, {
+        const record = {
           configuredAt: cat.configuredAt,
           endedAt,
           startValues: cat.startValues,
           goal: cat.goal,
           finalValue: cycleRecord.finalValue,
           achieved: cycleRecord.achieved,
+        };
+        updateAccountData((prev) => {
+          const list = [...(prev.cycleHistory[categoryId] ?? []), record];
+          return {
+            ...prev,
+            cycleHistory: { ...prev.cycleHistory, [categoryId]: list },
+          };
         });
       }
       clearChartDataForCategory(categoryId);
@@ -279,7 +314,7 @@ export function GoalProvider({ children }: { children: React.ReactNode }) {
         setPrimaryGoal(null);
       }
     },
-    [categorySettings, primaryGoal, setCategorySetting, setGoalSetting, setActiveQuest, setPrimaryGoal]
+    [categorySettings, primaryGoal, setCategorySetting, setGoalSetting, setActiveQuest, setPrimaryGoal, updateAccountData]
   );
 
   const resetGoal = useCallback(() => {

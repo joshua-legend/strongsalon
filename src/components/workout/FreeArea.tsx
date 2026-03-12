@@ -142,22 +142,22 @@ export default function FreeArea({
                     </div>
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <label className="flex items-center gap-1.5 font-bebas text-[10px] tracking-wider" style={{ color: '#fff' }}>
-                        <span>km</span>
                         <input
                           type="number" min={0} step={0.1} value={e.distanceKm || ''}
                           onChange={(ev) => onUpdateCardio(e.id, { distanceKm: parseFloat(ev.target.value) || 0 })}
                           className="w-16 rounded-xl py-1.5 px-2 font-bebas text-[13px] outline-none text-white transition-all focus:shadow-[0_0_16px_rgba(0,229,255,.3)] focus:border-cyan-400/60 border"
                           style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,.07)' }}
                         />
+                        <span>km</span>
                       </label>
                       <label className="flex items-center gap-1.5 font-bebas text-[10px] tracking-wider" style={{ color: '#fff' }}>
-                        <span>분</span>
                         <input
                           type="number" min={0} step={1} value={e.timeMinutes || ''}
                           onChange={(ev) => onUpdateCardio(e.id, { timeMinutes: parseInt(ev.target.value, 10) || 0 })}
                           className="w-14 rounded-xl py-1.5 px-2 font-bebas text-[13px] outline-none text-white transition-all focus:shadow-[0_0_16px_rgba(0,229,255,.3)] focus:border-cyan-400/60 border"
                           style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,.07)' }}
                         />
+                        <span>분</span>
                       </label>
                     </div>
                     <button type="button" onClick={() => onRemoveCardio(e.id)}

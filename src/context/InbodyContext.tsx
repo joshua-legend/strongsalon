@@ -6,11 +6,11 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  useEffect,
 } from "react";
 import type { InbodyRecord } from "@/types/workout";
-import { mockInbodyHistory } from "@/data/mockUserData";
-import { loadCategorySettings } from "./useCategoryStorage";
-import { appendChartPoint } from "./useChartDataStorage";
+import { useChartData } from "./ChartDataContext";
+import { useAuth } from "./AuthContext";
 
 interface InbodyContextValue {
   inbodyHistory: InbodyRecord[];
@@ -21,44 +21,58 @@ interface InbodyContextValue {
 const InbodyContext = createContext<InbodyContextValue | null>(null);
 
 export function InbodyProvider({ children }: { children: React.ReactNode }) {
-  const [inbodyHistory, setInbodyHistory] = useState<InbodyRecord[]>(
-    () => structuredClone(mockInbodyHistory)
-  );
+  const { accountData, updateAccountData } = useAuth();
+  const { appendChartPoint } = useChartData();
+  const [inbodyHistory, setInbodyHistory] = useState<InbodyRecord[]>(() => []);
+
+  useEffect(() => {
+    if (accountData) {
+      setInbodyHistory(structuredClone(accountData.inbodyHistory));
+    } else {
+      setInbodyHistory([]);
+    }
+  }, [accountData]);
 
   const load = useCallback(() => {
-    setInbodyHistory(structuredClone(mockInbodyHistory));
-  }, []);
+    setInbodyHistory(accountData ? structuredClone(accountData.inbodyHistory) : []);
+  }, [accountData]);
 
-  const addInbodyRecord = useCallback((record: InbodyRecord) => {
-    setInbodyHistory((prev) => {
-      const filtered = prev.filter((r) => r.date !== record.date);
-      return [...filtered, record].sort((a, b) => b.date.localeCompare(a.date));
-    });
+  const addInbodyRecord = useCallback(
+    (record: InbodyRecord) => {
+      if (!accountData) return;
+      const next = (() => {
+        const prev = accountData.inbodyHistory;
+        const filtered = prev.filter((r) => r.date !== record.date);
+        return [...filtered, record].sort((a, b) => b.date.localeCompare(a.date));
+      })();
+      setInbodyHistory(next);
+      updateAccountData((prev) => ({ ...prev, inbodyHistory: next }));
 
-    const categorySettings = loadCategorySettings();
-    const configuredAt = categorySettings.inbody?.configuredAt;
-    if (configuredAt) {
-      appendChartPoint(
-        "inbody.weight",
-        { day: 0, value: record.weight, date: record.date },
-        configuredAt
-      );
-      if (record.muscleMass > 0) {
+      const configuredAt = accountData.categorySettings?.inbody?.configuredAt;
+      if (configuredAt) {
         appendChartPoint(
-          "inbody.muscleMass",
-          { day: 0, value: record.muscleMass, date: record.date },
+          "inbody.weight",
+          { day: 0, value: record.weight, date: record.date },
           configuredAt
         );
+        if (record.muscleMass > 0) {
+          appendChartPoint(
+            "inbody.muscleMass",
+            { day: 0, value: record.muscleMass, date: record.date },
+            configuredAt
+          );
+        }
+        if (record.fatPercent >= 0) {
+          appendChartPoint(
+            "inbody.fatPercent",
+            { day: 0, value: record.fatPercent, date: record.date },
+            configuredAt
+          );
+        }
       }
-      if (record.fatPercent >= 0) {
-        appendChartPoint(
-          "inbody.fatPercent",
-          { day: 0, value: record.fatPercent, date: record.date },
-          configuredAt
-        );
-      }
-    }
-  }, []);
+    },
+    [appendChartPoint, accountData, updateAccountData]
+  );
 
   const value = useMemo(
     () => ({

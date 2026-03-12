@@ -1,13 +1,8 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useCallback } from "react";
 import type { User } from "@/types/user";
-import { mockUser } from "@/data/mockUserData";
+import { useAuth } from "./AuthContext";
 
 interface UserContextValue {
   user: User | null;
@@ -17,10 +12,11 @@ interface UserContextValue {
 const UserContext = createContext<UserContextValue | null>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUserState] = useState<User | null>(mockUser);
+  const { accountData } = useAuth();
+  const user = accountData?.user ?? null;
 
-  const setUser = useCallback((u: User | null) => {
-    setUserState(u);
+  const setUser = useCallback((_u: User | null) => {
+    // 읽기 전용: accountData에서 제공
   }, []);
 
   return (

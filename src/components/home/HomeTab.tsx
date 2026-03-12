@@ -1,17 +1,29 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { useGoal } from "@/context/GoalContext";
+import { useApp } from "@/context/AppContext";
 import { getDaysLeft, formatExpiry } from "@/utils/homeUtils";
 import QuestStartCard from "./QuestStartCard";
 import QuestGoalTracker from "./QuestGoalTracker";
 import GoalCompleteCard from "./GoalCompleteCard";
 import PtTicketCard from "./PtTicketCard";
 import GymTicketCard from "./GymTicketCard";
+import CategorySetupSheet from "./CategorySetupSheet";
 
 export default function HomeTab() {
   const { user } = useUser();
-  const { goalSetting, activeQuest, isGoalReached } = useGoal();
+  const { goalSetting, activeQuest, isGoalReached, primaryGoal } = useGoal();
+  const { openStrengthSetup, setOpenStrengthSetup } = useApp();
+  const [showStrengthSheet, setShowStrengthSheet] = useState(false);
+
+  useEffect(() => {
+    if (openStrengthSetup) {
+      setShowStrengthSheet(true);
+      setOpenStrengthSetup(false);
+    }
+  }, [openStrengthSetup, setOpenStrengthSetup]);
 
   const ptRemaining = user?.remainingSessions ?? 0;
   const ptTotal = user?.totalSessions ?? 0;
@@ -28,6 +40,14 @@ export default function HomeTab() {
   return (
     <div className="px-4 py-4 space-y-4">
       {questSection}
+
+      <CategorySetupSheet
+        open={showStrengthSheet}
+        onClose={() => setShowStrengthSheet(false)}
+        categoryId="strength"
+        primaryGoal={primaryGoal}
+        onComplete={() => setShowStrengthSheet(false)}
+      />
 
       <div className="space-y-3 pb-4">
         <PtTicketCard

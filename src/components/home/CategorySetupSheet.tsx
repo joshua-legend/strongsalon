@@ -4,7 +4,8 @@ import { createPortal } from "react-dom";
 import { useGoal } from "@/context/GoalContext";
 import { useProfile } from "@/context/ProfileContext";
 import { useInbody } from "@/context/InbodyContext";
-import { addStartPoint } from "@/context/useChartDataStorage";
+import { useChartData } from "@/context/ChartDataContext";
+import type { ChartMetricKey } from "@/types/chartData";
 import type { CategoryId } from "@/types/categorySettings";
 import type { CategorySetting } from "@/types/categorySettings";
 import type { GoalId } from "@/types/goalSetting";
@@ -27,6 +28,7 @@ interface CategorySetupSheetProps {
 }
 
 function addStartPointsForCategory(
+  addStartPoint: (key: ChartMetricKey, value: number, configuredAt: string) => void,
   categoryId: CategoryId,
   setting: CategorySetting,
   metric?: StrengthChartOption | CardioChartOption | InbodyChartOption
@@ -93,11 +95,12 @@ export default function CategorySetupSheet({
   const { setCategorySetting, categorySettings } = useGoal();
   const { profile } = useProfile();
   const { addInbodyRecord } = useInbody();
+  const { addStartPoint } = useChartData();
   const existingSetting = categorySettings[categoryId];
 
   const handleComplete = (setting: CategorySetting) => {
     setCategorySetting(categoryId, setting);
-    addStartPointsForCategory(categoryId, setting, metric);
+    addStartPointsForCategory(addStartPoint, categoryId, setting, metric);
     if (categoryId === "inbody" && setting.configuredAt && setting.startValues) {
       const { weight, muscleMass, fatPercent } = setting.startValues;
       if (typeof weight === "number" && typeof muscleMass === "number" && typeof fatPercent === "number") {

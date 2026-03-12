@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Plus } from "lucide-react";
-import { appendChartPoint } from "@/context/useChartDataStorage";
+import { useChartData } from "@/context/ChartDataContext";
 import type { InbodyChartOption } from "@/utils/goalChartData";
 import { CYCLE_WEEKS } from "@/utils/chartConstants";
 
@@ -47,6 +47,7 @@ export default function InbodyRecordInputPopover({
   existingValues = {},
   onRecorded,
 }: InbodyRecordInputPopoverProps) {
+  const { appendChartPoint } = useChartData();
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<Record<number, number>>(() => ({
     0: existingValues[0] ?? 0,

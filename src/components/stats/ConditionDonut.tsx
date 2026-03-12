@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { workoutHistory } from '@/data/workoutHistory';
 import type { WorkoutConditionValue } from '@/data/workoutHistory';
-import { getUserWorkoutRecords } from '@/context/useWorkoutRecordStorage';
+import { useWorkoutRecords } from '@/context/WorkoutRecordContext';
 
 const CONDITION_META: { value: WorkoutConditionValue; emoji: string; label: string; color: string; score: number }[] = [
   { value: '불타', emoji: '🔥', label: '불타', color: '#f97316', score: 5 },
@@ -17,11 +17,12 @@ const R = 52;
 const CIRC = 2 * Math.PI * R;
 
 export default function ConditionDonut() {
+  const { records } = useWorkoutRecords();
   const { data, avg, total } = useMemo(() => {
     const counts: Record<string, number> = {};
     CONDITION_META.forEach((c) => { counts[c.value] = 0; });
 
-    const allRecords = [...workoutHistory, ...getUserWorkoutRecords()];
+    const allRecords = [...workoutHistory, ...records];
     const seen = new Set<string>();
     for (const r of allRecords) {
       if (seen.has(r.date)) continue;
@@ -46,7 +47,7 @@ export default function ConditionDonut() {
     }
 
     return { data, avg: avgScore, total };
-  }, []);
+  }, [records]);
 
   if (total === 0) {
     return (

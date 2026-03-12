@@ -32,3 +32,12 @@ export interface GoalSetting {
   target: GoalTarget;
   autoPaces: Record<string, AutoPace> | null;
 }
+
+export interface CycleRecord {
+  configuredAt: string;
+  endedAt: string;
+  startValues: Record<string, number> | null;
+  goal: GoalTarget | null;
+  finalValue: number;
+  achieved: boolean;
+}

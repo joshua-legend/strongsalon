@@ -1,17 +1,20 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { WorkoutCondition, CardioEntry, CardioType, SetRecord } from '@/types';
 import { useToast } from '@/components/ui/Toast';
 import { useWorkoutSession } from './useWorkoutSession';
 import { useFreeExercises } from './useFreeExercises';
-import { loadCategorySettings } from '@/context/useCategoryStorage';
-import { appendChartPoint } from '@/context/useChartDataStorage';
+import { useChartData } from '@/context/ChartDataContext';
 import { useAttendance } from '@/context/AttendanceContext';
-import { appendWorkoutRecord } from '@/context/useWorkoutRecordStorage';
+import { useWorkoutRecords } from '@/context/WorkoutRecordContext';
 import type { DayWorkoutRecord } from '@/data/workoutHistory';
+import { workoutHistory } from '@/data/workoutHistory';
 import { estimate1RM } from '@/utils/estimate1RM';
 import type { ChartMetricKey } from '@/types/chartData';
+import { useApp } from '@/context/AppContext';
+import { useGoal } from '@/context/GoalContext';
+import { SPLIT_PRESETS } from '@/data/workoutPresets';
 
 function nextId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -71,6 +74,10 @@ export type WorkoutPhase = 'ready' | 'inProgress' | 'completed';
 export function useWorkoutLog() {
   const { showToast } = useToast();
   const { addAttendance } = useAttendance();
+  const { appendChartPoint } = useChartData();
+  const { selectedSplit } = useApp();
+  const { categorySettings } = useGoal();
+  const { appendWorkoutRecord, getLastRecordForExercise, getUserWorkoutRecords } = useWorkoutRecords();
   const [workoutPhase, setWorkoutPhase] = useState<WorkoutPhase>('ready');
   const [completedElapsedSec, setCompletedElapsedSec] = useState(0);
   const [workoutDate, setWorkoutDate] = useState(() => new Date().toISOString().split('T')[0]);
@@ -78,10 +85,35 @@ export function useWorkoutLog() {
   const [cardioEntries, setCardioEntries] = useState<CardioEntry[]>([]);
   const [prData] = useState<Record<string, number>>({});
 
+  const strength1RM = (() => {
+    const sv = categorySettings.strength?.startValues;
+    if (!sv) return { squat: 0, bench: 0, deadlift: 0 };
+    return {
+      squat: sv.squat ?? 0,
+      bench: sv.bench ?? 0,
+      deadlift: sv.deadlift ?? 0,
+    };
+  })();
+
+  const autoFillOptions = {
+    getLastRecord: (name: string) =>
+      getLastRecordForExercise(name, [...getUserWorkoutRecords(), ...workoutHistory]),
+    getStrength1RM: () => strength1RM,
+  };
+
   const { elapsedSec, prBadge, showPR, resetSession, formatElapsed } = useWorkoutSession(
     workoutPhase === 'inProgress'
   );
-  const exercises = useFreeExercises(prData, showPR);
+  const exercises = useFreeExercises(prData, showPR, autoFillOptions);
+
+  useEffect(() => {
+    if (selectedSplit && exercises.loadPreset) {
+      const preset = SPLIT_PRESETS.find((p) => p.id === selectedSplit);
+      if (preset && strength1RM.squat + strength1RM.bench + strength1RM.deadlift > 0) {
+        exercises.loadPreset(preset.exercises, strength1RM);
+      }
+    }
+  }, [selectedSplit]);
 
   const startWorkout = useCallback(() => {
     setWorkoutPhase('inProgress');
@@ -127,8 +159,6 @@ export function useWorkoutLog() {
     const date = workoutDate;
 
     // chartDataHistory 저장
-    const categorySettings = loadCategorySettings();
-
     // 스트렝스: 3대 1RM 추정 → strength.squat/bench/deadlift/total
     const strengthPoints: Record<string, number> = { squat: 0, bench: 0, deadlift: 0 };
     for (const ex of 근력) {
@@ -141,7 +171,7 @@ export function useWorkoutLog() {
       if (best1RM > strengthPoints[metric]) strengthPoints[metric] = best1RM;
     }
     const total1RM = strengthPoints.squat + strengthPoints.bench + strengthPoints.deadlift;
-    const strengthConfiguredAt = categorySettings.strength?.configuredAt;
+    const strengthConfiguredAt = categorySettings?.strength?.configuredAt;
     if (strengthConfiguredAt) {
       if (strengthPoints.squat > 0)
         appendChartPoint('strength.squat', { day: 0, value: strengthPoints.squat, date }, strengthConfiguredAt);
@@ -164,7 +194,7 @@ export function useWorkoutLog() {
     }
     const pacesArr = Object.values(fitnessPaces).filter((p) => p > 0);
     const totalPace = pacesArr.length > 0 ? pacesArr.reduce((a, b) => a + b, 0) / pacesArr.length : 0;
-    const fitnessConfiguredAt = categorySettings.fitness?.configuredAt;
+    const fitnessConfiguredAt = categorySettings?.fitness?.configuredAt;
     if (fitnessConfiguredAt) {
       if (fitnessPaces.running > 0)
         appendChartPoint('fitness.running', { day: 0, value: fitnessPaces.running, date }, fitnessConfiguredAt);
@@ -204,7 +234,7 @@ export function useWorkoutLog() {
     setCompletedElapsedSec(elapsedSec);
     setWorkoutPhase('completed');
     showToast('✅ 오운완! 챌린지 +1회 🥕');
-  }, [exercises.freeExercises, cardioEntries, workoutDate, showToast, addAttendance, elapsedSec]);
+  }, [exercises.freeExercises, cardioEntries, workoutDate, showToast, addAttendance, elapsedSec, categorySettings, appendChartPoint, appendWorkoutRecord]);
 
   const addCardio = useCallback((type: CardioType) => {
     setCardioEntries((prev) => [

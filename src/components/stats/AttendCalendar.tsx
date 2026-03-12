@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useAttendance } from "@/context/AttendanceContext";
 import { workoutHistory } from "@/data/workoutHistory";
-import { getWorkoutRecordByDate } from "@/context/useWorkoutRecordStorage";
+import { useWorkoutRecords } from "@/context/WorkoutRecordContext";
 import { getMonthGrid, getWeekDays, isToday } from "@/utils/calendar";
 import DayWorkoutDetail from "./DayWorkoutDetail";
 
@@ -31,6 +31,7 @@ interface AttendCalendarProps {
 export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }: AttendCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const { attendance } = useAttendance();
+  const { getWorkoutRecordByDate } = useWorkoutRecords();
 
   const grid = useMemo(() => getMonthGrid(year, month), [year, month]);
   const dayNames = getWeekDays();

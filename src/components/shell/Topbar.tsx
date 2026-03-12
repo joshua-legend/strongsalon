@@ -2,77 +2,20 @@
 
 import { useState } from "react";
 import { useUser } from "@/context/UserContext";
-import { useGoal } from "@/context/GoalContext";
+import { useAuth } from "@/context/AuthContext";
 import MyPageModal from "@/components/mypage/MyPageModal";
-import { appendChartPoint } from "@/context/useChartDataStorage";
-import { CYCLE_WEEKS, CYCLE_DAYS } from "@/utils/chartConstants";
-import type { CategorySetting } from "@/types/categorySettings";
-
-function getDateForDay(configuredAt: string, day: number): string {
-  const d = new Date(configuredAt);
-  d.setDate(d.getDate() + day);
-  return d.toISOString().slice(0, 10);
-}
-
-function randomBetween(min: number, max: number): number {
-  return Math.round((min + Math.random() * (max - min)) * 10) / 10;
-}
 
 export default function Topbar() {
   const { user } = useUser();
-  const { categorySettings, setCategorySetting } = useGoal();
+  const { currentAccountId, accountData } = useAuth();
   const [showMyPage, setShowMyPage] = useState(false);
 
   const handleTestClick = () => {
-    const strength = categorySettings.strength;
-    let configuredAt = strength?.configuredAt ?? null;
-
-    if (!configuredAt) {
-      const today = new Date().toISOString().slice(0, 10);
-      const endDate = new Date(today);
-      endDate.setDate(endDate.getDate() + 28);
-      const startVal = 100;
-      const targetVal = 120;
-      const newSetting: CategorySetting = {
-        isConfigured: true,
-        configuredAt: today,
-        startValues: { squat: startVal, bench: 90, deadlift: 120, total: 310 },
-        goal: {
-          metric: "squat",
-          startValue: startVal,
-          targetValue: targetVal,
-          weeklyDelta: (targetVal - startVal) / CYCLE_WEEKS,
-          estimatedWeeks: CYCLE_WEEKS,
-          totalWeeks: CYCLE_WEEKS,
-        },
-        autoPaces: {
-          squat: { start: startVal, target: targetVal, weeklyDelta: 5 },
-          bench: { start: 90, target: 100, weeklyDelta: 2.5 },
-          deadlift: { start: 120, target: 135, weeklyDelta: 3.75 },
-        },
-        cycleWeeks: CYCLE_WEEKS,
-        cycleEndDate: endDate.toISOString().slice(0, 10),
-      };
-      setCategorySetting("strength", newSetting);
-      configuredAt = today;
-    }
-
-    const startVal = strength?.autoPaces?.squat?.start ?? strength?.startValues?.squat ?? 100;
-    const targetVal = strength?.autoPaces?.squat?.target ?? strength?.goal?.targetValue ?? 120;
-    const minVal = Math.min(startVal, targetVal) - 10;
-    const maxVal = Math.max(startVal, targetVal) + 10;
-
-    for (let d = 0; d <= CYCLE_DAYS; d++) {
-      const date = getDateForDay(configuredAt!, d);
-      const value = randomBetween(minVal, maxVal);
-      appendChartPoint(
-        "strength.squat",
-        { day: d, value, date },
-        configuredAt!
-      );
-    }
-
-    window.dispatchEvent(new CustomEvent("chartRefresh"));
+    const payload = {
+      currentAccountId,
+      accountData: accountData ?? null,
+    };
+    console.log("[현재 유저 전체 데이터]", payload);
   };
 
   return (
