@@ -243,6 +243,15 @@ export function useWorkoutLog() {
     ]);
   }, []);
 
+  /** 유산소 토글: 이미 있으면 제거, 없으면 추가 */
+  const toggleCardio = useCallback((type: CardioType) => {
+    setCardioEntries((prev) => {
+      const exists = prev.some((e) => e.type === type);
+      if (exists) return prev.filter((e) => e.type !== type);
+      return [...prev, { id: nextId('cardio'), type, distanceKm: 0, timeMinutes: 0, checked: false }];
+    });
+  }, []);
+
   const updateCardio = useCallback(
     (id: string, patch: Partial<Pick<CardioEntry, 'distanceKm' | 'timeMinutes'>>) => {
       setCardioEntries((prev) => prev.map((e) => (e.id === id ? { ...e, ...patch } : e)));
@@ -282,6 +291,7 @@ export function useWorkoutLog() {
     clearAll,
     completeWorkout,
     addCardio,
+    toggleCardio,
     updateCardio,
     removeCardio,
     toggleCardioCheck,

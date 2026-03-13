@@ -21,7 +21,7 @@ interface FreeAreaProps {
   prData: Record<string, number>;
   selectedFavNames: Set<string>;
   onToggleFav: (icon: string, name: string) => void;
-  onAddCardio: (type: 'run' | 'cycle' | 'row' | 'skierg') => void;
+  onToggleCardio: (type: 'run' | 'cycle' | 'row' | 'skierg') => void;
   onAddSet: (exId: string) => void;
   onCopyLastSet: (exId: string) => void;
   onDeleteSet: (exId: string, setId: string) => void;
@@ -42,7 +42,7 @@ export default function FreeArea({
   prData,
   selectedFavNames,
   onToggleFav,
-  onAddCardio,
+  onToggleCardio,
   onAddSet,
   onCopyLastSet,
   onDeleteSet,
@@ -59,7 +59,8 @@ export default function FreeArea({
       <AddExerciseCard
         selectedNames={selectedFavNames}
         onToggleFav={onToggleFav}
-        onAddCardio={onAddCardio}
+        cardioTypes={cardioEntries.map((e) => e.type)}
+        onToggleCardio={onToggleCardio}
       />
 
       {totalCount > 0 && (

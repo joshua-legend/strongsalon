@@ -48,18 +48,6 @@ export default function Topbar() {
 
         {/* Right icons */}
         <div className="flex items-center gap-2">
-          {/* Bell */}
-          <button
-            className="relative w-9 h-9 flex items-center justify-center rounded-full"
-            style={{ background: "#0a0a0a", border: "1px solid rgba(255,255,255,.06)" }}
-          >
-            <span className="text-[16px]">🔔</span>
-            <span
-              className="absolute top-1 right-1 w-2 h-2 rounded-full bg-lime-400 animate-pulse"
-              style={{ boxShadow: "0 0 6px #a3e635, 0 0 12px rgba(163,230,53,.4)" }}
-            />
-          </button>
-
           {/* Avatar */}
           <button
             type="button"

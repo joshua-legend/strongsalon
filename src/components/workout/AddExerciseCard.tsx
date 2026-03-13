@@ -9,13 +9,15 @@ import type { CardioType } from '@/types';
 interface AddExerciseCardProps {
   selectedNames: Set<string>;
   onToggleFav: (icon: string, name: string) => void;
-  onAddCardio: (type: CardioType) => void;
+  cardioTypes: CardioType[];
+  onToggleCardio: (type: CardioType) => void;
 }
 
 export default function AddExerciseCard({
   selectedNames,
   onToggleFav,
-  onAddCardio,
+  cardioTypes,
+  onToggleCardio,
 }: AddExerciseCardProps) {
   const [openGroup, setOpenGroup] = useState<number | null>(0);
 
@@ -151,23 +153,35 @@ export default function AddExerciseCard({
                         );
                       })}
                     {hasCardio &&
-                      group.cardio!.map(({ type, label, emoji }) => (
-                        <button
-                          key={type}
-                          type="button"
-                          onClick={() => onAddCardio(type)}
-                          className="flex items-center gap-2 py-2 px-4 rounded-xl font-bebas text-[11px] tracking-wider transition-all whitespace-nowrap hover:scale-[1.02] active:scale-[0.98]"
-                          style={{
-                            border: '1px solid rgba(0,229,255,.4)',
-                            background: 'rgba(0,229,255,.08)',
-                            color: '#00e5ff',
-                            boxShadow: '0 0 12px rgba(0,229,255,.2)',
-                          }}
-                        >
-                          <span className="text-sm">{emoji}</span>
-                          <span>+ {label}</span>
-                        </button>
-                      ))}
+                      group.cardio!.map(({ type, label, emoji }) => {
+                        const active = cardioTypes.includes(type);
+                        return (
+                          <button
+                            key={type}
+                            type="button"
+                            onClick={() => onToggleCardio(type)}
+                            className="flex items-center gap-2 py-2 px-4 rounded-xl font-bebas text-[11px] tracking-wider transition-all whitespace-nowrap hover:scale-[1.02] active:scale-[0.98]"
+                            style={
+                              active
+                                ? {
+                                    border: '1px solid rgba(0,229,255,.6)',
+                                    background: 'rgba(0,229,255,.18)',
+                                    color: '#00e5ff',
+                                    boxShadow: '0 0 12px rgba(0,229,255,.35)',
+                                  }
+                                : {
+                                    border: '1px solid rgba(0,229,255,.4)',
+                                    background: 'rgba(0,229,255,.08)',
+                                    color: '#00e5ff',
+                                    boxShadow: '0 0 12px rgba(0,229,255,.2)',
+                                  }
+                            }
+                          >
+                            <span className="text-sm">{emoji}</span>
+                            <span>{active ? '✓ ' : '+ '}{label}</span>
+                          </button>
+                        );
+                      })}
                   </div>
                 )}
               </div>

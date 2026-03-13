@@ -161,6 +161,7 @@ input {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
 /* 로그인/회원가입 등 독립 페이지 스크롤 (body overflow:hidden 대응) */
