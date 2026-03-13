@@ -28,11 +28,16 @@ export default function CategoryChips({ value, onChange }: CategoryChipsProps) {
           <button
             key={c}
             onClick={() => onChange(c)}
-            className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
+            className={`shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors border ${
               isActive
-                ? "bg-lime-400 text-black border border-lime-400 shadow-[0_0_10px_rgba(163,230,53,0.3)]"
-                : "bg-neutral-900 text-neutral-500 border border-neutral-800 hover:text-neutral-300"
+                ? "shadow-[0_0_10px_rgba(163,230,53,0.3)]"
+                : "bg-[var(--bg-card)] border-[var(--border-light)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-main)]"
             }`}
+            style={
+              isActive
+                ? { backgroundColor: "var(--accent-main)", color: "var(--accent-text)", borderColor: "var(--accent-main)" }
+                : { color: "var(--text-sub)" }
+            }
           >
             {c}
           </button>

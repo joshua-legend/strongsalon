@@ -15,52 +15,52 @@ export default function InBodyView() {
   return (
     <div className="space-y-4">
       {/* LatestInbodyCard */}
-      <div className="rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800 p-5">
+      <div className="rounded-2xl overflow-hidden bg-[var(--bg-card)] border border-[var(--border-light)] p-5">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+          <span className="text-[10px] font-bold text-[var(--text-sub)] uppercase tracking-widest">
             최근 측정
           </span>
           <button
             type="button"
             onClick={() => setShowInput(true)}
-            className="text-xs text-lime-400 hover:text-lime-300"
+            className="text-xs text-[var(--accent-main)] hover:opacity-80"
           >
             + 추가
           </button>
         </div>
         {latest ? (
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3">
-              <div className="text-[10px] text-neutral-500 mb-1">체중</div>
-              <div className="font-mono text-lg text-white">{latest.weight} kg</div>
+            <div className="rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] p-3">
+              <div className="text-[10px] text-[var(--text-sub)] mb-1">체중</div>
+              <div className="font-mono text-lg text-[var(--text-main)]">{latest.weight} kg</div>
             </div>
-            <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3">
-              <div className="text-[10px] text-neutral-500 mb-1">골격근량</div>
-              <div className="font-mono text-lg text-white">{latest.muscleMass} kg</div>
+            <div className="rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] p-3">
+              <div className="text-[10px] text-[var(--text-sub)] mb-1">골격근량</div>
+              <div className="font-mono text-lg text-[var(--text-main)]">{latest.muscleMass} kg</div>
             </div>
-            <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3">
-              <div className="text-[10px] text-neutral-500 mb-1">체지방량</div>
-              <div className="font-mono text-lg text-white">{latest.fatMass} kg</div>
+            <div className="rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] p-3">
+              <div className="text-[10px] text-[var(--text-sub)] mb-1">체지방량</div>
+              <div className="font-mono text-lg text-[var(--text-main)]">{latest.fatMass} kg</div>
             </div>
-            <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3">
-              <div className="text-[10px] text-neutral-500 mb-1">체지방률</div>
-              <div className="font-mono text-lg text-white">{latest.fatPercent}%</div>
+            <div className="rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] p-3">
+              <div className="text-[10px] text-[var(--text-sub)] mb-1">체지방률</div>
+              <div className="font-mono text-lg text-[var(--text-main)]">{latest.fatPercent}%</div>
             </div>
             {latest.bmi != null && (
-              <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3">
-                <div className="text-[10px] text-neutral-500 mb-1">BMI</div>
-                <div className="font-mono text-lg text-white">{latest.bmi}</div>
+              <div className="rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] p-3">
+                <div className="text-[10px] text-[var(--text-sub)] mb-1">BMI</div>
+                <div className="font-mono text-lg text-[var(--text-main)]">{latest.bmi}</div>
               </div>
             )}
             {latest.bmr != null && (
-              <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3">
-                <div className="text-[10px] text-neutral-500 mb-1">기초대사량</div>
-                <div className="font-mono text-lg text-white">{latest.bmr} kcal</div>
+              <div className="rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] p-3">
+                <div className="text-[10px] text-[var(--text-sub)] mb-1">기초대사량</div>
+                <div className="font-mono text-lg text-[var(--text-main)]">{latest.bmr} kcal</div>
               </div>
             )}
           </div>
         ) : (
-          <div className="py-8 text-center text-xs text-neutral-600">
+          <div className="py-8 text-center text-xs text-[var(--text-sub)]">
             아직 인바디 기록이 없습니다
           </div>
         )}
@@ -68,8 +68,8 @@ export default function InBodyView() {
 
       {/* InbodyChangeCard */}
       {latest && prev && (
-        <div className="rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800 p-5">
-          <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">
+        <div className="rounded-2xl overflow-hidden bg-[var(--bg-card)] border border-[var(--border-light)] p-5">
+          <div className="text-[10px] font-bold text-[var(--text-sub)] uppercase tracking-widest mb-3">
             이전 대비 변화
           </div>
           <div className="flex flex-wrap gap-4 text-sm">
@@ -107,12 +107,12 @@ export default function InBodyView() {
       )}
 
       {/* InbodyHistoryList */}
-      <div className="rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800 p-5">
-        <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">
+      <div className="rounded-2xl overflow-hidden bg-[var(--bg-card)] border border-[var(--border-light)] p-5">
+        <div className="text-[10px] font-bold text-[var(--text-sub)] uppercase tracking-widest mb-3">
           측정 기록
         </div>
         {inbodyHistory.length === 0 ? (
-          <div className="py-6 text-center text-xs text-neutral-600">
+          <div className="py-6 text-center text-xs text-[var(--text-sub)]">
             기록이 없습니다
           </div>
         ) : (
@@ -120,10 +120,10 @@ export default function InBodyView() {
             {inbodyHistory.map((r) => (
               <div
                 key={r.date}
-                className="flex justify-between items-center py-2 border-b border-neutral-800 last:border-0"
+                className="flex justify-between items-center py-2 border-b border-[var(--border-light)] last:border-0"
               >
-                <span className="text-xs text-neutral-500">{r.date}</span>
-                <span className="font-mono text-sm text-white">
+                <span className="text-xs text-[var(--text-sub)]">{r.date}</span>
+                <span className="font-mono text-sm text-[var(--text-main)]">
                   {r.weight}kg · 근육{r.muscleMass} · 지방{r.fatPercent}%
                 </span>
               </div>
@@ -150,7 +150,7 @@ function ChangeItem({
 }) {
   const diff = curr - prev;
   const isGood = invert ? diff <= 0 : diff >= 0;
-  const color = diff === 0 ? "text-neutral-500" : isGood ? "text-lime-400" : "text-orange-400";
+  const color = diff === 0 ? "text-[var(--text-sub)]" : isGood ? "text-[var(--accent-main)]" : "text-orange-400";
   const sign = diff > 0 ? "+" : "";
   return (
     <span className={color}>

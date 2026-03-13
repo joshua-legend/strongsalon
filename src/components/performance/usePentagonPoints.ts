@@ -67,7 +67,7 @@ export function usePentagonPoints(
     const cat = ABILITY_CATEGORIES[i];
     const dot = pentagonPoint(cx, cy, maxRadius * ((s ?? 0) / 100), i);
     const outer = pentagonPoint(cx, cy, maxRadius, i);
-    const label = pentagonPoint(cx, cy, maxRadius + 18, i);
+    const label = pentagonPoint(cx, cy, maxRadius + 35, i);
     return {
       index: i,
       score: s,

@@ -25,7 +25,7 @@ export default function AddExerciseCard({
     <div
       className="rounded-2xl overflow-hidden relative"
       style={{
-        background: '#050505',
+        background: 'var(--bg-body)',
         border: '1px solid rgba(163,230,53,.35)',
         boxShadow: '0 0 20px rgba(163,230,53,.12), 0 0 40px rgba(163,230,53,.04)',
       }}
@@ -34,7 +34,7 @@ export default function AddExerciseCard({
       <div
         className="absolute left-0 top-0 bottom-0 w-1"
         style={{
-          background: '#a3e635',
+          background: 'var(--accent-main)',
           boxShadow: '0 0 10px rgba(163,230,53,.6), 0 0 20px rgba(163,230,53,.3)',
         }}
       />
@@ -43,7 +43,7 @@ export default function AddExerciseCard({
       <div
         className="relative pl-5 pr-5 py-4"
         style={{
-          background: 'linear-gradient(90deg, rgba(163,230,53,.06) 0%, transparent 100%)',
+          background: 'linear-gradient(90deg, var(--accent-bg) 0%, transparent 100%)',
           borderBottom: '1px solid rgba(255,255,255,.04)',
         }}
       >
@@ -51,21 +51,21 @@ export default function AddExerciseCard({
           <span
             className="flex items-center justify-center w-8 h-8 rounded-xl"
             style={{
-              background: 'rgba(163,230,53,.15)',
+              background: 'var(--accent-bg)',
               border: '1px solid rgba(163,230,53,.35)',
               boxShadow: '0 0 12px rgba(163,230,53,.2)',
             }}
           >
-            <Plus className="w-4 h-4" style={{ color: '#a3e635' }} strokeWidth={2.5} />
+            <Plus className="w-4 h-4 text-[var(--accent-main)]" strokeWidth={2.5} />
           </span>
           <div>
             <h3
-              className="font-bebas text-[18px] leading-none tracking-wider text-white"
+              className="font-bebas text-[18px] leading-none tracking-wider text-[var(--text-main)]"
               style={{ textShadow: '0 0 12px rgba(163,230,53,.5), 0 0 28px rgba(163,230,53,.2)' }}
             >
               운동 종목 추가
             </h3>
-            <p className="font-bebas text-[10px] mt-0.5 tracking-wider" style={{ color: 'rgba(255,255,255,.6)' }}>
+            <p className="font-bebas text-[10px] mt-0.5 tracking-wider text-[var(--text-sub)]">
               카테고리별로 선택
             </p>
           </div>
@@ -93,7 +93,7 @@ export default function AddExerciseCard({
                 <button
                   type="button"
                   onClick={() => setOpenGroup(isOpen ? null : idx)}
-                  className="w-full flex items-center justify-between px-4 py-3 font-bebas text-[13px] tracking-wider text-white transition-all hover:bg-white/3"
+                  className="w-full flex items-center justify-between px-4 py-3 font-bebas text-[13px] tracking-wider text-[var(--text-main)] transition-all duration-300 hover:bg-[var(--bg-card-hover)] active:scale-[0.98]"
                 >
                   <span className="flex items-center gap-2.5">
                     <span className="text-lg" style={{ filter: `drop-shadow(0 0 6px ${accentColor}60)` }}>
@@ -131,21 +131,11 @@ export default function AddExerciseCard({
                             key={name}
                             type="button"
                             onClick={() => onToggleFav(icon, name)}
-                            className="flex items-center gap-2 py-2 px-3.5 rounded-xl font-bebas text-[11px] tracking-wider transition-all whitespace-nowrap hover:scale-[1.02] active:scale-[0.98]"
-                            style={
+                            className={`flex items-center gap-2 py-2 px-3.5 rounded-xl font-bebas text-[11px] tracking-wider transition-all duration-300 whitespace-nowrap hover:scale-[1.02] active:scale-95 ${
                               active
-                                ? {
-                                    border: '1px solid rgba(163,230,53,.5)',
-                                    background: 'rgba(163,230,53,.12)',
-                                    color: '#a3e635',
-                                    boxShadow: '0 0 12px rgba(163,230,53,.25)',
-                                  }
-                                : {
-                                    border: '1px solid rgba(255,255,255,.08)',
-                                    background: 'rgba(255,255,255,.03)',
-                                    color: 'rgba(255,255,255,.9)',
-                                  }
-                            }
+                                ? "border border-[var(--accent-main)]/50 bg-[var(--accent-bg)] text-[var(--accent-main)] shadow-[0_0_12px_rgba(163,230,53,.25)]"
+                                : "border border-[var(--border-light)] bg-[var(--bg-card)] text-[var(--text-main)]"
+                            }`}
                           >
                             <span className="text-xs">{icon}</span>
                             <span>{name}</span>

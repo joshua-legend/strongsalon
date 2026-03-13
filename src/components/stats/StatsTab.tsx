@@ -38,17 +38,23 @@ export default function StatsTab() {
 
   return (
     <div className="px-4 py-4 flex flex-col gap-4">
-      <div className="fade-up fade-in-4">
+      <section className="space-y-3 fade-up fade-in-4">
+        <h2 className="text-xs font-semibold tracking-wider uppercase transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
+          Attendance Calendar
+        </h2>
         <AttendCalendar
           year={safeYear}
           month={safeMonth}
           onPrevMonth={onPrevMonth}
           onNextMonth={onNextMonth}
         />
-      </div>
-      <div className="fade-up fade-in-1">
+      </section>
+      <section className="space-y-3 fade-up fade-in-1">
+        <h2 className="text-xs font-semibold tracking-wider uppercase transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
+          Monthly Stats
+        </h2>
         <StatGrid year={safeYear} month={safeMonth} />
-      </div>
+      </section>
       <div className="fade-up fade-in-3">
         <ConditionDonut />
       </div>

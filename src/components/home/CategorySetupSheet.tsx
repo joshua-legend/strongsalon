@@ -128,7 +128,7 @@ export default function CategorySetupSheet({
       onClick={onClose}
     >
       <div
-        className="relative z-[10000] w-full max-w-[min(100vw,28rem)] min-w-0 rounded-t-2xl bg-neutral-950 border border-neutral-800 p-5 pb-8 max-h-[85vh] overflow-y-auto overflow-x-hidden box-border"
+        className="relative z-[10000] w-full max-w-[min(100vw,28rem)] min-w-0 rounded-t-2xl bg-[var(--bg-body)] border border-[var(--border-light)] p-5 pb-8 max-h-[85vh] overflow-y-auto overflow-x-hidden box-border"
         onClick={(e) => e.stopPropagation()}
       >
         {categoryId === "inbody" && metric && ["fatPercent", "muscleMass", "weight"].includes(metric) && (

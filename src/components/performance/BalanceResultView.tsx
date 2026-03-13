@@ -21,7 +21,7 @@ export default function BalanceResultView({
 
   return (
     <div className="px-4 py-6 flex flex-col min-h-[60vh]">
-      <h2 className="font-bebas text-xl text-center text-white mb-6">
+      <h2 className="font-bebas text-xl font-bold text-center mb-6" style={{ color: "var(--text-main)" }}>
         {category.icon} {category.label}
       </h2>
 
@@ -32,38 +32,40 @@ export default function BalanceResultView({
         >
           {result.grade}
         </div>
-        <p className="font-mono text-sm text-neutral-500 mt-4">점수: {result.score} / 100</p>
+        <p className="font-mono text-sm mt-4" style={{ color: "var(--text-sub)" }}>점수: {result.score} / 100</p>
       </div>
 
-      <div className="rounded-xl p-4 bg-neutral-900 border border-neutral-800 mb-4">
-        <p className="text-xs text-neutral-500 mb-2">전면/후면 비율</p>
-        <div className="h-2 rounded-full bg-neutral-800 overflow-hidden mb-1">
+      <div className="rounded-xl p-4 mb-4" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}>
+        <p className="text-xs mb-2" style={{ color: "var(--text-sub)" }}>전면/후면 비율</p>
+        <div className="h-2 rounded-full overflow-hidden mb-1" style={{ backgroundColor: "var(--bg-card-hover)" }}>
           <div className="h-full rounded-full transition-all"
             style={{ width: `${Math.min(100, result.frontBackRatio)}%`, backgroundColor: frontBackOk ? "#4ade80" : "#f97316" }} />
         </div>
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs" style={{ color: "var(--text-sub)" }}>
           {result.frontBackRatio}% {frontBackOk ? "✓ 균형" : "⚠ 보강 필요"}
         </p>
       </div>
 
-      <div className="rounded-xl p-4 bg-neutral-900 border border-neutral-800 mb-6">
-        <p className="text-xs text-neutral-500 mb-2">내측/외측 비율</p>
-        <div className="h-2 rounded-full bg-neutral-800 overflow-hidden mb-1">
+      <div className="rounded-xl p-4 mb-6" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}>
+        <p className="text-xs mb-2" style={{ color: "var(--text-sub)" }}>내측/외측 비율</p>
+        <div className="h-2 rounded-full overflow-hidden mb-1" style={{ backgroundColor: "var(--bg-card-hover)" }}>
           <div className="h-full rounded-full transition-all"
             style={{ width: `${Math.min(100, result.innerOuterRatio)}%`, backgroundColor: innerOuterOk ? "#4ade80" : "#f97316" }} />
         </div>
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs" style={{ color: "var(--text-sub)" }}>
           {result.innerOuterRatio}% {innerOuterOk ? "✓ 균형" : "⚠ 보강 필요"}
         </p>
       </div>
 
       <div className="mt-auto space-y-3">
         <button type="button" onClick={onConfirm}
-          className="w-full py-4 rounded-xl font-bold bg-lime-500 text-black hover:bg-lime-400 transition-colors">
+          className="w-full py-4 rounded-xl font-bold transition-colors hover:brightness-110"
+          style={{ backgroundColor: "var(--accent-main)", color: "var(--accent-text)" }}>
           확인
         </button>
         <button type="button" onClick={onRetry}
-          className="w-full py-3 rounded-xl font-bold bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition-colors">
+          className="w-full py-3 rounded-xl font-bold transition-colors hover:opacity-90"
+          style={{ backgroundColor: "var(--bg-card)", color: "var(--text-main)", border: "1px solid var(--border-light)" }}>
           다시 측정
         </button>
       </div>

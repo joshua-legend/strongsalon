@@ -20,7 +20,7 @@ export default function OnboardingWizard() {
   };
 
   return (
-    <div className="min-h-dvh bg-neutral-950 px-4 py-8 pb-24">
+    <div className="min-h-dvh bg-[var(--bg-body)] px-4 py-8 pb-24">
       <div className="max-w-md mx-auto">
         <ProfileSetup onComplete={handleProfileComplete} />
       </div>

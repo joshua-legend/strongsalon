@@ -64,9 +64,9 @@ export default function SetRow({
       textShadow: '0 0 10px #a3e635, 0 0 22px rgba(163,230,53,.6)',
     };
     return {
-      background: '#0a0a0a',
-      borderColor: 'rgba(255,255,255,.08)',
-      color: '#fff',
+      background: 'var(--bg-body)',
+      borderColor: 'var(--border-light)',
+      color: 'var(--text-main)',
     };
   })();
 
@@ -92,28 +92,28 @@ export default function SetRow({
 
         <div
           className={`flex items-center rounded-lg border overflow-hidden transition-all ${inputCellClass}`}
-          style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,.07)' }}
+          style={{ background: 'var(--bg-body)', borderColor: 'var(--border-light)' }}
         >
           <button type="button" onClick={() => onAdjWeight(-2.5)}
-            className="w-7 h-8 flex items-center justify-center shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-600">−</button>
+            className="w-7 h-8 flex items-center justify-center shrink-0 text-[14px] transition-colors hover:bg-[var(--bg-card-hover)]/50 text-[var(--text-sub)]">−</button>
           <input type="number" value={weight || ''} onChange={(e) => onWeightChange(parseFloat(e.target.value) || 0)}
             placeholder="kg" min={0} step={2.5}
-            className="flex-1 text-center bg-transparent border-none outline-none min-w-0 py-0 font-bebas text-xs text-white" />
+            className="flex-1 text-center bg-transparent border-none outline-none min-w-0 py-0 font-bebas text-xs text-[var(--text-main)]" />
           <button type="button" onClick={() => onAdjWeight(2.5)}
-            className="w-7 h-8 flex items-center justify-center shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-600">＋</button>
+            className="w-7 h-8 flex items-center justify-center shrink-0 text-[14px] transition-colors hover:bg-[var(--bg-card-hover)]/50 text-[var(--text-sub)]">＋</button>
         </div>
 
         <div
           className={`flex items-center rounded-lg border overflow-hidden transition-all ${inputCellClass}`}
-          style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,.07)' }}
+          style={{ background: 'var(--bg-body)', borderColor: 'var(--border-light)' }}
         >
           <button type="button" onClick={() => onAdjReps(-1)}
-            className="w-7 h-8 flex items-center justify-center shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-600">−</button>
+            className="w-7 h-8 flex items-center justify-center shrink-0 text-[14px] transition-colors hover:bg-[var(--bg-card-hover)]/50 text-[var(--text-sub)]">−</button>
           <input type="number" value={reps || ''} onChange={(e) => onRepsChange(parseInt(e.target.value, 10) || 0)}
             placeholder="회" min={0} step={1}
-            className="flex-1 text-center bg-transparent border-none outline-none min-w-0 py-0 font-bebas text-xs text-white" />
+            className="flex-1 text-center bg-transparent border-none outline-none min-w-0 py-0 font-bebas text-xs text-[var(--text-main)]" />
           <button type="button" onClick={() => onAdjReps(1)}
-            className="w-7 h-8 flex items-center justify-center shrink-0 text-[14px] transition-colors hover:bg-white/5 text-neutral-600">＋</button>
+            className="w-7 h-8 flex items-center justify-center shrink-0 text-[14px] transition-colors hover:bg-[var(--bg-card-hover)]/50 text-[var(--text-sub)]">＋</button>
         </div>
 
         <div className="text-center font-bebas text-[10px] transition-all"
@@ -121,12 +121,12 @@ export default function SetRow({
             ? isOrange
               ? { color: 'rgb(163, 230, 53)', textShadow: '0 0 8px rgba(163,230,53,.8)' }
               : { color: '#c084fc', textShadow: '0 0 8px rgba(192,132,252,.8)' }
-            : { color: '#fff' }}>
+            : { color: 'var(--text-main)' }}>
           {volume > 0 ? `${volume.toLocaleString()}` : '—'}
         </div>
 
         <button type="button" onClick={onDelete}
-          className="w-7 h-7 rounded-md flex items-center justify-center text-xs transition-all hover:bg-red-500/10 hover:text-red-500 shrink-0 text-neutral-700">
+          className="w-7 h-7 rounded-md flex items-center justify-center text-xs transition-all hover:bg-red-500/10 hover:text-red-500 shrink-0 text-[var(--text-sub)]">
           ✕
         </button>
       </div>

@@ -20,7 +20,7 @@ export default function BodyInfo({ purpose, form, onChange, onNext, onBack }: Bo
 
   return (
     <div className="animate-slide-up-quest">
-      <h2 className="font-bebas text-2xl text-white tracking-wider mb-6">현재 상태를 알려주세요</h2>
+      <h2 className="font-bebas text-2xl text-[var(--text-main)] tracking-wider mb-6">현재 상태를 알려주세요</h2>
       <div className="space-y-4 mb-8">
         <InputRow label="키 (cm)" value={form.height} onChangeVal={(v) => onChange({ ...form, height: v })}
           unit="cm" placeholder="170" min={100} max={250} step={0.1} isRequired />
@@ -50,11 +50,11 @@ export default function BodyInfo({ purpose, form, onChange, onNext, onBack }: Bo
         )}
       </div>
       <div className="flex gap-3">
-        <button type="button" onClick={onBack} className="px-4 py-3 text-neutral-500 hover:text-white transition-colors">
+        <button type="button" onClick={onBack} className="px-4 py-3 text-[var(--text-sub)] hover:text-[var(--text-main)] transition-colors">
           이전
         </button>
         <button type="button" onClick={onNext} disabled={!isValid}
-          className="flex-1 py-4 rounded-xl font-bold text-lg bg-lime-400 text-black disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all">
+          className="flex-1 py-4 rounded-xl font-bold text-lg bg-[var(--accent-main)] text-[var(--accent-text)] disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all">
           다음
         </button>
       </div>

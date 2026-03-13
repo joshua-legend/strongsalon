@@ -30,12 +30,12 @@ export default function MiniFeed() {
           <div key={i} className="flex items-start gap-3">
             <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: f.color }} />
             <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-medium text-white">
+              <p className="text-[12px] font-medium text-[var(--text-main)]">
                 {f.text}
               </p>
-              <p className="text-[10px] text-neutral-400">{f.sub}</p>
+              <p className="text-[10px] text-[var(--text-sub)]">{f.sub}</p>
             </div>
-            <span className="font-bebas text-[8px] shrink-0 mt-0.5 text-neutral-400">
+            <span className="font-bebas text-[8px] shrink-0 mt-0.5 text-[var(--text-sub)]">
               {f.time}
             </span>
           </div>

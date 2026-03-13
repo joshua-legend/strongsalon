@@ -33,13 +33,14 @@ const CHALLENGES = [
 export default function WildChallengeCards() {
   return (
     <div className="space-y-3">
-      <div className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-2">
+      <h3 className="font-bebas text-lg font-bold tracking-wider mb-3" style={{ color: "var(--text-main)" }}>
         야생의 타임어택 챌린지
-      </div>
+      </h3>
       {CHALLENGES.map((c) => (
         <div
           key={c.id}
-          className="rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 hover:border-orange-500/30 transition-colors"
+          className="rounded-2xl overflow-hidden border hover:border-orange-500/30 transition-colors"
+        style={{ borderColor: "var(--border-light)", backgroundColor: "var(--bg-card)" }}
         >
           <div className="w-full h-32 overflow-hidden">
             <img
@@ -49,16 +50,16 @@ export default function WildChallengeCards() {
             />
           </div>
           <div className="p-4">
-            <h4 className="font-bebas text-base text-white tracking-wider mb-0.5">
+            <h4 className="font-bebas text-lg font-bold tracking-wider mb-0.5" style={{ color: "var(--text-main)" }}>
               {c.name}
             </h4>
-            <p className="text-[11px] text-neutral-500 mb-2">{c.description}</p>
+            <p className="text-[11px] mb-2" style={{ color: "var(--text-sub)" }}>{c.description}</p>
             <div className="flex items-baseline gap-2 flex-wrap">
               <span className="font-bebas text-lg text-orange-500">
                 {c.myBest}
               </span>
               {c.topPct != null && (
-                <span className="text-[10px] text-neutral-400">
+                <span className="text-[10px]" style={{ color: "var(--text-sub)" }}>
                   상위 {c.topPct}%
                 </span>
               )}

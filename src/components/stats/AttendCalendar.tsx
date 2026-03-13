@@ -1,20 +1,23 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAttendance } from "@/context/AttendanceContext";
 import { workoutHistory } from "@/data/workoutHistory";
 import { useWorkoutRecords } from "@/context/WorkoutRecordContext";
-import { getMonthGrid, getWeekDays, isToday } from "@/utils/calendar";
+import { getMonthGrid } from "@/utils/calendar";
 import DayWorkoutDetail from "./DayWorkoutDetail";
 
+const WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] as const;
+
 const typeColor: Record<string, string> = {
-  pt: "rgb(249,115,22)",
-  self: "rgb(163,230,53)",
+  pt: "var(--accent-main)",
+  self: "var(--accent-sub)",
 };
 
 const typeLabel: Record<string, string> = {
-  pt: "PT",
-  self: "개인",
+  pt: "PT수업",
+  self: "개인운동",
 };
 
 function formatDateKey(year: number, month: number, day: number): string {
@@ -34,7 +37,6 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
   const { getWorkoutRecordByDate } = useWorkoutRecords();
 
   const grid = useMemo(() => getMonthGrid(year, month), [year, month]);
-  const dayNames = getWeekDays();
 
   const attendMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -48,95 +50,93 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
     return map;
   }, [attendance]);
 
-  const selectedColor = "rgb(249,115,22)";
-
   return (
-    <div className="card">
-      <p className="card-label mb-3">📅 출석 캘린더</p>
-
-      <div className="flex items-center gap-3 mb-3 justify-center">
-        {[
-          { color: typeColor.pt, label: "PT수업" },
-          { color: typeColor.self, label: "개인운동" },
-        ].map((l) => (
-          <div key={l.label} className="flex items-center gap-1">
-            <div
-              className="w-2 h-2 rounded-full"
-              style={{ background: l.color }}
-            />
-            <span className="font-bebas text-[8px] text-neutral-400">
-              {l.label}
-            </span>
-          </div>
-        ))}
+    <div
+      className="rounded-2xl p-5 border transition-colors duration-300 shadow-sm"
+      style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)" }}
+    >
+      {/* 범례 */}
+      <div className="flex items-center gap-4 mb-4 justify-center">
+        <div className="flex items-center gap-1.5">
+          <div
+            className="w-2 h-2 rounded-full transition-colors duration-300"
+            style={{ backgroundColor: "var(--accent-main)" }}
+          />
+          <span className="font-bebas text-[11px] tracking-wider transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
+            PT수업
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div
+            className="w-2 h-2 rounded-full transition-colors duration-300"
+            style={{ backgroundColor: "var(--accent-sub)" }}
+          />
+          <span className="font-bebas text-[11px] tracking-wider transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
+            개인운동
+          </span>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between mb-3">
-        <button onClick={onPrevMonth} className="text-[16px] px-2 text-neutral-400">
-          ‹
+      {/* 월 변경 */}
+      <div className="flex items-center justify-between mb-4">
+        <button
+          onClick={onPrevMonth}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-300 active:scale-95 hover:bg-(--bg-card-hover)"
+          style={{ color: "var(--text-sub)" }}
+        >
+          <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="font-bebas text-[18px] text-white">
-          {year}년 {month + 1}월
+        <span className="font-bebas text-xl tracking-wider transition-colors duration-300" style={{ color: "var(--text-main)" }}>
+          {year}. {String(month + 1).padStart(2, "0")}
         </span>
-        <button onClick={onNextMonth} className="text-[16px] px-2 text-neutral-400">
-          ›
+        <button
+          onClick={onNextMonth}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-300 active:scale-95 hover:bg-(--bg-card-hover)"
+          style={{ color: "var(--text-sub)" }}
+        >
+          <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 mb-1">
-        {dayNames.map((d) => (
-          <div key={d} className="text-center font-bebas text-[8px] py-1 text-neutral-500">
+      {/* 요일 헤더 */}
+      <div className="grid grid-cols-7 gap-1 mb-2">
+        {WEEKDAYS.map((d) => (
+          <div key={d} className="text-center font-bebas text-[11px] py-1 transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
             {d}
           </div>
         ))}
       </div>
 
+      {/* 날짜 그리드 */}
       <div className="grid grid-cols-7 gap-1">
         {grid.map((day, i) => {
           if (day === null) return <div key={i} className="h-9" />;
           const dateKey = formatDateKey(year, month, day);
           const type = attendMap[dateKey];
-          const color = type ? typeColor[type] : undefined;
-          const today = isToday(year, month, day);
           const isSelected = selectedDate === dateKey;
-          const showTodayBorder = !selectedDate && today;
-
-          let bg: string;
-          let border: string;
-          let textColor: string;
-
-          if (isSelected) {
-            bg = color ? `${color}15` : "transparent";
-            border = `2px solid ${selectedColor}`;
-            textColor = color ?? "rgb(163,163,163)";
-          } else if (showTodayBorder) {
-            bg = color ? `${color}15` : "transparent";
-            border = `1.5px solid ${selectedColor}`;
-            textColor = color ?? "rgb(163,163,163)";
-          } else if (color) {
-            bg = `${color}15`;
-            border = "1px solid transparent";
-            textColor = color;
-          } else {
-            bg = "transparent";
-            border = "1px solid transparent";
-            textColor = "rgb(163,163,163)";
-          }
 
           return (
             <button
               key={i}
               type="button"
               onClick={() => setSelectedDate(dateKey)}
-              className="h-9 rounded-lg flex flex-col items-center justify-center gap-0.5 text-[11px] relative w-full cursor-pointer active:scale-[0.97] transition-transform"
-              style={{ background: bg, border, color: textColor }}
+              className={`h-9 rounded-lg flex items-center justify-center w-full transition-all duration-300 active:scale-95 ${!isSelected ? "hover:bg-(--bg-card-hover)" : ""}`}
+              style={
+                isSelected
+                  ? {
+                      borderWidth: 2,
+                      borderColor: "var(--accent-main)",
+                      color: "var(--accent-main)",
+                      backgroundColor: "var(--accent-bg)",
+                      boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+                    }
+                  : {
+                      color: "var(--text-main)",
+                      backgroundColor: type ? (type === "pt" ? "rgba(163,230,53,0.1)" : "rgba(34,197,94,0.1)" as string) : undefined,
+                    }
+              }
             >
-              <span className="leading-none">{day}</span>
-              {type && (
-                <span className="font-bebas text-[6px] leading-none opacity-80">
-                  {typeLabel[type]}
-                </span>
-              )}
+              <span className="font-bebas text-lg">{day}</span>
             </button>
           );
         })}

@@ -16,12 +16,12 @@ export default function TodayCTA() {
       <div className="flex items-center gap-4">
         <span className="text-[32px]">🏋️</span>
         <div className="flex-1 min-w-0">
-          <p className="text-[16px] font-bold text-white mb-0.5">오늘의 운동 시작</p>
-          <p className="text-[11px] text-white/70">
+          <p className="text-[16px] font-bold text-[var(--text-main)] mb-0.5">오늘의 운동 시작</p>
+          <p className="text-[11px] text-[var(--text-main)]/70">
             가슴 + 삼두 데이 · 4종목 13세트 · 약 75분
           </p>
         </div>
-        <span className="text-[20px] text-white/60 group-hover:translate-x-1 transition-transform">›</span>
+        <span className="text-[20px] text-[var(--text-main)]/60 group-hover:translate-x-1 transition-transform">›</span>
       </div>
 
       <div

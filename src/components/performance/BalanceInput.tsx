@@ -68,33 +68,36 @@ export default function BalanceInput({ category, onComplete, onBack }: BalanceIn
   };
 
   return (
-    <div className="rounded-2xl p-5 bg-neutral-950 border border-neutral-800 space-y-5">
+    <div className="rounded-2xl p-5 space-y-5" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}>
       <div className="flex items-center gap-2">
-        <button type="button" onClick={onBack} className="p-1 rounded-lg hover:bg-neutral-800 text-neutral-400">
+        <button type="button" onClick={onBack} className="p-1 rounded-lg transition-colors" style={{ color: "var(--text-sub)" }}>
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h2 className="font-bebas text-lg text-white">{category.icon} {category.label} 테스트</h2>
+        <h2 className="font-bebas text-lg" style={{ color: "var(--text-main)" }}>{category.icon} {category.label} 테스트</h2>
       </div>
 
       <div>
-        <p className="text-xs font-bold text-neutral-400 mb-3">── 전면 / 후면 비율 ──</p>
+        <p className="text-xs font-bold mb-3" style={{ color: "var(--text-sub)" }}>── 전면 / 후면 비율 ──</p>
         <WeightRepsInput label={QUAD_EQUIP.name} weight={quadWeight} setWeight={setQuadWeight} reps={quadReps} setReps={setQuadReps} />
         <div className="mt-3">
-          <p className="text-xs text-neutral-500 mb-2">레그컬 (후면) — 라잉 or 시티드 택1</p>
+          <p className="text-xs mb-2" style={{ color: "var(--text-sub)" }}>레그컬 (후면) — 라잉 or 시티드 택1</p>
           <div className="flex gap-2 mb-2">
             {HAM_OPTIONS.map((o) => (
               <button key={o.id} type="button" onClick={() => setHamChoice(o.id as "lyingcurl" | "seatedcurl")}
-                className={`px-3 py-1.5 rounded-lg text-xs ${hamChoice === o.id ? "bg-violet-500/20 text-violet-400 border border-violet-500/50" : "bg-neutral-900 text-neutral-500 border border-neutral-800"}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs border ${hamChoice === o.id ? "bg-violet-500/20 text-violet-400 border-violet-500/50" : ""}`}
+              style={hamChoice !== o.id ? { backgroundColor: "var(--bg-body)", borderColor: "var(--border-light)", color: "var(--text-sub)" } : undefined}>
                 {o.name}
               </button>
             ))}
           </div>
           <div className="flex gap-2">
             <input type="number" inputMode="decimal" value={hamWeight} onChange={(e) => setHamWeight(e.target.value)} placeholder="중량"
-              className="flex-1 font-mono text-sm bg-neutral-900 border border-neutral-700 px-3 py-2 rounded-lg text-white focus:border-lime-400 focus:outline-none" />
+              className="flex-1 font-mono text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-[var(--border-focus)]"
+              style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)", color: "var(--text-main)" }} />
             <input type="number" inputMode="numeric" value={hamReps} onChange={(e) => setHamReps(e.target.value)} placeholder="횟수"
-              className="w-20 font-mono text-sm bg-neutral-900 border border-neutral-700 px-3 py-2 rounded-lg text-white focus:border-lime-400 focus:outline-none" />
-            <span className="text-neutral-500 text-sm self-center">회</span>
+              className="w-20 font-mono text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-[var(--border-focus)]"
+              style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)", color: "var(--text-main)" }} />
+            <span className="text-sm self-center" style={{ color: "var(--text-sub)" }}>회</span>
           </div>
         </div>
         {(quad1RM > 0 || ham1RM > 0) && (
@@ -105,7 +108,7 @@ export default function BalanceInput({ category, onComplete, onBack }: BalanceIn
       </div>
 
       <div>
-        <p className="text-xs font-bold text-neutral-400 mb-3">── 내측 / 외측 비율 ──</p>
+        <p className="text-xs font-bold mb-3" style={{ color: "var(--text-sub)" }}>── 내측 / 외측 비율 ──</p>
         <WeightRepsInput label={INNER_EQUIP.name} weight={innerWeight} setWeight={setInnerWeight} reps={innerReps} setReps={setInnerReps} />
         <div className="mt-3">
           <WeightRepsInput label={OUTER_EQUIP.name} weight={outerWeight} setWeight={setOuterWeight} reps={outerReps} setReps={setOuterReps} />
@@ -118,7 +121,8 @@ export default function BalanceInput({ category, onComplete, onBack }: BalanceIn
       </div>
 
       <button type="button" onClick={handleSubmit} disabled={!allFilled}
-        className={`w-full py-4 rounded-xl font-bold text-sm ${allFilled ? "bg-lime-500 text-black hover:bg-lime-400" : "bg-neutral-800 text-neutral-600 pointer-events-none"}`}>
+        className={`w-full py-4 rounded-xl font-bold text-sm transition-colors ${allFilled ? "hover:brightness-110" : "pointer-events-none opacity-50"}`}
+        style={allFilled ? { backgroundColor: "var(--accent-main)", color: "var(--accent-text)" } : { backgroundColor: "var(--bg-card)", color: "var(--text-sub)" }}>
         기록 완료
       </button>
     </div>

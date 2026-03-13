@@ -33,28 +33,28 @@ export default function CycleCompleteCard({
   const label = CATEGORY_LABELS[categoryId];
 
   return (
-    <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950 border border-neutral-800 p-5 space-y-4">
+    <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-[var(--bg-card)] via-[var(--bg-card)] to-[var(--bg-body)] border border-[var(--border-light)] p-5 space-y-4">
       <div className="flex items-center gap-2">
         <Trophy
           className={`w-6 h-6 ${achieved ? "text-lime-400" : "text-amber-500"}`}
         />
-        <span className="font-bebas text-lg text-white">
+        <span className="font-bebas text-lg text-[var(--text-main)]">
           {label} 4주 사이클 완료
         </span>
       </div>
 
       <div className="space-y-2 text-sm">
-        <div className="flex items-center justify-between text-neutral-400">
+        <div className="flex items-center justify-between text-[var(--text-sub)]">
           <span>시작</span>
-          <span className="font-mono text-white">{startValue}{unit}</span>
+          <span className="font-mono text-[var(--text-main)]">{startValue}{unit}</span>
         </div>
-        <div className="flex items-center justify-between text-neutral-400">
+        <div className="flex items-center justify-between text-[var(--text-sub)]">
           <span>목표</span>
-          <span className="font-mono text-white">{targetValue}{unit}</span>
+          <span className="font-mono text-[var(--text-main)]">{targetValue}{unit}</span>
         </div>
         <div className="flex items-center justify-between">
           <span>결과</span>
-          <span className="font-mono font-bold text-white">
+          <span className="font-mono font-bold text-[var(--text-main)]">
             {finalValue}{unit}
           </span>
         </div>
@@ -81,7 +81,7 @@ export default function CycleCompleteCard({
         <button
           type="button"
           onClick={onReset}
-          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm border-2 border-neutral-600 text-neutral-400 hover:border-lime-400/50 hover:text-lime-400 transition-all"
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm border-2 border-[var(--border-light)] text-[var(--text-sub)] hover:border-[var(--accent-main)]/50 hover:text-[var(--accent-main)] transition-all"
         >
           <RotateCcw className="w-4 h-4" />
           새로운 목표로 설정

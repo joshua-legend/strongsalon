@@ -94,11 +94,22 @@ export function useFreeExercises(
     [getInitialWeightReps]
   );
 
-  const addFreeSet = useCallback((exId: string, weight = 0, reps = 0) => {
+  const addFreeSet = useCallback((exId: string, weight?: number, reps?: number) => {
     setFreeExercises((prev) => {
       const ex = prev[exId];
       if (!ex) return prev;
-      const newSet: SetRecord = { id: nextId('fs'), weight, reps, status: 'pending' };
+      let w = weight ?? 0;
+      let r = reps ?? 0;
+      if (ex.sets.length > 0 && w === 0 && r === 0) {
+        const last = ex.sets[ex.sets.length - 1];
+        w = last.weight;
+        r = last.reps;
+      }
+      if (w === 0 && r === 0) {
+        w = 5;
+        r = 10;
+      }
+      const newSet: SetRecord = { id: nextId('fs'), weight: w, reps: r, status: 'pending' };
       return { ...prev, [exId]: { ...ex, sets: [...ex.sets, newSet] } };
     });
   }, []);

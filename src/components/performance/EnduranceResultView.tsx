@@ -30,7 +30,7 @@ export default function EnduranceResultView({
 
   return (
     <div className="px-4 py-6 flex flex-col min-h-[60vh]">
-      <h2 className="font-bebas text-xl text-center text-white mb-6">
+      <h2 className="font-bebas text-xl font-bold text-center mb-6" style={{ color: "var(--text-main)" }}>
         {category.icon} {category.label}
       </h2>
 
@@ -41,17 +41,17 @@ export default function EnduranceResultView({
         >
           {result.grade}
         </div>
-        <p className="font-mono text-sm text-neutral-400 mt-4">
+        <p className="font-mono text-sm mt-4" style={{ color: "var(--text-sub)" }}>
           {equipName} {result.testWeight}kg × {result.reps}회
         </p>
-        <p className="font-mono text-sm text-neutral-500">점수: {result.score} / 100</p>
+        <p className="font-mono text-sm" style={{ color: "var(--text-sub)" }}>점수: {result.score} / 100</p>
       </div>
 
       {prevResult && sameEquipment && (
-        <div className="rounded-xl p-4 bg-neutral-900 border border-neutral-800 mb-6">
-          <p className="text-xs text-neutral-500 mb-1">이전 기록</p>
-          <p className="text-sm text-neutral-400">{prevResult.reps}회 ({prevResult.score}점)</p>
-          <p className={`text-sm font-bold mt-2 flex items-center gap-1 ${diff > 0 ? "text-lime-400" : diff < 0 ? "text-orange-400" : "text-neutral-400"}`}>
+        <div className="rounded-xl p-4 mb-6" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}>
+          <p className="text-xs mb-1" style={{ color: "var(--text-sub)" }}>이전 기록</p>
+          <p className="text-sm" style={{ color: "var(--text-sub)" }}>{prevResult.reps}회 ({prevResult.score}점)</p>
+          <p className={`text-sm font-bold mt-2 flex items-center gap-1 ${diff > 0 ? "text-lime-400" : diff < 0 ? "text-orange-400" : ""}`} style={diff === 0 ? { color: "var(--text-sub)" } : undefined}>
             {diff > 0 ? <TrendingUp className="w-4 h-4" /> : diff < 0 ? <TrendingDown className="w-4 h-4" /> : null}
             {diff > 0 ? `+${diff}회 향상!` : diff < 0 ? `${diff}회` : "동일"}
           </p>
@@ -60,11 +60,13 @@ export default function EnduranceResultView({
 
       <div className="mt-auto space-y-3">
         <button type="button" onClick={onConfirm}
-          className="w-full py-4 rounded-xl font-bold bg-lime-500 text-black hover:bg-lime-400 transition-colors">
+          className="w-full py-4 rounded-xl font-bold transition-colors hover:brightness-110"
+          style={{ backgroundColor: "var(--accent-main)", color: "var(--accent-text)" }}>
           확인
         </button>
         <button type="button" onClick={onRetry}
-          className="w-full py-3 rounded-xl font-bold bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition-colors">
+          className="w-full py-3 rounded-xl font-bold transition-colors hover:opacity-90"
+          style={{ backgroundColor: "var(--bg-card)", color: "var(--text-main)", border: "1px solid var(--border-light)" }}>
           다시 측정
         </button>
       </div>

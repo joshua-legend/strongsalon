@@ -287,11 +287,12 @@ export default function UnifiedGoalCard() {
     : null;
 
   return (
-    <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950 border border-neutral-800 relative">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-lime-500 opacity-5 blur-3xl rounded-full" />
+    <div className="rounded-2xl overflow-hidden border border-[var(--border-light)] relative"
+          style={{ backgroundColor: "var(--bg-card)" }}>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[var(--accent-main)] opacity-5 blur-3xl rounded-full" />
       <div className="relative z-10 p-5 space-y-4">
         {/* 1. 메인 탭: 인바디 | 스트렝스 | 체력 */}
-        <div className="rounded-full p-1 bg-neutral-900/80 border border-neutral-800 flex">
+        <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex">
           {MAIN_TABS.map((tab) => (
             <button
               key={tab.id}
@@ -301,7 +302,9 @@ export default function UnifiedGoalCard() {
                 setSubTab(tab.id === "inbody" ? "fatPercent" : tab.id === "strength" ? "squat" : "run5k");
               }}
               className={`flex-1 py-1.5 px-4 rounded-full text-xs font-bold transition-all ${
-                mainTab === tab.id ? "bg-neutral-800 text-white" : "text-neutral-500"
+                mainTab === tab.id
+                  ? "bg-[var(--accent-bg)] text-[var(--accent-main)] border border-[var(--accent-main)]/40 shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+                  : "text-[var(--text-sub)]"
               }`}
             >
               {tab.label}
@@ -311,7 +314,7 @@ export default function UnifiedGoalCard() {
 
         {/* 2-1. 인바디/스트렝스/체력 하위 버튼 */}
         {mainTab === "inbody" && (
-          <div className="rounded-full p-1 bg-neutral-950/80 border border-neutral-800 flex flex-wrap gap-1">
+          <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex flex-wrap gap-1">
             {INBODY_SUB_TABS_WITH_COLOR.map((tab) => (
               <button
                 key={tab.id}
@@ -319,12 +322,8 @@ export default function UnifiedGoalCard() {
                 onClick={() => setSubTab(tab.id)}
                 className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
                   subTab === tab.id
-                    ? tab.color === "lime"
-                      ? "bg-lime-400/20 text-lime-400"
-                      : tab.color === "orange"
-                        ? "bg-orange-400/20 text-orange-400"
-                        : "bg-sky-400/20 text-sky-400"
-                    : "text-neutral-500"
+                    ? "bg-[var(--accent-bg)] text-[var(--accent-main)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+                    : "text-[var(--text-sub)]"
                 }`}
               >
                 {tab.label}
@@ -333,7 +332,7 @@ export default function UnifiedGoalCard() {
           </div>
         )}
         {mainTab === "strength" && (
-          <div className="rounded-full p-1 bg-neutral-950/80 border border-neutral-800 flex flex-wrap gap-1">
+          <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex flex-wrap gap-1">
             {STRENGTH_SUB_TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -341,12 +340,8 @@ export default function UnifiedGoalCard() {
                 onClick={() => setSubTab(tab.id)}
                 className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
                   subTab === tab.id
-                    ? tab.color === "lime"
-                      ? "bg-lime-400/20 text-lime-400"
-                      : tab.color === "orange"
-                        ? "bg-orange-400/20 text-orange-400"
-                        : "bg-sky-400/20 text-sky-400"
-                    : "text-neutral-500"
+                    ? "bg-[var(--accent-bg)] text-[var(--accent-main)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+                    : "text-[var(--text-sub)]"
                 }`}
               >
                 {tab.label}
@@ -355,7 +350,7 @@ export default function UnifiedGoalCard() {
           </div>
         )}
         {mainTab === "cardio" && (
-          <div className="rounded-full p-1 bg-neutral-950/80 border border-neutral-800 flex flex-wrap gap-1">
+          <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex flex-wrap gap-1">
             {CARDIO_SUB_TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -363,12 +358,8 @@ export default function UnifiedGoalCard() {
                 onClick={() => setSubTab(tab.id)}
                 className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
                   subTab === tab.id
-                    ? tab.color === "lime"
-                      ? "bg-lime-400/20 text-lime-400"
-                      : tab.color === "orange"
-                        ? "bg-orange-400/20 text-orange-400"
-                        : "bg-sky-400/20 text-sky-400"
-                    : "text-neutral-500"
+                    ? "bg-[var(--accent-bg)] text-[var(--accent-main)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+                    : "text-[var(--text-sub)]"
                 }`}
               >
                 {tab.label}
@@ -381,7 +372,7 @@ export default function UnifiedGoalCard() {
         <div className="pt-2">
           {!mounted ? (
             <div className="py-12 px-4 text-center">
-              <p className="text-sm text-neutral-500 mb-4">로딩 중...</p>
+              <p className="text-sm text-[var(--text-sub)] mb-4">로딩 중...</p>
             </div>
           ) : isCycleComplete && catSetting?.goal ? (
             <CycleCompleteCard
@@ -465,7 +456,7 @@ export default function UnifiedGoalCard() {
                         ? STRENGTH_LINE_COLORS[subTab as StrengthChartOption]
                         : CARDIO_LINE_COLORS[subTab as CardioChartOption];
                   return (
-                    <div className="flex items-center gap-4 text-[10px] text-neutral-400">
+                    <div className="flex items-center gap-4 text-[10px] text-[var(--text-sub)]">
                       <span className="flex items-center gap-1">
                         <span className="w-5 h-0.5 rounded" style={{ backgroundColor: activeColor }} />
                         실제기록
@@ -547,7 +538,7 @@ export default function UnifiedGoalCard() {
                   configuredAt={catSetting?.configuredAt ?? null}
                 />
               ) : (
-                <div className="py-12 text-center text-xs text-neutral-600">
+                <div className="py-12 text-center text-xs text-[var(--text-sub)]">
                   데이터가 필요합니다
                 </div>
               )}
@@ -556,7 +547,7 @@ export default function UnifiedGoalCard() {
                 <button
                   type="button"
                   onClick={() => setShowResetModal(true)}
-                  className="text-xs text-neutral-500 underline hover:text-neutral-400 transition-colors"
+                  className="text-xs text-[var(--text-sub)] underline hover:text-[var(--text-main)] transition-colors"
                 >
                   목표 다시 설정하기
                 </button>

@@ -82,6 +82,7 @@ export function useWorkoutLog() {
   const [completedElapsedSec, setCompletedElapsedSec] = useState(0);
   const [workoutDate, setWorkoutDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [condition, setCondition] = useState<WorkoutCondition>('좋음');
+  const [estMinutes, setEstMinutes] = useState<number>(60);
   const [cardioEntries, setCardioEntries] = useState<CardioEntry[]>([]);
   const [prData] = useState<Record<string, number>>({});
 
@@ -276,6 +277,8 @@ export function useWorkoutLog() {
     setWorkoutDate,
     condition,
     setCondition,
+    estMinutes,
+    setEstMinutes,
     cardioEntries,
     elapsedSec,
     prData,

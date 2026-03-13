@@ -61,24 +61,25 @@ export default function MaxWeightInput({
   };
 
   return (
-    <div className="rounded-2xl p-5 bg-neutral-950 border border-neutral-800 space-y-5">
+    <div className="rounded-2xl p-5 space-y-5" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}>
       <div className="flex items-center gap-2">
-        <button type="button" onClick={onBack} className="p-1 rounded-lg hover:bg-neutral-800 text-neutral-400">
+        <button type="button" onClick={onBack} className="p-1 rounded-lg transition-colors" style={{ color: "var(--text-sub)" }}>
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h2 className="font-bebas text-lg text-white">{category.icon} {category.label} 테스트</h2>
+        <h2 className="font-bebas text-lg" style={{ color: "var(--text-main)" }}>{category.icon} {category.label} 테스트</h2>
       </div>
 
       <div>
-        <p className="text-xs text-neutral-500 mb-2">기구 선택</p>
+        <p className="text-xs mb-2" style={{ color: "var(--text-sub)" }}>기구 선택</p>
         <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
           {equipmentOptions.map((eq) => (
             <button key={eq.id} type="button" onClick={() => setSelectedEquipment(eq.id)}
-              className={`shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                 selectedEquipment === eq.id
-                  ? "bg-lime-500/20 text-lime-400 border border-lime-500/50"
-                  : "bg-neutral-900 text-neutral-400 border border-neutral-800 hover:border-neutral-700"
-              }`}>
+                  ? "bg-lime-500/20 text-lime-400 border-lime-500/50"
+                  : "bg-[var(--bg-body)] border-[var(--border-light)]"
+              }`}
+              style={selectedEquipment !== eq.id ? { color: "var(--text-sub)" } : undefined}>
               {eq.name}
             </button>
           ))}
@@ -87,32 +88,34 @@ export default function MaxWeightInput({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <p className="text-xs text-neutral-500 mb-1">{isAssist ? "보조 중량(kg)" : "중량(kg)"}</p>
+          <p className="text-xs mb-1" style={{ color: "var(--text-sub)" }}>{isAssist ? "보조 중량(kg)" : "중량(kg)"}</p>
           <input type="number" inputMode="decimal" value={weight} onChange={(e) => setWeight(e.target.value)}
             placeholder="0"
-            className="w-full font-mono text-lg bg-neutral-900 border-b-2 border-neutral-700 px-3 py-2 text-white focus:border-lime-400 focus:outline-none rounded-t-lg" />
+            className="w-full font-mono text-lg border-b-2 px-3 py-2 focus:outline-none focus:border-[var(--accent-main)] rounded-t-lg"
+            style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)", color: "var(--text-main)" }} />
         </div>
         <div>
-          <p className="text-xs text-neutral-500 mb-1">횟수(회)</p>
+          <p className="text-xs mb-1" style={{ color: "var(--text-sub)" }}>횟수(회)</p>
           <input type="number" inputMode="numeric" value={reps} onChange={(e) => setReps(e.target.value)}
             placeholder="0"
-            className="w-full font-mono text-lg bg-neutral-900 border-b-2 border-neutral-700 px-3 py-2 text-white focus:border-lime-400 focus:outline-none rounded-t-lg" />
+            className="w-full font-mono text-lg border-b-2 px-3 py-2 focus:outline-none focus:border-[var(--accent-main)] rounded-t-lg"
+            style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)", color: "var(--text-main)" }} />
         </div>
       </div>
 
       {isAssist && (
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs" style={{ color: "var(--text-sub)" }}>
           실제 부하: {actualLoad.toFixed(1)} kg (체중 {bodyweight} - 보조 {weightNum})
         </p>
       )}
 
       {(weightNum > 0 || repsNum > 0) && (
-        <div className="rounded-xl p-4 bg-neutral-900/80 border border-neutral-800">
-          <p className="font-mono text-sm text-neutral-300">
+        <div className="rounded-xl p-4" style={{ backgroundColor: "var(--bg-body)", border: "1px solid var(--border-light)" }}>
+          <p className="font-mono text-sm" style={{ color: "var(--text-main)" }}>
             추정 1RM: <span className="text-lime-400 font-bold">{estimated1RM.toFixed(1)} kg</span>
           </p>
-          <p className="font-mono text-sm text-neutral-400 mt-1">
-            체중 대비: <span className="text-white font-bold">{bodyweightRatio.toFixed(2)}배</span>
+          <p className="font-mono text-sm mt-1" style={{ color: "var(--text-sub)" }}>
+            체중 대비: <span className="font-bold" style={{ color: "var(--text-main)" }}>{bodyweightRatio.toFixed(2)}배</span>
           </p>
         </div>
       )}
@@ -120,9 +123,10 @@ export default function MaxWeightInput({
       {assistError && <p className="text-sm text-orange-400">{assistError}</p>}
 
       <button type="button" onClick={handleSubmit} disabled={!canSubmit}
-        className={`w-full py-4 rounded-xl font-bold text-sm ${
-          canSubmit ? "bg-lime-500 text-black hover:bg-lime-400" : "bg-neutral-800 text-neutral-600 pointer-events-none"
-        }`}>
+        className={`w-full py-4 rounded-xl font-bold text-sm transition-colors ${
+          canSubmit ? "hover:brightness-110" : "pointer-events-none opacity-50"
+        }`}
+        style={canSubmit ? { backgroundColor: "var(--accent-main)", color: "var(--accent-text)" } : { backgroundColor: "var(--bg-card)", color: "var(--text-sub)" }}>
         기록 완료
       </button>
     </div>

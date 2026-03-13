@@ -15,11 +15,11 @@ export default function ModeBanner({
 }: ModeBannerProps) {
   if (mode === null) {
     return (
-      <div className="rounded-2xl p-5 sm:p-6 border border-neutral-800 bg-neutral-900 shadow-[0_0_30px_rgba(163,230,53,.06)]">
-        <h2 className="text-center font-bebas text-[20px] tracking-wider mb-4 text-white drop-shadow-[0_0_10px_rgba(255,255,255,.2)]">
+      <div className="rounded-2xl p-5 sm:p-6 border border-[var(--border-light)] bg-[var(--bg-card)] shadow-[0_0_30px_rgba(163,230,53,.06)]">
+        <h2 className="text-center font-bebas text-[20px] tracking-wider mb-4 text-[var(--text-main)] drop-shadow-[0_0_10px_rgba(255,255,255,.2)]">
           운동 모드 선택
         </h2>
-        <p className="text-center font-bebas text-[11px] mb-5 text-neutral-500 tracking-wider">
+        <p className="text-center font-bebas text-[11px] mb-5 text-[var(--text-sub)] tracking-wider">
           오늘은 어떤 방식으로 운동할까요?
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -39,10 +39,10 @@ export default function ModeBanner({
             >
               🤖
             </div>
-            <div className="font-bebas text-[16px] leading-none mb-0.5 text-white tracking-wider">
+            <div className="font-bebas text-[16px] leading-none mb-0.5 text-[var(--text-main)] tracking-wider">
               AI 트레이닝
             </div>
-            <div className="font-bebas text-[10px] text-neutral-500 tracking-wider">
+            <div className="font-bebas text-[10px] text-[var(--text-sub)] tracking-wider">
               오늘의 프로그램이 자동으로 나와요
             </div>
           </button>
@@ -62,10 +62,10 @@ export default function ModeBanner({
             >
               🏃
             </div>
-            <div className="font-bebas text-[16px] leading-none mb-0.5 text-white tracking-wider">
+            <div className="font-bebas text-[16px] leading-none mb-0.5 text-[var(--text-main)] tracking-wider">
               자유모드 트레이닝
             </div>
-            <div className="font-bebas text-[10px] text-neutral-500 tracking-wider">
+            <div className="font-bebas text-[10px] text-[var(--text-sub)] tracking-wider">
               근력 + 유산소 직접 선택해서 진행
             </div>
           </button>
@@ -102,7 +102,7 @@ export default function ModeBanner({
             <button
               type="button"
               onClick={onShowModeChoice}
-              className="py-2 px-3 rounded-lg border border-neutral-700 bg-neutral-900 text-neutral-400 font-bebas text-[10px] tracking-wider transition-opacity hover:opacity-80"
+              className="py-2 px-3 rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] text-[var(--text-sub)] font-bebas text-[10px] tracking-wider transition-opacity hover:opacity-80"
             >
               모드 변경
             </button>
@@ -139,7 +139,7 @@ export default function ModeBanner({
           <button
             type="button"
             onClick={onShowModeChoice}
-            className="py-2 px-3 rounded-lg border border-neutral-700 bg-neutral-900 text-neutral-400 font-bebas text-[10px] tracking-wider transition-opacity hover:opacity-80"
+            className="py-2 px-3 rounded-lg border border-[var(--border-light)] bg-[var(--bg-card)] text-[var(--text-sub)] font-bebas text-[10px] tracking-wider transition-opacity hover:opacity-80"
           >
             모드 변경
           </button>

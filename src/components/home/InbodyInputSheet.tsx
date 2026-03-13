@@ -65,40 +65,40 @@ export default function InbodyInputSheet({ open, onClose }: InbodyInputSheetProp
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-t-2xl bg-neutral-900 border border-neutral-800 p-5 pb-8 max-h-[80vh] overflow-auto"
+        className="w-full max-w-md rounded-t-2xl bg-[var(--bg-card)] border border-[var(--border-light)] p-5 pb-8 max-h-[80vh] overflow-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="font-bebas text-lg text-white mb-4">인바디 입력</h3>
+        <h3 className="font-bebas text-lg text-[var(--text-main)] mb-4">인바디 입력</h3>
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-neutral-500 block mb-1">날짜</label>
+            <label className="text-xs text-[var(--text-sub)] block mb-1">날짜</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-700 text-white"
+              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
             />
           </div>
           <div>
-            <label className="text-xs text-neutral-500 block mb-1">체중 (kg) *</label>
+            <label className="text-xs text-[var(--text-sub)] block mb-1">체중 (kg) *</label>
             <input
               type="number"
               inputMode="decimal"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
               placeholder="70"
-              className="w-full px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-700 text-white"
+              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
             />
           </div>
           <div>
-            <label className="text-xs text-neutral-500 block mb-1">골격근량 (kg)</label>
+            <label className="text-xs text-[var(--text-sub)] block mb-1">골격근량 (kg)</label>
             <input
               type="number"
               inputMode="decimal"
               value={muscleMass}
               onChange={(e) => setMuscleMass(e.target.value)}
               placeholder="30"
-              className="w-full px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-700 text-white"
+              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
             />
           </div>
           <div>
@@ -109,7 +109,7 @@ export default function InbodyInputSheet({ open, onClose }: InbodyInputSheetProp
               value={fatMass}
               onChange={(e) => setFatMass(e.target.value)}
               placeholder="15"
-              className="w-full px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-700 text-white"
+              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
             />
           </div>
           <div>
@@ -120,7 +120,7 @@ export default function InbodyInputSheet({ open, onClose }: InbodyInputSheetProp
               value={fatPercent}
               onChange={(e) => setFatPercent(e.target.value)}
               placeholder="20"
-              className="w-full px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-700 text-white"
+              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
             />
           </div>
           <div>
@@ -131,7 +131,7 @@ export default function InbodyInputSheet({ open, onClose }: InbodyInputSheetProp
               value={bmi}
               onChange={(e) => setBmi(e.target.value)}
               placeholder="22"
-              className="w-full px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-700 text-white"
+              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
             />
           </div>
           <div>
@@ -142,7 +142,7 @@ export default function InbodyInputSheet({ open, onClose }: InbodyInputSheetProp
               value={bmr}
               onChange={(e) => setBmr(e.target.value)}
               placeholder="1600"
-              className="w-full px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-700 text-white"
+              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
             />
           </div>
         </div>

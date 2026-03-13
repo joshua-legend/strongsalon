@@ -73,8 +73,8 @@ export default function RankCards() {
             <div className="flex items-center gap-3">
               <span className="text-[20px]">{s.icon}</span>
               <div className="text-left">
-                <p className="text-[13px] font-medium text-white">{s.title}</p>
-                <p className="font-bebas text-[8px] text-neutral-400">{s.weight}</p>
+                <p className="text-[13px] font-bold" style={{ color: "var(--text-main)" }}>{s.title}</p>
+                <p className="font-bebas text-[8px]" style={{ color: "var(--text-sub)" }}>{s.weight}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -96,15 +96,15 @@ export default function RankCards() {
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden"
               >
-                <div className="pt-3 mt-3 border-t border-neutral-800">
-                  <p className="font-bebas text-[8px] mb-3 text-neutral-400">
+                <div className="pt-3 mt-3 border-t" style={{ borderColor: "var(--border-light)" }}>
+                  <p className="font-bebas text-[8px] mb-3" style={{ color: "var(--text-sub)" }}>
                     기준: {s.source}
                   </p>
                   <div className="flex flex-col gap-3">
                     {s.details.map((d, j) => (
                       <div key={j}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-[11px] text-white">{d.label}</span>
+                          <span className="text-[11px]" style={{ color: "var(--text-main)" }}>{d.label}</span>
                           <span className="font-bebas text-[10px] font-bold" style={{ color: d.color }}>{d.value}</span>
                         </div>
                         <div className="progress-track" style={{ height: 5 }}>
@@ -113,7 +113,7 @@ export default function RankCards() {
                             style={{ width: `${d.pct}%`, background: d.color }}
                           />
                         </div>
-                        <p className="font-bebas text-[7px] text-right mt-0.5 text-neutral-400">
+                        <p className="font-bebas text-[7px] text-right mt-0.5" style={{ color: "var(--text-sub)" }}>
                           상위 {100 - d.pct}%
                         </p>
                       </div>

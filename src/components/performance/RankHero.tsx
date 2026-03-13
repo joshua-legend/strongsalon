@@ -15,10 +15,10 @@ export default function RankHero() {
 
   return (
     <div
-      className="rounded-2xl p-5 relative overflow-hidden"
+      className="rounded-2xl p-5 relative overflow-hidden transition-colors duration-300"
       style={{
-        background: 'linear-gradient(135deg, rgba(168,85,247,.12), rgba(255,94,31,.08))',
-        border: '1px solid rgba(168,85,247,.2)',
+        background: 'var(--challenge-rank-bg)',
+        border: '1px solid var(--challenge-rank-border)',
       }}
     >
       <div className="flex flex-col items-center text-center mb-4">
@@ -31,11 +31,11 @@ export default function RankHero() {
         >
           {total}
         </p>
-        <p className="font-bebas text-[9px] mt-1 text-neutral-400">
+        <p className="font-bebas text-[9px] mt-1" style={{ color: "var(--text-sub)" }}>
           / 100
         </p>
 
-        <p className="text-[11px] mt-2 text-neutral-400">
+        <p className="text-[11px] mt-2" style={{ color: "var(--text-sub)" }}>
           전국 일반인 기준 <span className="text-orange-500">상위 37%</span>
         </p>
       </div>

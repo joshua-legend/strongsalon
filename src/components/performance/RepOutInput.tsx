@@ -64,33 +64,35 @@ export default function RepOutInput({
   };
 
   return (
-    <div className="rounded-2xl p-5 bg-neutral-950 border border-neutral-800 space-y-5">
+    <div className="rounded-2xl p-5 space-y-5" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}>
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={onBack}
-          className="p-1 rounded-lg hover:bg-neutral-800 text-neutral-400"
+          className="p-1 rounded-lg transition-colors"
+          style={{ color: "var(--text-sub)" }}
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h2 className="font-bebas text-lg text-white">
+        <h2 className="font-bebas text-lg" style={{ color: "var(--text-main)" }}>
           {category.icon} {category.label} 테스트
         </h2>
       </div>
 
       <div>
-        <p className="text-xs text-neutral-500 mb-2">기구 선택</p>
+        <p className="text-xs mb-2" style={{ color: "var(--text-sub)" }}>기구 선택</p>
         <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
           {equipmentOptions.map((eq) => (
             <button
               key={eq.id}
               type="button"
               onClick={() => setSelectedEquipment(eq.id)}
-              className={`shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                 selectedEquipment === eq.id
-                  ? "bg-lime-500/20 text-lime-400 border border-lime-500/50"
-                  : "bg-neutral-900 text-neutral-400 border border-neutral-800 hover:border-neutral-700"
+                  ? "bg-lime-500/20 text-lime-400 border-lime-500/50"
+                  : "bg-[var(--bg-body)] border-[var(--border-light)]"
               }`}
+              style={selectedEquipment !== eq.id ? { color: "var(--text-sub)" } : undefined}
             >
               {eq.name}
             </button>
@@ -102,13 +104,13 @@ export default function RepOutInput({
         <p className="text-sm text-amber-400 font-medium">
           기구를 {testWeight}kg으로 세팅하세요
         </p>
-        <p className="text-xs text-neutral-500 mt-1">
+        <p className="text-xs mt-1" style={{ color: "var(--text-sub)" }}>
           (체중 {bodyweight}kg × {weightRatio})
         </p>
       </div>
 
       <div>
-        <p className="text-xs text-neutral-500 mb-2">
+        <p className="text-xs mb-2" style={{ color: "var(--text-sub)" }}>
           해당 중량에서 최대 몇 회 수행했나요?
         </p>
         <div className="flex items-baseline justify-center gap-2">
@@ -118,9 +120,10 @@ export default function RepOutInput({
             value={reps}
             onChange={(e) => setReps(e.target.value)}
             placeholder="0"
-            className="font-bebas text-6xl w-32 text-center bg-transparent border-b-2 border-neutral-700 text-white focus:border-lime-400 focus:outline-none"
+            className="font-bebas text-6xl w-32 text-center bg-transparent border-b-2 focus:border-[var(--accent-main)] focus:outline-none"
+          style={{ borderColor: "var(--border-light)", color: "var(--text-main)" }}
           />
-          <span className="font-mono text-lg text-neutral-500">회</span>
+          <span className="font-mono text-lg" style={{ color: "var(--text-sub)" }}>회</span>
         </div>
       </div>
 
@@ -128,11 +131,12 @@ export default function RepOutInput({
         type="button"
         onClick={handleSubmit}
         disabled={!canSubmit}
-        className={`w-full py-4 rounded-xl font-bold text-sm ${
+        className={`w-full py-4 rounded-xl font-bold text-sm transition-colors ${
           canSubmit
-            ? "bg-lime-500 text-black hover:bg-lime-400"
-            : "bg-neutral-800 text-neutral-600 pointer-events-none"
+            ? "hover:brightness-110"
+            : "pointer-events-none opacity-50"
         }`}
+          style={canSubmit ? { backgroundColor: "var(--accent-main)", color: "var(--accent-text)" } : { backgroundColor: "var(--bg-card)", color: "var(--text-sub)" }}
       >
         기록 완료
       </button>

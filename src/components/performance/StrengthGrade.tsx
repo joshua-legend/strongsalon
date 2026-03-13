@@ -32,36 +32,36 @@ export default function StrengthGrade() {
             <p className="font-bebas text-[30px] leading-none text-yellow-500">
               {user?.level ?? "—"}
             </p>
-            <p className="text-[11px] text-neutral-400">
+            <p className="text-[11px]" style={{ color: "var(--text-sub)" }}>
               3대 합계 {user?.liftTotal ?? 0}kg
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 mb-2">
-          <span className="font-bebas text-[8px] text-neutral-400">NOVICE</span>
+          <span className="font-bebas text-[8px]" style={{ color: "var(--text-sub)" }}>NOVICE</span>
           <div className="flex-1">
             <ProgressBar value={user?.liftTotal ?? 360} max={405} gradient="linear-gradient(90deg, #eab308, #f97316)" height={8} />
           </div>
-          <span className="font-bebas text-[8px] text-neutral-400">ADVANCED</span>
+          <span className="font-bebas text-[8px]" style={{ color: "var(--text-sub)" }}>ADVANCED</span>
         </div>
-        <p className="text-[10px] text-center text-neutral-400">
+        <p className="text-[10px] text-center" style={{ color: "var(--text-sub)" }}>
           ADVANCED까지 합계 +45kg 필요
         </p>
       </div>
 
       <div className="card">
-        <p className="card-label mb-4">🏋️ 3대 운동 1RM</p>
+        <p className="card-label font-bold mb-4">🏋️ 3대 운동 1RM</p>
         <div className="flex flex-col gap-4">
           {lifts.map((lift, i) => (
             <div key={i}>
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[12px] font-medium text-white">
+                <span className="text-[12px] font-medium" style={{ color: "var(--text-main)" }}>
                   {lift.name}
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="font-bebas text-[18px]" style={{ color: lift.color }}>
-                    {lift.weight}<span className="text-[11px] text-neutral-400">kg</span>
+                    {lift.weight}<span className="text-[11px]" style={{ color: "var(--text-sub)" }}>kg</span>
                   </span>
                   <Badge variant={lift.grade === 'Intermediate' ? 'yellow' : 'orange'}>
                     {lift.grade}
@@ -78,8 +78,8 @@ export default function StrengthGrade() {
                 />
               </div>
               <div className="flex justify-between mt-1">
-                <span className="font-bebas text-[7px] text-neutral-400">0kg</span>
-                <span className="font-bebas text-[7px] text-neutral-400">상위 {100 - lift.pct}%</span>
+                <span className="font-bebas text-[7px]" style={{ color: "var(--text-sub)" }}>0kg</span>
+                <span className="font-bebas text-[7px]" style={{ color: "var(--text-sub)" }}>상위 {100 - lift.pct}%</span>
               </div>
             </div>
           ))}
@@ -87,7 +87,7 @@ export default function StrengthGrade() {
       </div>
 
       <div className="card">
-        <p className="card-label mb-4">📈 6개월 추이</p>
+        <p className="card-label font-bold mb-4">📈 6개월 추이</p>
         <StrengthLineChart data={trendData} />
         <div className="flex gap-4 mt-3 justify-center">
           {[
@@ -97,7 +97,7 @@ export default function StrengthGrade() {
           ].map(l => (
             <div key={l.label} className="flex items-center gap-1">
               <div className="w-3 h-[2px] rounded-full" style={{ background: l.color }} />
-              <span className="font-bebas text-[8px] text-neutral-400">{l.label}</span>
+              <span className="font-bebas text-[8px]" style={{ color: "var(--text-sub)" }}>{l.label}</span>
             </div>
           ))}
         </div>
@@ -125,7 +125,7 @@ function StrengthLineChart({ data }: { data: typeof trendData }) {
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${H}`}>
       {data.map((d, i) => (
-        <text key={i} x={getX(i)} y={H - 5} textAnchor="middle" fill="#a3a3a3" fontSize="8" fontFamily='"Bebas Neue", cursive'>
+        <text key={i} x={getX(i)} y={H - 5} textAnchor="middle" fill="var(--text-sub)" fontSize="8" fontFamily='"Bebas Neue", cursive'>
           {d.month}
         </text>
       ))}

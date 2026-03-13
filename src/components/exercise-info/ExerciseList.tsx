@@ -7,15 +7,15 @@ import { getExerciseGif } from "@/data/exercise-gifs";
 const DEFAULT_MODEL_URL =
   "https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Shoulder-Press.gif";
 
-const CATEGORY_COLORS: Record<ExerciseCategory | "전체", string> = {
-  전체: "bg-neutral-500",
-  가슴: "bg-lime-400",
-  등: "bg-orange-500",
-  어깨: "bg-yellow-500",
-  팔: "bg-cyan-500",
-  하체: "bg-purple-500",
-  코어: "bg-red-500",
-  유산소: "bg-blue-500",
+const CATEGORY_COLORS: Record<ExerciseCategory | "전체", { bg: string; text: string }> = {
+  전체: { bg: "var(--text-sub)", text: "white" },
+  가슴: { bg: "#a3e635", text: "black" },
+  등: { bg: "#f97316", text: "black" },
+  어깨: { bg: "#eab308", text: "black" },
+  팔: { bg: "#22d3ee", text: "black" },
+  하체: { bg: "#a855f7", text: "white" },
+  코어: { bg: "#ef4444", text: "white" },
+  유산소: { bg: "#3b82f6", text: "white" },
 };
 
 function getEquipment(item: ExerciseInfoItem): string {
@@ -41,7 +41,7 @@ export default function ExerciseList({ items, onSelect }: ExerciseListProps) {
   return (
     <div className="flex flex-col gap-3">
       {items.map((ex) => {
-        const badgeColor = CATEGORY_COLORS[ex.category] ?? "bg-neutral-500";
+        const badgeStyle = CATEGORY_COLORS[ex.category] ?? { bg: "var(--text-sub)", text: "white" };
         const modelUrl = ex.modelUrl ?? getExerciseGif(ex.id) ?? DEFAULT_MODEL_URL;
         const equipment = getEquipment(ex);
 
@@ -49,13 +49,13 @@ export default function ExerciseList({ items, onSelect }: ExerciseListProps) {
           <button
             key={ex.id}
             onClick={() => onSelect(ex)}
-            className="group bg-neutral-900 border border-neutral-800 rounded-xl p-3 flex gap-4 items-center hover:border-neutral-600 transition-colors cursor-pointer relative overflow-hidden shadow-lg text-left"
+            className="group bg-[var(--bg-card)] border border-[var(--border-light)] hover:border-[var(--text-sub)] rounded-xl p-3 flex gap-4 items-center transition-colors cursor-pointer relative overflow-hidden text-left"
           >
             {/* 우측 배경 장식 아이콘 */}
-            <Dumbbell className="absolute -right-4 -bottom-4 w-24 h-24 text-neutral-100 opacity-5 -rotate-12 pointer-events-none" />
+            <Dumbbell className="absolute -right-4 -bottom-4 w-24 h-24 -rotate-12 pointer-events-none transition-opacity duration-300" style={{ color: "var(--decor-icon-color)", opacity: "var(--decor-icon-opacity)" }} />
 
-            {/* 3D 썸네일 영역 (흰색 배경) */}
-            <div className="relative w-20 h-20 bg-white rounded-lg border border-neutral-700 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
+            {/* 3D 썸네일 영역 */}
+            <div className="relative w-20 h-20 bg-[var(--bg-card-hover)] rounded-lg border border-[var(--border-light)] overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
               <img
                 src={modelUrl}
                 alt={ex.name}
@@ -68,26 +68,27 @@ export default function ExerciseList({ items, onSelect }: ExerciseListProps) {
               {/* Skewed 뱃지 */}
               <div className="flex items-start mb-1">
                 <span
-                  className={`inline-block px-2 py-0.5 text-black font-bold text-[9px] uppercase italic -skew-x-12 ${badgeColor}`}
+                  className="inline-block px-2 py-0.5 font-bold text-[9px] uppercase italic -skew-x-12"
+                  style={{ backgroundColor: badgeStyle.bg, color: badgeStyle.text }}
                 >
                   <span className="skew-x-12 block">{ex.category}</span>
                 </span>
               </div>
 
               {/* 종목명 */}
-              <h3 className="text-xl font-bebas text-neutral-200 group-hover:text-white transition-colors truncate tracking-wide">
+              <h3 className="text-xl font-bebas text-[var(--text-main)] group-hover:text-[var(--text-main)] transition-colors truncate tracking-wide">
                 {ex.name}
               </h3>
 
               {/* 장비 메타데이터 태그 */}
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-[10px] font-mono text-neutral-500 flex items-center gap-1 border border-neutral-800 px-1.5 py-0.5 rounded bg-neutral-950">
+                <span className="text-[10px] font-mono text-[var(--text-sub)] flex items-center gap-1 border border-[var(--border-light)] px-1.5 py-0.5 rounded bg-[var(--bg-body)]">
                   {equipment}
                 </span>
               </div>
             </div>
 
-            <ChevronRight className="w-5 h-5 text-neutral-600 group-hover:text-lime-400 transition-colors mr-1 flex-shrink-0" />
+            <ChevronRight className="w-5 h-5 text-[var(--text-sub)] group-hover:text-[var(--accent-main)] transition-colors mr-1 flex-shrink-0" />
           </button>
         );
       })}

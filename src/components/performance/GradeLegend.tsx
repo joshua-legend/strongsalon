@@ -14,7 +14,7 @@ const grades: { grade: RankGrade; range: string }[] = [
 export default function GradeLegend() {
   return (
     <div className="card">
-      <p className="card-label mb-3">🏆 등급 기준</p>
+      <p className="card-label font-bold mb-3">🏆 등급 기준</p>
       <div className="flex gap-1">
         {grades.map(g => {
           const color = getGradeColor(g.grade);
@@ -22,14 +22,15 @@ export default function GradeLegend() {
           return (
             <div
               key={g.grade}
-              className={`flex-1 rounded-lg py-2 text-center relative ${
-                isActive ? 'bg-yellow-500/20 border border-yellow-500/50' : 'bg-neutral-900 border border-neutral-800'
+              className={`flex-1 rounded-lg py-2 text-center relative border ${
+                isActive ? 'bg-yellow-500/20 border-yellow-500/50' : 'border-[var(--border-light)]'
               }`}
+            style={!isActive ? { backgroundColor: "var(--bg-body)" } : undefined}
             >
-              <p className={`font-bebas text-[7px] font-bold mb-0.5 ${isActive ? '' : 'text-neutral-400'}`} style={isActive ? { color } : undefined}>
+              <p className="font-bebas text-[7px] font-bold mb-0.5" style={{ color: isActive ? color : "var(--text-sub)" }}>
                 {g.grade}
               </p>
-              <p className="font-bebas text-[7px] text-neutral-400">{g.range}</p>
+              <p className="font-bebas text-[7px]" style={{ color: "var(--text-sub)" }}>{g.range}</p>
               {isActive && (
                 <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full" style={{ background: color }} />
               )}

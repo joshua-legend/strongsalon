@@ -6,9 +6,16 @@ import { Hand } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { useWorkoutLog } from "./useWorkoutLog";
 import CondBox from "./CondBox";
-import DateBox from "./DateBox";
 import FreeArea from "./FreeArea";
+import CustomDropdown, { type DropdownOption } from "@/components/ui/CustomDropdown";
 import { getMockRecommendation } from "@/data/workoutRecommendation";
+
+const EST_TIME_OPTIONS: DropdownOption<number>[] = [
+  { value: 30, label: "30분" },
+  { value: 45, label: "45분" },
+  { value: 60, label: "60분" },
+  { value: 90, label: "90분" },
+];
 
 export default function WorkoutPage() {
   const log = useWorkoutLog();
@@ -54,15 +61,11 @@ export default function WorkoutPage() {
   const isInProgress = log.workoutPhase === "inProgress";
 
   const bottomNavHeight = 72;
-  const ctaBarHeight = 88;
+  const ctaBottomMargin = 16; // bt-m: 버튼과 바텀 네비 사이 간격
+  const ctaBarHeight = 88; // 스크롤 영역 padding-bottom
 
   return (
-    <div
-      className="min-h-full flex flex-col"
-      style={{
-        background: "#000",
-      }}
-    >
+    <div className="min-h-full flex flex-col bg-[var(--bg-body)]">
       {/* 스크롤 영역 (형제 1) */}
       <div
         className="flex-1 overflow-auto px-4 py-4"
@@ -70,96 +73,43 @@ export default function WorkoutPage() {
       >
         <div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
           <div className="flex flex-col gap-3.5">
-            {/* 운동 날짜 선택 */}
-            <DateBox value={log.workoutDate} onChange={log.setWorkoutDate} />
+            {/* 운동 시간 / 컨디션 드롭다운 */}
+            <div className="grid grid-cols-2 gap-3">
+              <CustomDropdown<number>
+                value={log.estMinutes}
+                options={EST_TIME_OPTIONS}
+                onChange={log.setEstMinutes}
+                subLabel="예상 운동시간"
+              />
+              <CondBox value={log.condition} onChange={log.setCondition} />
+            </div>
 
-            {/* 모드 선택: 추천 / 자유 */}
-            <div className="relative flex gap-2.5">
-              <motion.button
+            {/* 모드 선택: 추천 / 자유 (Segmented Control) */}
+            <div className="relative flex gap-2 rounded-2xl p-1 border shadow-sm" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)" }}>
+              <button
                 type="button"
                 onClick={() => handleModeSelect("recommended")}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`relative flex-1 py-4 px-5 rounded-2xl overflow-hidden flex items-center justify-center gap-2 transition-all duration-300 ${
+                className={`flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 text-[13px] font-bold text-white ${
                   mode === "recommended"
-                    ? "text-black"
-                    : "text-neutral-500 hover:text-neutral-300"
+                    ? "bg-[var(--accent-main)] border border-[var(--accent-main)] shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
+                    : "bg-black/20 border border-transparent"
                 }`}
-                style={
-                  mode === "recommended"
-                    ? {
-                        background: "linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%)",
-                        border: "1px solid rgba(251,146,60,.8)",
-                        boxShadow:
-                          "0 0 30px rgba(249,115,22,.5), 0 0 60px rgba(249,115,22,.2), inset 0 1px 0 rgba(255,255,255,.4)",
-                      }
-                    : {
-                        background: "rgba(255,255,255,.03)",
-                        border: "1px solid rgba(255,255,255,.08)",
-                      }
-                }
               >
-                {mode === "recommended" && (
-                  <motion.div
-                    className="absolute inset-0"
-                    initial={false}
-                    animate={{
-                      background: [
-                        "radial-gradient(circle at 20% 30%, rgba(255,255,255,.5) 0%, transparent 50%)",
-                        "radial-gradient(circle at 80% 70%, rgba(255,255,255,.3) 0%, transparent 50%)",
-                        "radial-gradient(circle at 20% 30%, rgba(255,255,255,.5) 0%, transparent 50%)",
-                      ],
-                    }}
-                    transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-                  />
-                )}
-                <span className="relative z-10 text-xl leading-none">✨</span>
-                <span className="relative z-10 font-semibold text-[15px] tracking-tight">추천</span>
-              </motion.button>
-
-              <motion.button
+                <span className="text-base">✨</span>
+                <span>추천</span>
+              </button>
+              <button
                 type="button"
                 onClick={() => handleModeSelect("free")}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`relative flex-1 py-4 px-5 rounded-2xl overflow-hidden flex items-center justify-center gap-2 transition-all duration-300 ${
+                className={`flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 text-[13px] font-bold text-white ${
                   mode === "free"
-                    ? "text-white"
-                    : "text-neutral-500 hover:text-neutral-300"
+                    ? "bg-[var(--accent-main)] border border-[var(--accent-main)] shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
+                    : "bg-black/20 border border-transparent"
                 }`}
-                style={
-                  mode === "free"
-                    ? {
-                        background: "linear-gradient(135deg, rgba(34,211,238,.25) 0%, rgba(6,182,212,.2) 50%, rgba(8,145,178,.15) 100%)",
-                        border: "1px solid rgba(34,211,238,.5)",
-                        boxShadow:
-                          "0 0 25px rgba(34,211,238,.25), 0 0 50px rgba(34,211,238,.1), inset 0 1px 0 rgba(255,255,255,.15)",
-                      }
-                    : {
-                        background: "rgba(255,255,255,.03)",
-                        border: "1px solid rgba(255,255,255,.08)",
-                      }
-                }
               >
-                {mode === "free" && (
-                  <motion.div
-                    className="absolute inset-0 opacity-60"
-                    initial={false}
-                    animate={{
-                      opacity: [0.4, 0.7, 0.4],
-                    }}
-                    transition={{ duration: 2.5, repeat: Infinity, repeatType: "reverse" }}
-                    style={{
-                      background: "radial-gradient(circle at 50% 50%, rgba(34,211,238,.2) 0%, transparent 70%)",
-                    }}
-                  />
-                )}
-                <Hand
-                  className={`relative z-10 w-5 h-5 shrink-0 ${mode === "free" ? "text-cyan-300" : "text-neutral-500"}`}
-                  strokeWidth={2}
-                />
-                <span className="relative z-10 font-semibold text-[15px] tracking-tight">자유</span>
-              </motion.button>
+                <Hand className="w-4 h-4 shrink-0" strokeWidth={2} style={{ color: "inherit" }} />
+                <span>자유</span>
+              </button>
             </div>
 
             {/* 추천 모드 시 추천 이유 */}
@@ -173,22 +123,16 @@ export default function WorkoutPage() {
                   className="overflow-hidden"
                 >
                   <div
-                    className="rounded-2xl px-4 py-3 mt-1"
-                    style={{
-                      background: "linear-gradient(180deg, rgba(249,115,22,.06) 0%, rgba(249,115,22,.02) 50%, transparent 100%)",
-                      border: "1px solid rgba(249,115,22,.2)",
-                      boxShadow: "0 0 30px rgba(249,115,22,.08)",
-                    }}
+                    className="rounded-2xl px-4 py-3 mt-1 border"
+                    style={{ backgroundColor: "var(--accent-bg)", borderColor: "var(--border-light)" }}
                   >
-                    <p className="text-[12px] text-orange-300/90">
+                    <p className="text-[12px] transition-colors duration-300" style={{ color: "var(--accent-main)" }}>
                       ✨ {recommendationReason}
                     </p>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-
-            <CondBox value={log.condition} onChange={log.setCondition} />
             <FreeArea
               freeExercises={log.freeExercises}
               orderedIds={log.orderedIds}
@@ -201,7 +145,6 @@ export default function WorkoutPage() {
               onToggleFav={log.toggleFav}
               onToggleCardio={log.toggleCardio}
               onAddSet={(id) => log.addFreeSet(id)}
-              onCopyLastSet={log.copyLastFreeSet}
               onDeleteSet={log.delFreeSet}
               onSetChange={log.onFSetChange}
               onSetStatusChange={log.setSetStatus}
@@ -213,23 +156,24 @@ export default function WorkoutPage() {
         </div>
       </div>
 
-      {/* 고정 CTA 버튼 - 바텀 네비 위 */}
-      <button
-        type="button"
-        onClick={handleButtonClick}
-        disabled={(isReady && !log.isWorkoutReady) || (isInProgress && !(log.allSetsChecked && log.allCardioChecked))}
-        className="group relative fixed left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[calc(480px-2rem)] z-30 px-6 py-4 rounded-2xl font-black text-base uppercase italic text-white transition-all duration-300 ease-out hover:scale-[1.02] hover:brightness-110 hover:shadow-[0_0_28px_rgba(163,230,53,.6)] active:scale-[0.97] flex items-center justify-center disabled:opacity-40 disabled:pointer-events-none disabled:hover:scale-100"
+      {/* 고정 CTA 바 - 바텀 네비처럼 하단 고정 (bt-m 적용) */}
+      <div
+        className="fixed left-0 right-0 w-full max-w-[480px] mx-auto z-30 px-4 flex justify-center"
         style={{
-          bottom: `calc(${bottomNavHeight}px + env(safe-area-inset-bottom, 0px) + 8px)`,
-          background: isInProgress ? "#f97316" : "#a3e635",
-          boxShadow: isInProgress
-            ? "0 0 20px rgba(249,115,22,.55), 0 0 40px rgba(249,115,22,.2)"
-            : "0 0 20px rgba(163,230,53,.55), 0 0 40px rgba(163,230,53,.2)",
-          textShadow: "0 1px 2px rgba(0,0,0,.2)",
+          bottom: `calc(${bottomNavHeight}px + env(safe-area-inset-bottom, 0px) + ${ctaBottomMargin}px)`,
         }}
       >
-        <div className="absolute inset-0 bg-stripes opacity-20 pointer-events-none transition-opacity duration-300 group-hover:opacity-30 rounded-2xl" />
-        <span className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={handleButtonClick}
+          disabled={(isReady && !log.isWorkoutReady) || (isInProgress && !(log.allSetsChecked && log.allCardioChecked))}
+          className="w-full max-w-[calc(480px-2rem)] py-4 rounded-2xl font-bold text-base transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-40 disabled:pointer-events-none disabled:hover:scale-100"
+          style={{
+            backgroundColor: "var(--accent-main)",
+            color: "white",
+            boxShadow: "0 4px 14px rgba(0,0,0,0.2)",
+          }}
+        >
           {isReady ? (
             <>
               <span>✅</span>
@@ -241,8 +185,8 @@ export default function WorkoutPage() {
               <span>운동 종료</span>
             </>
           )}
-        </span>
-      </button>
+        </button>
+      </div>
 
       <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
         {showOverlay && !overlayExiting && (
@@ -252,7 +196,8 @@ export default function WorkoutPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm"
+            style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
           >
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
@@ -271,8 +216,8 @@ export default function WorkoutPage() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
-                className="font-bebas text-5xl md:text-6xl text-lime-400 tracking-wider"
-                style={{ textShadow: "0 0 30px rgba(163,230,53,.6)" }}
+                className="font-bebas text-5xl md:text-6xl tracking-wider"
+                style={{ color: "var(--accent-main)" }}
               >
                 오운완 ✨
               </motion.div>
@@ -280,7 +225,8 @@ export default function WorkoutPage() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.35, duration: 0.4 }}
-                className="mt-3 text-lg text-neutral-400"
+                className="mt-3 text-lg"
+                style={{ color: "var(--text-sub)" }}
               >
                 오늘도 해냈다
               </motion.p>
@@ -288,7 +234,8 @@ export default function WorkoutPage() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.45, duration: 0.4 }}
-                className="mt-2 text-sm text-neutral-500 font-mono"
+                className="mt-2 text-sm font-mono"
+                style={{ color: "var(--text-sub)" }}
               >
                 ⏱ {log.formatElapsed(log.completedElapsedSec)}
               </motion.p>

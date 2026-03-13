@@ -59,7 +59,7 @@ export default function ConditionDonut() {
               <circle
                 cx="65" cy="65" r={R}
                 fill="none"
-                stroke="rgba(255,255,255,0.06)"
+                stroke="var(--border-light)"
                 strokeWidth="12"
               />
             </svg>
@@ -68,8 +68,8 @@ export default function ConditionDonut() {
             </div>
           </div>
           <div className="text-center">
-            <p className="font-bebas text-[12px] text-neutral-400">아직 컨디션 데이터가 없습니다</p>
-            <p className="font-bebas text-[10px] text-neutral-600 mt-1">운동 탭에서 운동을 완료하면 컨디션이 기록됩니다</p>
+            <p className="font-bebas text-[12px] text-[var(--text-sub)]">아직 컨디션 데이터가 없습니다</p>
+            <p className="font-bebas text-[10px] text-[var(--text-sub)]/70 mt-1">운동 탭에서 운동을 완료하면 컨디션이 기록됩니다</p>
           </div>
         </div>
       </div>
@@ -108,7 +108,7 @@ export default function ConditionDonut() {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="font-bebas text-[28px] leading-none" style={{ color: avgColor }}>{avg}</span>
-            <span className="font-bebas text-[8px] text-neutral-400">평균</span>
+            <span className="font-bebas text-[8px] text-[var(--text-sub)]">평균</span>
           </div>
         </div>
 
@@ -116,18 +116,18 @@ export default function ConditionDonut() {
           {data.map((d, i) => (
             <div key={i} className="flex items-center gap-2">
               <span className="text-[11px] w-16 shrink-0">{d.emoji} {d.label}</span>
-              <div className="flex-1 h-[5px] rounded-full overflow-hidden bg-neutral-950/50">
+              <div className="flex-1 h-[5px] rounded-full overflow-hidden bg-[var(--bg-body)]/50">
                 <div
                   className="h-full rounded-full transition-all duration-1000"
                   style={{ width: `${d.pct}%`, background: d.color }}
                 />
               </div>
-              <span className="font-bebas text-[9px] w-8 text-right text-neutral-500">
+              <span className="font-bebas text-[9px] w-8 text-right text-[var(--text-sub)]">
                 {d.pct}%
               </span>
             </div>
           ))}
-          <span className="font-bebas text-[8px] text-neutral-600 mt-0.5">
+          <span className="font-bebas text-[8px] text-[var(--text-sub)]/80 mt-0.5">
             총 {total}회 기록
           </span>
         </div>

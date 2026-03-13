@@ -42,10 +42,10 @@ export default function CarrotShop({ open, onClose }: CarrotShopProps) {
   return (
     <>
       <div className="fixed inset-0 z-[900] bg-black/40" onClick={onClose} />
-      <div className="fixed left-0 right-0 bottom-0 z-[901] rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))] max-h-[80vh] overflow-auto bg-neutral-950 border-t border-neutral-800">
+      <div className="fixed left-0 right-0 bottom-0 z-[901] rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))] max-h-[80vh] overflow-auto bg-[var(--bg-body)] border-t border-[var(--border-light)]">
         <div className="flex items-center justify-between mb-4">
-          <p className="font-bebas text-[24px] mb-0 text-lime-400">🥕 {balance}</p>
-          <button onClick={onClose} className="text-[14px] text-neutral-400">
+          <p className="font-bebas text-[24px] mb-0 text-[var(--accent-main)]">🥕 {balance}</p>
+          <button onClick={onClose} className="text-[14px] text-[var(--text-sub)]">
             닫기
           </button>
         </div>
@@ -55,8 +55,8 @@ export default function CarrotShop({ open, onClose }: CarrotShopProps) {
             onClick={() => setTab("shop")}
             className={`flex-1 py-2 rounded-lg text-[11px] font-medium ${
               tab === "shop"
-                ? "bg-lime-400/20 text-lime-400 border border-lime-400/50"
-                : "bg-neutral-900 text-neutral-400"
+                ? "bg-[var(--accent-bg)] text-[var(--accent-main)] border border-[var(--accent-main)]/50"
+                : "bg-[var(--bg-card)] text-[var(--text-sub)]"
             }`}
           >
             상점
@@ -65,8 +65,8 @@ export default function CarrotShop({ open, onClose }: CarrotShopProps) {
             onClick={() => setTab("history")}
             className={`flex-1 py-2 rounded-lg text-[11px] font-medium ${
               tab === "history"
-                ? "bg-lime-400/20 text-lime-400 border border-lime-400/50"
-                : "bg-neutral-900 text-neutral-400"
+                ? "bg-[var(--accent-bg)] text-[var(--accent-main)] border border-[var(--accent-main)]/50"
+                : "bg-[var(--bg-card)] text-[var(--text-sub)]"
             }`}
           >
             이력
@@ -80,11 +80,11 @@ export default function CarrotShop({ open, onClose }: CarrotShopProps) {
                 key={item.id}
                 onClick={() => handlePurchase(item)}
                 disabled={balance < item.cost}
-                className="rounded-xl p-4 text-left disabled:opacity-50 bg-neutral-900 border border-neutral-800 hover:border-neutral-600"
+                className="rounded-xl p-4 text-left disabled:opacity-50 bg-[var(--bg-card)] border border-[var(--border-light)] hover:border-[var(--text-sub)]"
               >
                 <span className="text-[24px]">{item.emoji}</span>
-                <p className="font-bebas text-[11px] mt-2 text-white">{item.name}</p>
-                <p className="font-bebas text-[16px] text-lime-400">{item.cost} 🥕</p>
+                <p className="font-bebas text-[11px] mt-2 text-[var(--text-main)]">{item.name}</p>
+                <p className="font-bebas text-[16px] text-[var(--accent-main)]">{item.cost} 🥕</p>
               </button>
             ))}
           </div>

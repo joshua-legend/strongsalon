@@ -1,9 +1,63 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable.css");
 @import "tailwindcss";
+
+/* FitLog Design System - Color Variables */
+:root {
+  /* Dark Mode (Default): Black + Neon Lime */
+  --bg-outer: #262626;
+  --bg-body: #0a0a0a;
+  --bg-card: #171717;
+  --bg-card-hover: #262626;
+  --text-main: #ffffff;
+  --text-sub: #a3a3a3;
+  --border-light: #262626;
+  --border-focus: #a3e635;
+  --accent-main: #a3e635;
+  --accent-sub: #22c55e;
+  --accent-bg: rgba(163, 230, 53, 0.1);
+  --accent-text: #000000;
+}
+
+/* 라이브러리 탭 장식 아이콘 (덤벨) - 테마별 가시성 */
+:root {
+  --decor-icon-opacity: 0.05;
+  --decor-icon-color: var(--text-main);
+}
+
+/* Challenge tab hero boxes - theme-aware */
+:root {
+  --challenge-hero-bg: linear-gradient(135deg, rgba(163,230,53,.06), rgba(163,230,53,.02));
+  --challenge-hero-border: rgba(163, 230, 53, 0.2);
+  --challenge-rank-bg: linear-gradient(135deg, rgba(168,85,247,.12), rgba(255,94,31,.08));
+  --challenge-rank-border: rgba(168, 85, 247, 0.2);
+}
+
+.theme-light {
+  /* Light Mode: White + Clear Blue */
+  --decor-icon-opacity: 0.18;
+  --decor-icon-color: var(--text-sub);
+  --bg-outer: #e5e5e5;
+  --bg-body: #f3f4f6;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9fafb;
+  --text-main: #111827;
+  --text-sub: #6b7280;
+  --border-light: #e5e7eb;
+  --border-focus: #3b82f6;
+  --accent-main: #3b82f6;
+  --accent-sub: #22c55e;
+  --accent-bg: #eff6ff;
+  --accent-text: #ffffff;
+  --challenge-hero-bg: var(--accent-bg);
+  --challenge-hero-border: var(--border-light);
+  --challenge-rank-bg: var(--accent-bg);
+  --challenge-rank-border: var(--border-light);
+}
 
 @theme inline {
   --font-bebas: var(--font-bebas-neue);
   --font-mono: var(--font-space-mono), "Space Mono", ui-monospace, monospace;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Pretendard Variable", Pretendard, ui-sans-serif, system-ui, sans-serif;
   --color-wild-primary: #f97316;
   --color-wild-primary-rgb: 249, 115, 22;
 }
@@ -23,15 +77,22 @@ body {
 }
 
 body {
-  background: #0a0a0a;
-  color: white;
-  font-family: var(--font-bebas), "Bebas Neue", cursive;
+  --font-bebas: var(--font-bebas-neue, "Bebas Neue"), "Bebas Neue", sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  font-family: "Pretendard Variable", Pretendard, system-ui, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 @media (min-width: 540px) {
   body {
-    background: #0a0a0a;
+    background-color: var(--bg-body);
   }
+}
+
+.font-bebas {
+  font-family: var(--font-bebas-neue, "Bebas Neue"), "Bebas Neue", sans-serif;
+  letter-spacing: 0.05em;
 }
 
 ::-webkit-scrollbar {
@@ -41,24 +102,25 @@ body {
   scrollbar-width: none;
 }
 
-/* custom-scrollbar: horizontal chips 등에서만 얇은 스크롤바 표시 */
+/* custom-scrollbar: 얇고 깔끔한 스크롤바 */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgb(64 64 64) transparent;
+  scrollbar-color: var(--border-light) transparent;
 }
 .custom-scrollbar::-webkit-scrollbar {
   display: block;
+  width: 4px;
   height: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgb(64 64 64);
-  border-radius: 2px;
+  background-color: var(--border-light);
+  border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgb(82 82 82);
+  background-color: var(--bg-card-hover);
 }
 
 button,
@@ -143,16 +205,17 @@ input {
   margin: 0 auto;
   height: 100dvh;
   position: relative;
-  background: #0a0a0a;
+  background-color: var(--bg-body);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 @media (min-width: 540px) {
   .app-container {
-    border-left: 1px solid rgb(38 38 38);
-    border-right: 1px solid rgb(38 38 38);
+    border-left: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-light);
   }
 }
 
@@ -174,10 +237,11 @@ input {
 }
 
 .card {
-  background: #171717;
-  border: 1px solid rgb(38 38 38);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-radius: 1rem;
   padding: 1.125rem;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
 }
 
 .card-label {
@@ -185,7 +249,7 @@ input {
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgb(163 163 163);
+  color: var(--text-sub);
 }
 
 .font-sans {
@@ -204,7 +268,7 @@ input {
 
 .progress-track {
   height: 6px;
-  background: rgb(23 23 23);
+  background: var(--bg-card);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -229,9 +293,9 @@ input[type=range].tactical-slider {
 input[type=range].tactical-slider:focus { outline: none; }
 input[type=range].tactical-slider::-webkit-slider-runnable-track {
   width: 100%; height: 12px; cursor: pointer;
-  background: #171717;
-  border: 1px solid #262626; border-radius: 2px;
-  background-image: repeating-linear-gradient(90deg, transparent, transparent 10%, #262626 10%, #262626 11%);
+  background: var(--bg-card);
+  border: 1px solid var(--border-light); border-radius: 2px;
+  background-image: repeating-linear-gradient(90deg, transparent, transparent 10%, var(--border-light) 10%, var(--border-light) 11%);
 }
 input[type=range].tactical-slider::-webkit-slider-thumb {
   height: 28px; width: 14px; border-radius: 2px;
@@ -290,19 +354,19 @@ input[type=range].slider-core::-webkit-slider-runnable-track {
   width: 100%;
   height: 6px;
   cursor: pointer;
-  background: #262626;
+  background: var(--border-light);
   border-radius: 4px;
 }
 input[type=range].slider-core::-webkit-slider-thumb {
   height: 20px;
   width: 20px;
   border-radius: 50%;
-  background: #a3e635;
+  background: var(--accent-main);
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -7px;
   box-shadow: 0 0 10px rgba(163,230,53,0.5);
-  border: 2px solid #0a0a0a;
+  border: 2px solid var(--bg-body);
 }
 
 /* ── Goal Tracker Setup Wizard ── */
@@ -347,8 +411,8 @@ input[type="range"].setup-slider::-webkit-slider-runnable-track {
   width: 100%;
   height: 14px;
   cursor: pointer;
-  background: #171717;
-  border: 2px solid #262626;
+  background: var(--bg-card);
+  border: 2px solid var(--border-light);
   border-radius: 2px;
 }
 input[type="range"].setup-slider::-webkit-slider-thumb {
@@ -385,27 +449,27 @@ input[type="number"] {
   height: 3rem;
   padding: 0 2.75rem 0 1rem;
   font-size: 0.875rem;
-  color: white;
-  background-color: #171717;
+  color: var(--text-main);
+  background-color: var(--bg-card);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
-  border: 1px solid rgb(64 64 64);
+  border: 1px solid var(--border-light);
   border-radius: 0.75rem;
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .select-signup:hover {
-  border-color: rgb(82 82 82);
+  border-color: var(--bg-card-hover);
 }
 .select-signup:focus {
   outline: none;
-  border-color: rgba(163, 230, 53, 0.6);
-  box-shadow: 0 0 0 1px rgba(163, 230, 53, 0.15);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 1px var(--accent-bg);
 }
 .select-signup option {
-  background: #171717;
-  color: white;
+  background: var(--bg-card);
+  color: var(--text-main);
   padding: 0.5rem;
 }
 
@@ -418,17 +482,17 @@ input[type="number"] {
 /* CustomSelect 드롭다운 옵션 리스트 */
 .custom-select-dropdown {
   scrollbar-width: thin;
-  scrollbar-color: rgb(64 64 64) transparent;
+  scrollbar-color: var(--border-light) transparent;
 }
 .custom-select-dropdown::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 .custom-select-dropdown::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-select-dropdown::-webkit-scrollbar-thumb {
-  background: rgb(64 64 64);
-  border-radius: 3px;
+  background-color: var(--border-light);
+  border-radius: 4px;
 }
 
 .custom-select-option {
@@ -485,4 +549,50 @@ input[type="number"] {
 }
 .animate-breathing-glow {
   animation: breathingGlow 2s ease-in-out infinite;
+}
+
+/* ── FitLog Design System: Core Component Classes ── */
+.btn-primary {
+  width: 100%;
+  border-radius: 0.75rem;
+  padding: 1rem 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  background-color: var(--accent-main);
+  color: var(--accent-text);
+  transition: all 0.3s;
+}
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.input-base {
+  width: 100%;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  font-size: 0.875rem;
+  outline: none;
+  display: block;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.input-base:focus {
+  border-color: var(--border-focus);
+}
+
+.list-item {
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  background-color: var(--bg-card-hover);
+  transition: background-color 0.3s;
 }

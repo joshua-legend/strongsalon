@@ -38,10 +38,10 @@ export default function PerformanceTab() {
       <TierDistributionModal open={showTierModal} onClose={() => setShowTierModal(false)} />
 
       {showWeightPrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-          <div className="rounded-2xl p-6 bg-neutral-900 border border-neutral-800 w-full max-w-sm">
-            <h3 className="font-bebas text-lg text-white mb-2">측정 전 체중 입력</h3>
-            <p className="text-sm text-neutral-400 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.6)" }}>
+          <div className="rounded-2xl p-6 w-full max-w-sm" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}>
+            <h3 className="font-bebas text-lg font-bold mb-2" style={{ color: "var(--text-main)" }}>측정 전 체중 입력</h3>
+            <p className="text-sm mb-4" style={{ color: "var(--text-sub)" }}>
               체중 대비 점수 계산을 위해 현재 체중(kg)을 입력해주세요.
             </p>
             <input
@@ -50,16 +50,19 @@ export default function PerformanceTab() {
               value={tempWeight}
               onChange={(e) => setTempWeight(e.target.value)}
               placeholder="예: 75"
-              className="w-full font-mono text-lg bg-neutral-800 border border-neutral-700 px-4 py-3 rounded-xl text-white focus:border-lime-400 focus:outline-none mb-4"
+              className="w-full font-mono text-lg px-4 py-3 rounded-xl focus:outline-none focus:border-[var(--border-focus)] mb-4"
+              style={{ backgroundColor: "var(--bg-body)", border: "1px solid var(--border-light)", color: "var(--text-main)" }}
             />
             <div className="flex gap-2">
               <button type="button" onClick={handleWeightPromptCancel}
-                className="flex-1 py-3 rounded-xl font-bold bg-neutral-800 text-neutral-300">
+                className="flex-1 py-3 rounded-xl font-bold transition-colors"
+                style={{ backgroundColor: "var(--bg-card)", color: "var(--text-main)", border: "1px solid var(--border-light)" }}>
                 취소
               </button>
               <button type="button" onClick={handleWeightPromptConfirm}
                 disabled={!tempWeight || parseFloat(tempWeight) <= 0}
-                className="flex-1 py-3 rounded-xl font-bold bg-lime-500 text-black disabled:opacity-40 disabled:pointer-events-none">
+                className="flex-1 py-3 rounded-xl font-bold disabled:opacity-40 disabled:pointer-events-none transition-colors hover:brightness-110"
+                style={{ backgroundColor: "var(--accent-main)", color: "var(--accent-text)" }}>
                 확인
               </button>
             </div>

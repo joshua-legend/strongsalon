@@ -20,7 +20,7 @@ export default function GoalTrackerTabs() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-full p-1 bg-neutral-900 border border-neutral-800 flex">
+      <div className="rounded-full p-1 bg-[var(--bg-card)] border border-[var(--border-light)] flex">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -28,8 +28,8 @@ export default function GoalTrackerTabs() {
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-1.5 px-4 rounded-full text-xs font-bold transition-all ${
               activeTab === tab.id
-                ? "bg-neutral-800 text-white"
-                : "text-neutral-500"
+                ? "bg-[var(--bg-card-hover)] text-[var(--text-main)]"
+                : "text-[var(--text-sub)]"
             }`}
           >
             {tab.label}
@@ -39,7 +39,7 @@ export default function GoalTrackerTabs() {
 
       <div className="transition-opacity duration-200" style={{ opacity: 1 }}>
         {activeTab === "goal" && (activeQuest ? <UnifiedGoalCard /> : (
-          <div className="py-12 text-center text-xs text-neutral-500">
+          <div className="py-12 text-center text-xs text-[var(--text-sub)]">
             목표를 설정하면 골 트래커가 표시됩니다
           </div>
         ))}

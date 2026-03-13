@@ -16,20 +16,21 @@ export default function TierDistributionModal({ open, onClose }: TierDistributio
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="relative w-full max-w-sm bg-neutral-900 border border-orange-500/30 rounded-2xl p-5 shadow-xl animate-zoom-in-95">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm" style={{ backgroundColor: "rgba(0,0,0,0.6)" }}>
+      <div className="relative w-full max-w-sm rounded-2xl p-5 shadow-xl animate-zoom-in-95" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}>
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 p-1 rounded-lg text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors"
+          className="absolute top-3 right-3 p-1 rounded-lg transition-colors hover:opacity-80"
+          style={{ color: "var(--text-sub)" }}
           aria-label="닫기"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <h3 className="font-bebas text-xl text-white mb-4 tracking-wider">
+        <h3 className="font-bebas text-xl font-bold mb-4 tracking-wider" style={{ color: "var(--text-main)" }}>
           티어 분포
         </h3>
-        <p className="text-[11px] text-neutral-400 mb-4">
+        <p className="text-[11px] mb-4" style={{ color: "var(--text-sub)" }}>
           전체 유저 기준 정규 분포
         </p>
 
@@ -55,7 +56,7 @@ export default function TierDistributionModal({ open, onClose }: TierDistributio
           })}
         </div>
 
-        <div className="flex justify-between gap-1 border-t border-neutral-800 pt-3">
+        <div className="flex justify-between gap-1 border-t pt-3" style={{ borderColor: "var(--border-light)" }}>
           {TIER_ORDER.map((tierId) => {
             const cfg = ANIMAL_TIER_CONFIG[tierId];
             return (
@@ -64,7 +65,7 @@ export default function TierDistributionModal({ open, onClose }: TierDistributio
                 className="flex flex-col items-center gap-0.5 min-w-0 flex-1"
               >
                 <span className="text-lg">{cfg.emoji}</span>
-                <span className="text-[9px] text-neutral-500 truncate w-full text-center">
+                <span className="text-[9px] truncate w-full text-center" style={{ color: "var(--text-sub)" }}>
                   {cfg.label}
                 </span>
               </div>

@@ -49,8 +49,7 @@ export default function CardioArea({ entries, onUpdate, onRemove }: CardioAreaPr
               {/* Inputs */}
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <label
-                  className="flex items-center gap-1.5 font-bebas text-[10px] tracking-wider"
-                  style={{ color: '#fff' }}
+                  className="flex items-center gap-1.5 font-bebas text-[10px] tracking-wider text-[var(--text-main)]"
                 >
                   <span>km</span>
                   <input
@@ -61,13 +60,12 @@ export default function CardioArea({ entries, onUpdate, onRemove }: CardioAreaPr
                     onChange={(ev) =>
                       onUpdate(e.id, { distanceKm: parseFloat(ev.target.value) || 0 })
                     }
-                    className="w-16 rounded-xl py-1.5 px-2 font-bebas text-[13px] outline-none text-white transition-all focus:shadow-[0_0_16px_rgba(0,229,255,.3)] focus:border-cyan-400/60 border"
-                    style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,.07)' }}
+                    className="w-16 rounded-xl py-1.5 px-2 font-bebas text-[13px] outline-none text-[var(--text-main)] transition-all focus:shadow-[0_0_16px_rgba(0,229,255,.3)] focus:border-cyan-400/60 border"
+                    style={{ background: 'var(--bg-body)', borderColor: 'var(--border-light)' }}
                   />
                 </label>
                 <label
-                  className="flex items-center gap-1.5 font-bebas text-[10px] tracking-wider"
-                  style={{ color: '#fff' }}
+                  className="flex items-center gap-1.5 font-bebas text-[10px] tracking-wider text-[var(--text-main)]"
                 >
                   <span>분</span>
                   <input
@@ -78,8 +76,8 @@ export default function CardioArea({ entries, onUpdate, onRemove }: CardioAreaPr
                     onChange={(ev) =>
                       onUpdate(e.id, { timeMinutes: parseInt(ev.target.value, 10) || 0 })
                     }
-                    className="w-14 rounded-xl py-1.5 px-2 font-bebas text-[13px] outline-none text-white transition-all focus:shadow-[0_0_16px_rgba(0,229,255,.3)] focus:border-cyan-400/60 border"
-                    style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,.07)' }}
+                    className="w-14 rounded-xl py-1.5 px-2 font-bebas text-[13px] outline-none text-[var(--text-main)] transition-all focus:shadow-[0_0_16px_rgba(0,229,255,.3)] focus:border-cyan-400/60 border"
+                    style={{ background: 'var(--bg-body)', borderColor: 'var(--border-light)' }}
                   />
                 </label>
               </div>
@@ -88,8 +86,8 @@ export default function CardioArea({ entries, onUpdate, onRemove }: CardioAreaPr
               <button
                 type="button"
                 onClick={() => onRemove(e.id)}
-                className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:bg-red-500/10 hover:text-red-500 hover:shadow-[0_0_10px_rgba(239,68,68,.2)]"
-                style={{ color: '#fff' }}
+                className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:bg-red-500/10 hover:text-red-500"
+                style={{ color: "var(--text-main)" }}
                 aria-label="삭제"
               >
                 ✕

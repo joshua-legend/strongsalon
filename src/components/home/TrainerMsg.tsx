@@ -11,13 +11,13 @@ export default function TrainerMsg() {
           이
         </div>
         <div>
-          <p className="text-[12px] font-medium text-white">
+          <p className="text-[12px] font-medium text-[var(--text-main)]">
             {user?.trainerName ?? ""} 트레이너
           </p>
-          <p className="font-bebas text-[8px] text-neutral-400">오늘 메시지</p>
+          <p className="font-bebas text-[8px] text-[var(--text-sub)]">오늘 메시지</p>
         </div>
       </div>
-      <p className="text-[12px] leading-relaxed text-neutral-400">
+      <p className="text-[12px] leading-relaxed text-[var(--text-sub)]">
         "민준씨, 오늘 벤치프레스 102.5kg 도전해봅시다! 지난주 100kg 6회 성공했으니 충분히 가능합니다. 폼 유지에 집중하세요 💪"
       </p>
     </div>

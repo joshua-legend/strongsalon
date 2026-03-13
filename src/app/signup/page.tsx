@@ -104,70 +104,70 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="auth-page-scroll flex flex-col items-center px-5 py-8 bg-neutral-950 text-white">
+    <div className="auth-page-scroll flex flex-col items-center px-5 py-8 bg-[var(--bg-body)] text-[var(--text-main)]">
       <div className="w-full max-w-[400px] flex flex-col">
         <Link href="/login" className="font-bebas text-[32px] tracking-wide leading-none mb-2">
-          <span className="text-orange-500">Fit</span>
-          <span className="text-neutral-400">Log</span>
+          <span className="text-[var(--accent-main)]">Fit</span>
+          <span className="text-[var(--text-sub)]">Log</span>
         </Link>
-        <p className="font-bebas text-[10px] tracking-widest uppercase mb-8 text-neutral-400">
+        <p className="font-bebas text-[10px] tracking-widest uppercase mb-8 text-[var(--text-sub)]">
           나의 피트니스 기록
         </p>
 
-        <h1 className="font-bebas text-[28px] tracking-wide mb-2 text-white">
+        <h1 className="font-bebas text-[28px] tracking-wide mb-2 text-[var(--text-main)]">
           회원가입
         </h1>
-        <p className="text-[13px] mb-6 text-neutral-400">
+        <p className="text-[13px] mb-6 text-[var(--text-sub)]">
           맞춤 운동 추천을 위해 아래 정보를 입력해주세요
         </p>
 
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
           <div>
-            <label className="text-xs text-neutral-500 block mb-1">아이디</label>
+            <label className="text-xs text-[var(--text-sub)] block mb-1">아이디</label>
             <input
               type="text"
               placeholder="아이디"
               value={id}
               onChange={(e) => setId(e.target.value)}
-              className="w-full h-12 rounded-xl px-4 bg-neutral-900 border border-neutral-700 text-white placeholder:text-neutral-500 text-[14px]"
+              className="w-full h-12 rounded-xl px-4 bg-[var(--bg-card)] border border-[var(--border-light)] text-[var(--text-main)] placeholder:text-[var(--text-sub)] text-[14px] outline-none focus:border-[var(--border-focus)] transition-colors duration-300"
             />
           </div>
           <div>
-            <label className="text-xs text-neutral-500 block mb-1">비밀번호</label>
+            <label className="text-xs text-[var(--text-sub)] block mb-1">비밀번호</label>
             <input
               type="password"
               placeholder="4자 이상"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-12 rounded-xl px-4 bg-neutral-900 border border-neutral-700 text-white placeholder:text-neutral-500 text-[14px]"
+              className="w-full h-12 rounded-xl px-4 bg-[var(--bg-card)] border border-[var(--border-light)] text-[var(--text-main)] placeholder:text-[var(--text-sub)] text-[14px] outline-none focus:border-[var(--border-focus)] transition-colors duration-300"
             />
           </div>
           <div>
-            <label className="text-xs text-neutral-500 block mb-1">비밀번호 확인</label>
+            <label className="text-xs text-[var(--text-sub)] block mb-1">비밀번호 확인</label>
             <input
               type="password"
               placeholder="비밀번호 다시 입력"
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
-              className="w-full h-12 rounded-xl px-4 bg-neutral-900 border border-neutral-700 text-white placeholder:text-neutral-500 text-[14px]"
+              className="w-full h-12 rounded-xl px-4 bg-[var(--bg-card)] border border-[var(--border-light)] text-[var(--text-main)] placeholder:text-[var(--text-sub)] text-[14px] outline-none focus:border-[var(--border-focus)] transition-colors duration-300"
             />
           </div>
           <div>
-            <label className="text-xs text-neutral-500 block mb-1">이름 (선택)</label>
+            <label className="text-xs text-[var(--text-sub)] block mb-1">이름 (선택)</label>
             <input
               type="text"
               placeholder="이름"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full h-12 rounded-xl px-4 bg-neutral-900 border border-neutral-700 text-white placeholder:text-neutral-500 text-[14px]"
+              className="w-full h-12 rounded-xl px-4 bg-[var(--bg-card)] border border-[var(--border-light)] text-[var(--text-main)] placeholder:text-[var(--text-sub)] text-[14px] outline-none focus:border-[var(--border-focus)] transition-colors duration-300"
             />
           </div>
 
-          <div className="border-t border-neutral-800 pt-4 mt-2">
-            <p className="text-[10px] text-neutral-500 font-bold tracking-widest uppercase mb-4">운동 정보</p>
+          <div className="border-t border-[var(--border-light)] pt-4 mt-2">
+            <p className="text-[10px] text-[var(--text-sub)] font-bold tracking-widest uppercase mb-4">운동 정보</p>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-neutral-500 block mb-1">운동 목표</label>
+                <label className="text-xs text-[var(--text-sub)] block mb-1">운동 목표</label>
                 <CustomSelect
                   value={onboarding.goal}
                   options={GOAL_OPTIONS}
@@ -175,7 +175,7 @@ export default function SignupPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-neutral-500 block mb-1">운동 경험</label>
+                <label className="text-xs text-[var(--text-sub)] block mb-1">운동 경험</label>
                 <CustomSelect
                   value={onboarding.experience}
                   options={EXPERIENCE_OPTIONS}
@@ -183,7 +183,7 @@ export default function SignupPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-neutral-500 block mb-1">주당 운동 가능 일수</label>
+                <label className="text-xs text-[var(--text-sub)] block mb-1">주당 운동 가능 일수</label>
                 <CustomSelect
                   value={onboarding.daysPerWeek}
                   options={DAYS_OPTIONS}
@@ -191,7 +191,7 @@ export default function SignupPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-neutral-500 block mb-1">1회 운동 가능 시간</label>
+                <label className="text-xs text-[var(--text-sub)] block mb-1">1회 운동 가능 시간</label>
                 <CustomSelect
                   value={onboarding.sessionMinutes}
                   options={MINUTES_OPTIONS}
@@ -199,7 +199,7 @@ export default function SignupPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-neutral-500 block mb-1">부상 또는 통증</label>
+                <label className="text-xs text-[var(--text-sub)] block mb-1">부상 또는 통증</label>
                 <CustomSelect
                   value={onboarding.injury}
                   options={INJURY_OPTIONS}
@@ -208,7 +208,7 @@ export default function SignupPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-neutral-500 block mb-1">성별</label>
+                  <label className="text-xs text-[var(--text-sub)] block mb-1">성별</label>
                   <CustomSelect
                     value={onboarding.gender}
                     options={[
@@ -219,7 +219,7 @@ export default function SignupPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-neutral-500 block mb-1">연령대</label>
+                  <label className="text-xs text-[var(--text-sub)] block mb-1">연령대</label>
                   <CustomSelect
                     value={onboarding.ageRange}
                     options={AGE_OPTIONS}
@@ -234,14 +234,14 @@ export default function SignupPage() {
 
           <button
             type="submit"
-            className="w-full h-12 rounded-xl font-medium text-[14px] bg-lime-500 text-black hover:bg-lime-400 transition-colors mt-4"
+            className="w-full h-12 rounded-xl font-bold text-[14px] bg-[var(--accent-main)] text-[var(--accent-text)] hover:brightness-110 transition-all duration-300 active:scale-[0.98] mt-4"
           >
             가입하기
           </button>
         </form>
 
         <p className="mt-6 text-center">
-          <Link href="/login" className="text-[13px] text-neutral-400 hover:text-white transition-colors">
+          <Link href="/login" className="text-[13px] text-[var(--text-sub)] hover:text-[var(--text-main)] transition-colors duration-300">
             이미 계정이 있으신가요? 로그인
           </Link>
         </p>

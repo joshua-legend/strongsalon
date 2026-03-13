@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronRight } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { calcTotalScore } from "@/utils/scoring";
 import {
@@ -29,33 +30,33 @@ export default function AnimalTierHero({
 
   return (
     <div
-      className="rounded-2xl p-5 relative overflow-hidden bg-neutral-950"
+      className="rounded-2xl p-5 relative overflow-hidden transition-colors duration-300"
       style={{
-        border: "1px solid rgba(163, 230, 53, 0.2)",
-        background:
-          "linear-gradient(135deg, rgba(163,230,53,.06), rgba(163,230,53,.02))",
+        border: "1px solid var(--challenge-hero-border)",
+        background: "var(--challenge-hero-bg)",
       }}
     >
-      <span className="inline-block px-3 py-1 rounded-lg bg-lime-400 text-neutral-950 text-[10px] font-bold tracking-widest uppercase mb-4">
+      <span className="inline-block px-3 py-1 rounded-lg text-[10px] font-bold tracking-widest uppercase mb-4 transition-colors duration-300" style={{ backgroundColor: "var(--accent-main)", color: "var(--accent-text)" }}>
         Tier {cfg.tierNum} CLASS
       </span>
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <h2 className="font-bebas text-xl text-lime-400 tracking-wider mb-1">
+          <h2 className="font-bebas text-2xl font-bold tracking-wider mb-1 transition-colors duration-300" style={{ color: "var(--accent-main)" }}>
             {cfg.label}
           </h2>
-          <p className="text-[11px] text-neutral-400 leading-relaxed">
+          <p className="text-[12px] font-medium leading-relaxed transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
             {cfg.mascotDesc}
           </p>
         </div>
 
         <div className="relative shrink-0">
           <div
-            className="w-16 h-16 rounded-xl overflow-hidden border border-lime-500/30 flex items-center justify-center transform rotate-3"
+            className="w-16 h-16 rounded-xl overflow-hidden border flex items-center justify-center transform rotate-3 transition-colors duration-300"
             style={{
-              boxShadow: "0 0 20px rgba(163,230,53,0.5)",
-              filter: "drop-shadow(0 0 12px rgba(163,230,53,0.5))",
+              backgroundColor: "var(--bg-body)",
+              borderColor: "var(--accent-main)",
+              boxShadow: "0 0 15px var(--accent-bg)",
             }}
           >
             {tier === "tiger" ? (
@@ -71,35 +72,36 @@ export default function AnimalTierHero({
               <span className="text-4xl">{cfg.emoji}</span>
             )}
           </div>
-          <span className="absolute -top-1 -right-1 px-2 py-0.5 rounded-md bg-lime-500/30 text-lime-400 text-[9px] font-bold border border-lime-500/50">
+          <span className="absolute -top-2 -right-2 px-2 py-0.5 rounded-md text-[9px] font-bold border transition-colors duration-300" style={{ backgroundColor: "var(--accent-bg)", color: "var(--accent-main)", borderColor: "var(--accent-main)" }}>
             Top {topPercent}%
           </span>
         </div>
       </div>
 
-      <div className="mt-5 pt-4 border-t border-neutral-800/80">
+      <div className="mt-5 pt-4 border-t transition-colors duration-300" style={{ borderColor: "var(--border-light)" }}>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] text-neutral-500">
+          <span className="text-[11px] font-bold transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
             {segment} 보정 적용
           </span>
           {onOpenTierDistribution && (
             <button
               onClick={onOpenTierDistribution}
-              className="text-[10px] font-bold text-lime-400 hover:text-lime-300 transition-colors flex items-center gap-0.5"
+              className="text-[11px] font-bold flex items-center gap-0.5 transition-colors duration-300"
+              style={{ color: "var(--accent-main)" }}
             >
               생태계 분포
-              <span className="text-neutral-500">&gt;</span>
+              <ChevronRight className="w-3 h-3" />
             </button>
           )}
         </div>
-        <div className="h-2 rounded-full bg-neutral-800 overflow-hidden">
+        <div className="h-2.5 rounded-full overflow-hidden transition-colors duration-300 shadow-inner" style={{ backgroundColor: "var(--bg-body)" }}>
           <div
-            className="h-full rounded-full bg-lime-500 transition-all duration-700"
-            style={{ width: `${100 - topPercent}%` }}
+            className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${100 - topPercent}%`, backgroundColor: "var(--accent-main)" }}
           />
         </div>
         {nextInfo && (
-          <p className="text-[9px] text-neutral-500 mt-2">
+          <p className="text-[11px] font-medium mt-2 transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
             다음 진화: {nextInfo.label} (상위 {nextInfo.percent}%)
           </p>
         )}

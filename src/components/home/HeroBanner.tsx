@@ -29,23 +29,23 @@ export default function HeroBanner() {
   const ptStatus  = ptAlert(user?.nextPtDate);
 
   return (
-    <div className="rounded-2xl px-5 py-4 relative overflow-hidden bg-neutral-900 border border-neutral-800">
+    <div className="rounded-2xl px-5 py-4 relative overflow-hidden bg-[var(--bg-card)] border border-[var(--border-light)]">
       <div className="absolute -top-8 -right-8 w-32 h-32 bg-lime-500 opacity-10 blur-3xl rounded-full" />
 
       <div className="relative z-10">
         {/* 인사말 */}
-        <p className="font-bebas text-[11px] text-neutral-400 mb-3">
-          {greeting}, <span className="text-white">{user?.name ?? ""}</span>님
+        <p className="font-bebas text-[11px] text-[var(--text-sub)] mb-3">
+          {greeting}, <span className="text-[var(--text-main)]">{user?.name ?? ""}</span>님
         </p>
 
         {/* 스트릭 + 오늘 출석 */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div>
-              <p className="font-bebas text-[52px] leading-none text-white">
+              <p className="font-bebas text-[52px] leading-none text-[var(--text-main)]">
                 {user?.streak ?? 0}
               </p>
-              <p className="font-bebas text-[9px] text-neutral-500 uppercase tracking-wider -mt-1">
+              <p className="font-bebas text-[9px] text-[var(--text-sub)] uppercase tracking-wider -mt-1">
                 연속 출석 일
               </p>
             </div>
@@ -56,11 +56,11 @@ export default function HeroBanner() {
           <div className={`flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl border transition-colors ${
             checkedIn
               ? "bg-lime-400/10 border-lime-400/30"
-              : "bg-neutral-800 border-neutral-700"
+              : "bg-[var(--bg-card-hover)] border-[var(--border-light)]"
           }`}>
             <span className="text-[20px]">{checkedIn ? "✅" : "⬜"}</span>
             <p className={`font-bebas text-[8px] uppercase tracking-wider ${
-              checkedIn ? "text-lime-400" : "text-neutral-500"
+              checkedIn ? "text-[var(--accent-main)]" : "text-[var(--text-sub)]"
             }`}>
               {checkedIn ? "출석 완료" : "미출석"}
             </p>

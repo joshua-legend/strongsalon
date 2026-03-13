@@ -15,19 +15,21 @@ export function WeightRepsInput({
 }) {
   return (
     <div className="space-y-2">
-      <p className="text-xs text-neutral-500">{label}</p>
+      <p className="text-xs" style={{ color: "var(--text-sub)" }}>{label}</p>
       <div className="flex gap-2">
         <input
           type="number" inputMode="decimal" value={weight}
           onChange={(e) => setWeight(e.target.value)} placeholder="중량"
-          className="flex-1 font-mono text-sm bg-neutral-900 border border-neutral-700 px-3 py-2 rounded-lg text-white focus:border-lime-400 focus:outline-none"
+          className="flex-1 font-mono text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-[var(--border-focus)]"
+          style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)", color: "var(--text-main)" }}
         />
         <input
           type="number" inputMode="numeric" value={reps}
           onChange={(e) => setReps(e.target.value)} placeholder="횟수"
-          className="w-20 font-mono text-sm bg-neutral-900 border border-neutral-700 px-3 py-2 rounded-lg text-white focus:border-lime-400 focus:outline-none"
+          className="w-20 font-mono text-sm px-3 py-2 rounded-lg focus:outline-none focus:border-[var(--border-focus)]"
+          style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)", color: "var(--text-main)" }}
         />
-        <span className="text-neutral-500 text-sm self-center">회</span>
+        <span className="text-sm self-center" style={{ color: "var(--text-sub)" }}>회</span>
       </div>
     </div>
   );

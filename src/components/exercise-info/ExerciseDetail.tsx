@@ -21,14 +21,15 @@ export default function ExerciseDetail({ item, embedUrl, onClose }: ExerciseDeta
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm transition-all"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all"
+      style={{ backgroundColor: "rgba(0,0,0,0.75)" }}
       onClick={onClose}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.2 }}
-        className="relative w-full max-w-sm aspect-[9/16] bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl border border-neutral-800"
+        className="relative w-full max-w-sm aspect-[9/16] bg-[var(--bg-card)] rounded-2xl overflow-hidden shadow-2xl border border-[var(--border-light)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 1. YouTube Shorts (embedUrl prop, autoplay+mute 권장) */}
@@ -41,7 +42,7 @@ export default function ExerciseDetail({ item, embedUrl, onClose }: ExerciseDeta
             className="absolute inset-0 w-full h-full"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-neutral-900 text-neutral-500 text-sm">
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg-card)] text-[var(--text-sub)] text-sm">
             영상 없음
           </div>
         )}
@@ -51,7 +52,8 @@ export default function ExerciseDetail({ item, embedUrl, onClose }: ExerciseDeta
 
         {/* 3. 우측 상단 닫기 버튼 */}
         <button
-          className="absolute top-4 right-4 bg-black/40 hover:bg-black/70 p-2 rounded-full text-white transition-colors z-10"
+          className="absolute top-4 right-4 p-2 rounded-full transition-colors z-10 hover:opacity-90"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)", color: "var(--text-main)" }}
           onClick={onClose}
         >
           <X className="w-5 h-5" />
@@ -61,34 +63,34 @@ export default function ExerciseDetail({ item, embedUrl, onClose }: ExerciseDeta
         <div className="absolute bottom-6 left-5 right-5 pointer-events-none z-10">
           {/* 태그 영역 */}
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-block px-2 py-0.5 text-[10px] font-bold italic uppercase -skew-x-12 text-black bg-lime-400">
+            <span className="inline-block px-2 py-0.5 text-[10px] font-bold italic uppercase -skew-x-12 text-[var(--accent-text)] bg-[var(--accent-main)]">
               <span className="skew-x-12 block">{item.category}</span>
             </span>
-            <span className="bg-neutral-800/80 backdrop-blur text-white text-[10px] font-bebas px-2 py-0.5 rounded uppercase flex items-center gap-1 border border-neutral-700">
-              <Zap className="w-3 h-3 text-lime-400 fill-lime-400" /> In
+            <span className="bg-[var(--bg-card-hover)]/80 backdrop-blur text-[var(--text-main)] text-[10px] font-bebas px-2 py-0.5 rounded uppercase flex items-center gap-1 border border-[var(--border-light)]">
+              <Zap className="w-3 h-3 text-[var(--accent-main)] fill-[var(--accent-main)]" /> In
               Progress
             </span>
           </div>
 
           {/* 메인 타이틀 */}
-          <h3 className="text-4xl font-bebas text-white tracking-wide mb-1 drop-shadow-md">
+          <h3 className="text-4xl font-bebas text-[var(--text-main)] tracking-wide mb-1 drop-shadow-md">
             {item.name}
           </h3>
 
           {/* 타겟 수치 및 진행률 */}
-          <div className="text-sm font-bebas text-neutral-300 flex items-center gap-2">
+          <div className="text-sm font-bebas text-[var(--text-main)] flex items-center gap-2">
             <span>TARGET:</span>
-            <span className="text-white font-bold text-lg">
+            <span className="text-[var(--text-main)] font-bold text-lg">
               {current}{" "}
-              <span className="text-neutral-500 text-sm">/ {target}</span>
+              <span className="text-[var(--text-sub)] text-sm">/ {target}</span>
             </span>
-            <span className="text-[10px] text-neutral-500">{unit}</span>
+            <span className="text-[10px] text-[var(--text-sub)]">{unit}</span>
           </div>
 
           {/* 미니 프로그레스 바 */}
-          <div className="w-full h-1 bg-neutral-800/50 rounded-full mt-3 overflow-hidden backdrop-blur">
+          <div className="w-full h-1 bg-[var(--border-light)] rounded-full mt-3 overflow-hidden backdrop-blur">
             <div
-              className="h-full bg-lime-400 transition-all duration-1000"
+              className="h-full bg-[var(--accent-main)] transition-all duration-1000"
               style={{ width: `${progress}%` }}
             />
           </div>

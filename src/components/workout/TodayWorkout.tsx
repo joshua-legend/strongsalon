@@ -68,8 +68,8 @@ export default function TodayWorkout({ plan }: TodayWorkoutProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="text-center mb-2">
-        <h1 className="font-bebas text-2xl text-white">오늘의 운동</h1>
-        <p className="text-sm text-neutral-400 mt-1">
+        <h1 className="font-bebas text-2xl text-[var(--text-main)]">오늘의 운동</h1>
+        <p className="text-sm text-[var(--text-sub)] mt-1">
           {plan.dayLabel} — {dayTypeLabel} · {dayName}요일
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function TodayWorkout({ plan }: TodayWorkoutProps) {
         ))}
       </div>
 
-      <p className="font-mono text-sm text-neutral-500 text-center">
+      <p className="font-mono text-sm text-[var(--text-sub)] text-center">
         전체 진행: {totalCompletedSets} / {totalTargetSets} 세트
       </p>
 
@@ -96,10 +96,10 @@ export default function TodayWorkout({ plan }: TodayWorkoutProps) {
         onClick={handleComplete}
         className={`w-full py-4 rounded-2xl font-bold text-base transition-all ${
           allComplete
-            ? "bg-lime-400 text-black shadow-[0_0_20px_rgba(163,230,53,.5)]"
+            ? "bg-[var(--accent-main)] text-[var(--accent-text)] shadow-[0_0_20px_rgba(163,230,53,.5)]"
             : totalCompletedSets > 0
-              ? "bg-neutral-100 text-neutral-900"
-              : "bg-neutral-800 text-neutral-600"
+              ? "bg-[var(--accent-bg)] text-[var(--accent-text)]"
+              : "bg-[var(--bg-card-hover)] text-[var(--text-sub)]"
         }`}
       >
         {allComplete ? "오늘 운동 완료 ✓" : totalCompletedSets > 0 ? `오늘 운동 완료 (${totalCompletedSets}/${totalTargetSets} 세트)` : "오늘 운동 완료"}

@@ -23,7 +23,6 @@ export default function ExerciseInfoTab() {
 
   return (
     <div className="px-4 py-4 flex flex-col gap-4">
-      <p className="card-label">📋 운동사전</p>
       <ExerciseSearch value={search} onChange={setSearch} />
       <CategoryChips value={category} onChange={setCategory} />
       <ExerciseList items={filtered} onSelect={setSelected} />

@@ -21,7 +21,7 @@ export default function SubTabs() {
           className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-200 ${
             subTab === t.id
               ? 'bg-orange-500/12 border border-orange-500/30 text-orange-500'
-              : 'bg-neutral-900 border border-neutral-800 text-neutral-400'
+              : 'bg-[var(--bg-card)] border border-[var(--border-light)] text-[var(--text-sub)]'
           }`}
         >
           <span>{t.icon}</span>
