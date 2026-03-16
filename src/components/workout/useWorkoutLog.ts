@@ -13,8 +13,9 @@ import { workoutHistory } from '@/data/workoutHistory';
 import { estimate1RM } from '@/utils/estimate1RM';
 import type { ChartMetricKey } from '@/types/chartData';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { useGoal } from '@/context/GoalContext';
-import { SPLIT_PRESETS } from '@/data/workoutPresets';
+import { SPLIT_PRESETS, getCardioAutoFill } from '@/data/workoutPresets';
 
 function nextId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -71,11 +72,15 @@ function calcPace(distanceKm: number, timeMin: number): number | null {
 
 export type WorkoutPhase = 'ready' | 'inProgress' | 'completed';
 
+/** 데모 workoutHistory를 사용하지 않는 계정 (본인 기록만 사용) */
+const ACCOUNTS_WITHOUT_DEMO_HISTORY = ['민준'] as const;
+
 export function useWorkoutLog() {
   const { showToast } = useToast();
   const { addAttendance } = useAttendance();
   const { appendChartPoint } = useChartData();
   const { selectedSplit } = useApp();
+  const { currentAccountId } = useAuth();
   const { categorySettings } = useGoal();
   const { appendWorkoutRecord, getLastRecordForExercise, getUserWorkoutRecords } = useWorkoutRecords();
   const [workoutPhase, setWorkoutPhase] = useState<WorkoutPhase>('ready');
@@ -96,10 +101,17 @@ export function useWorkoutLog() {
     };
   })();
 
+  const workoutRecordsForLastRecord =
+    currentAccountId && ACCOUNTS_WITHOUT_DEMO_HISTORY.includes(currentAccountId)
+      ? getUserWorkoutRecords()
+      : [...getUserWorkoutRecords(), ...workoutHistory];
+
   const autoFillOptions = {
     getLastRecord: (name: string) =>
-      getLastRecordForExercise(name, [...getUserWorkoutRecords(), ...workoutHistory]),
+      getLastRecordForExercise(name, workoutRecordsForLastRecord),
     getStrength1RM: () => strength1RM,
+    condition,
+    estMinutes,
   };
 
   const { elapsedSec, prBadge, showPR, resetSession, formatElapsed } = useWorkoutSession(
@@ -238,20 +250,22 @@ export function useWorkoutLog() {
   }, [exercises.freeExercises, cardioEntries, workoutDate, showToast, addAttendance, elapsedSec, categorySettings, appendChartPoint, appendWorkoutRecord]);
 
   const addCardio = useCallback((type: CardioType) => {
+    const { distanceKm, timeMinutes } = getCardioAutoFill(type, condition, estMinutes);
     setCardioEntries((prev) => [
       ...prev,
-      { id: nextId('cardio'), type, distanceKm: 0, timeMinutes: 0, checked: false },
+      { id: nextId('cardio'), type, distanceKm, timeMinutes, checked: false },
     ]);
-  }, []);
+  }, [condition, estMinutes]);
 
-  /** 유산소 토글: 이미 있으면 제거, 없으면 추가 */
+  /** 유산소 토글: 이미 있으면 제거, 없으면 추가 (운동시간·컨디션 기반 자동 입력) */
   const toggleCardio = useCallback((type: CardioType) => {
     setCardioEntries((prev) => {
       const exists = prev.some((e) => e.type === type);
       if (exists) return prev.filter((e) => e.type !== type);
-      return [...prev, { id: nextId('cardio'), type, distanceKm: 0, timeMinutes: 0, checked: false }];
+      const { distanceKm, timeMinutes } = getCardioAutoFill(type, condition, estMinutes);
+      return [...prev, { id: nextId('cardio'), type, distanceKm, timeMinutes, checked: false }];
     });
-  }, []);
+  }, [condition, estMinutes]);
 
   const updateCardio = useCallback(
     (id: string, patch: Partial<Pick<CardioEntry, 'distanceKm' | 'timeMinutes'>>) => {

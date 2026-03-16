@@ -306,3 +306,84 @@ export const exercisesInfo: ExerciseInfoItem[] = [
     },
   },
 ];
+
+/** exercisesInfo 기반 + 프리셋/추천 종목명 별칭 → 부위 매핑 */
+const nameToCategoryBase: Record<string, string> = Object.fromEntries(
+  exercisesInfo.map((e) => [e.name, e.category])
+);
+
+/** 공백/괄호 제거한 정규화 이름 → 부위 (프리셋·추천 등 다양한 표기 대응) */
+const ALIAS_TO_CATEGORY: Record<string, string> = {
+  // 하체
+  퍼팩트스쿼트: '하체',
+  레그익스텐션: '하체',
+  '레그 익스텐션': '하체',
+  라잉레그컬: '하체',
+  시티드레그컬: '하체',
+  파워레그프레스: '하체',
+  레그프레스: '하체',
+  이너타이: '하체',
+  아웃타이: '하체',
+  // 가슴
+  체스트프레스: '가슴',
+  '체스트 프레스': '가슴',
+  어시스트딥스스탠딩: '가슴',
+  '어시스트딥스(스탠딩)': '가슴',
+  어시스트딥스닐링: '가슴',
+  '어시스트딥스(닐링)': '가슴',
+  팩덱플라이: '가슴',
+  // 어깨
+  숄더프레스: '어깨',
+  오버헤드프레스: '어깨',
+  리버스플라이: '어깨',
+  // 등
+  시티드로우: '등',
+  '시티드 로우': '등',
+  어시스트풀업스탠딩: '등',
+  '어시스트풀업(스탠딩)': '등',
+  어시스트풀업닐링: '등',
+  '어시스트풀업(닐링)': '등',
+  롱풀: '등',
+  티바로우: '등',
+};
+
+/** 키워드 → 부위 (커스텀 종목 fallback) */
+const KEYWORD_TO_CATEGORY: { keywords: string[]; category: string }[] = [
+  { keywords: ['스쿼트', '레그', '스티프', '런지', '스텝'], category: '하체' },
+  { keywords: ['벤치', '체스트', '딥스', '플라이', '푸시업', '푸쉬업'], category: '가슴' },
+  { keywords: ['로우', '풀업', '풀다운', '랫풀', '데드리프트', '친업'], category: '등' },
+  { keywords: ['숄더', '오버헤드', '레터럴', '레이즈', '리버스'], category: '어깨' },
+  { keywords: ['컬', '바이셉', '트라이셉', '푸시다운', '딥스'], category: '팔' },
+  { keywords: ['플랭크', '크런치', '시트업', '레그레이즈', '바이시클'], category: '코어' },
+  { keywords: ['러닝', '로잉', '스키', '사이클', '자전거'], category: '유산소' },
+];
+
+function normalizeForMatch(name: string): string {
+  return name.replace(/\s/g, '').replace(/[()]/g, '');
+}
+
+/**
+ * 운동 종목명 → 부위(카테고리) 반환.
+ * exercisesInfo → 별칭 → 키워드 fallback 순으로 매칭.
+ */
+export function getExerciseCategory(name: string): string {
+  if (!name?.trim()) return '기타';
+
+  const exact = nameToCategoryBase[name];
+  if (exact) return exact;
+
+  const norm = normalizeForMatch(name);
+  const aliasByKey = ALIAS_TO_CATEGORY[name] ?? ALIAS_TO_CATEGORY[norm];
+  if (aliasByKey) return aliasByKey;
+
+  const aliasByNorm = Object.entries(ALIAS_TO_CATEGORY).find(
+    ([key]) => normalizeForMatch(key) === norm
+  );
+  if (aliasByNorm) return aliasByNorm[1];
+
+  for (const { keywords, category } of KEYWORD_TO_CATEGORY) {
+    if (keywords.some((kw) => norm.includes(kw))) return category;
+  }
+
+  return '기타';
+}

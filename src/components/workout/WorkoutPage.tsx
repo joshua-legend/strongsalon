@@ -4,29 +4,67 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Hand } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { useGoal } from "@/context/GoalContext";
 import { useWorkoutLog } from "./useWorkoutLog";
-import CondBox from "./CondBox";
+import NeedStrengthModal from "./NeedStrengthModal";
 import FreeArea from "./FreeArea";
-import CustomDropdown, { type DropdownOption } from "@/components/ui/CustomDropdown";
+import TimeSelectCard from "./TimeSelectCard";
+import ConditionSelectCard from "./ConditionSelectCard";
 import { getMockRecommendation } from "@/data/workoutRecommendation";
-
-const EST_TIME_OPTIONS: DropdownOption<number>[] = [
-  { value: 30, label: "30분" },
-  { value: 45, label: "45분" },
-  { value: 60, label: "60분" },
-  { value: 90, label: "90분" },
-];
 
 export default function WorkoutPage() {
   const log = useWorkoutLog();
-  const { exitWorkout, setSelectedSplit } = useApp();
+  const {
+    exitWorkout,
+    setSelectedSplit,
+    setTab,
+    setOpenRecommendationSetup,
+    setOpenStrengthSetup,
+  } = useApp();
+  const { categorySettings } = useGoal();
   const [overlayExiting, setOverlayExiting] = useState(false);
   const [mode, setMode] = useState<"recommended" | "free">("free");
+  const [showNeedStrengthModal, setShowNeedStrengthModal] = useState(false);
 
-  const [recommendationReason, setRecommendationReason] = useState<string | null>(null);
+  const [recommendationReason, setRecommendationReason] = useState<
+    string | null
+  >(null);
+
+  const strength = categorySettings?.strength;
+  const inbody = categorySettings?.inbody;
+  const fitness = categorySettings?.fitness;
+  const hasStrength =
+    strength?.isConfigured &&
+    strength?.startValues &&
+    (strength.startValues.squat ?? 0) > 0 &&
+    (strength.startValues.bench ?? 0) > 0 &&
+    (strength.startValues.deadlift ?? 0) > 0;
+  const hasInbody =
+    inbody?.isConfigured &&
+    inbody?.startValues &&
+    (inbody.startValues.weight ?? 0) > 0 &&
+    (inbody.startValues.fatPercent ?? 0) >= 5 &&
+    (inbody.startValues.muscleMass ?? 0) >= 10;
+  const hasFitness =
+    fitness?.isConfigured &&
+    fitness?.startValues &&
+    ((fitness.startValues.running ?? 0) > 0 ||
+      (fitness.startValues.rowing ?? 0) > 0 ||
+      (fitness.startValues.skierg ?? 0) > 0);
+  const hasAllRecommendationData = hasStrength && hasInbody && hasFitness;
+  const has1RM =
+    strength?.startValues &&
+    (strength.startValues.squat ?? 0) +
+      (strength.startValues.bench ?? 0) +
+      (strength.startValues.deadlift ?? 0) >
+      0;
 
   const handleModeSelect = (m: "recommended" | "free") => {
     if (m === mode) return;
+    if (m === "recommended" && !hasAllRecommendationData) {
+      setShowNeedStrengthModal(true);
+      return;
+    }
     setMode(m);
     if (m === "free") {
       setSelectedSplit(null);
@@ -38,6 +76,12 @@ export default function WorkoutPage() {
       log.loadFromRecommendation(rec);
       setRecommendationReason(rec.reason ?? null);
     }
+  };
+
+  const handleGoToStrengthSetup = () => {
+    setShowNeedStrengthModal(false);
+    setTab("home");
+    setOpenRecommendationSetup(true);
   };
 
   const handleButtonClick = () => {
@@ -73,19 +117,14 @@ export default function WorkoutPage() {
       >
         <div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
           <div className="flex flex-col gap-3.5">
-            {/* 운동 시간 / 컨디션 드롭다운 */}
-            <div className="grid grid-cols-2 gap-3">
-              <CustomDropdown<number>
-                value={log.estMinutes}
-                options={EST_TIME_OPTIONS}
-                onChange={log.setEstMinutes}
-                subLabel="예상 운동시간"
-              />
-              <CondBox value={log.condition} onChange={log.setCondition} />
-            </div>
-
             {/* 모드 선택: 추천 / 자유 (Segmented Control) */}
-            <div className="relative flex gap-2 rounded-2xl p-1 border shadow-sm" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)" }}>
+            <div
+              className="relative flex gap-2 rounded-2xl p-1 border shadow-sm"
+              style={{
+                backgroundColor: "var(--bg-card)",
+                borderColor: "var(--border-light)",
+              }}
+            >
               <button
                 type="button"
                 onClick={() => handleModeSelect("recommended")}
@@ -107,10 +146,83 @@ export default function WorkoutPage() {
                     : "bg-black/20 border border-transparent"
                 }`}
               >
-                <Hand className="w-4 h-4 shrink-0" strokeWidth={2} style={{ color: "inherit" }} />
+                <Hand
+                  className="w-4 h-4 shrink-0"
+                  strokeWidth={2}
+                  style={{ color: "inherit" }}
+                />
                 <span>자유</span>
               </button>
             </div>
+
+            {/* 자유 모드 시: 운동 시간 / 컨디션 선택 카드 */}
+            <AnimatePresence mode="wait">
+              {mode === "free" && (
+                <motion.section
+                  key="time-condition"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="grid grid-cols-2 gap-3 relative z-20"
+                  style={{ overflow: "visible" }}
+                >
+                  <TimeSelectCard
+                    value={log.estMinutes}
+                    onChange={log.setEstMinutes}
+                  />
+                  <ConditionSelectCard
+                    value={log.condition}
+                    onChange={log.setCondition}
+                  />
+                </motion.section>
+              )}
+            </AnimatePresence>
+
+            {/* 자유 모드 시: 1RM 자동 입력 힌트 */}
+            {mode === "free" && (
+              <div
+                className="rounded-xl px-4 py-2.5 border"
+                style={{
+                  backgroundColor: has1RM
+                    ? "var(--accent-bg)"
+                    : "var(--bg-card)",
+                  borderColor: "var(--border-light)",
+                }}
+              >
+                {has1RM ? (
+                  <p
+                    className="text-[11px] font-bebas tracking-wider"
+                    style={{ color: "var(--accent-main)" }}
+                  >
+                    ✓ 3대 1RM 기반으로 권장 무게가 자동 입력되었어요
+                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTab("home");
+                      setOpenStrengthSetup(true);
+                    }}
+                    className="w-full text-left"
+                  >
+                    <p
+                      className="text-[11px] font-bebas tracking-wider"
+                      style={{ color: "var(--text-sub)" }}
+                    >
+                      ⓘ 홈에서 3대 운동 1RM을 설정하면 권장 무게가 자동으로
+                      채워져요
+                    </p>
+                    <p
+                      className="text-[10px] mt-0.5"
+                      style={{ color: "var(--accent-main)" }}
+                    >
+                      ㅡ 1RM 설정하러 가기
+                    </p>
+                  </button>
+                )}
+              </div>
+            )}
 
             {/* 추천 모드 시 추천 이유 */}
             <AnimatePresence mode="wait">
@@ -124,9 +236,15 @@ export default function WorkoutPage() {
                 >
                   <div
                     className="rounded-2xl px-4 py-3 mt-1 border"
-                    style={{ backgroundColor: "var(--accent-bg)", borderColor: "var(--border-light)" }}
+                    style={{
+                      backgroundColor: "var(--accent-bg)",
+                      borderColor: "var(--border-light)",
+                    }}
                   >
-                    <p className="text-[12px] transition-colors duration-300" style={{ color: "var(--accent-main)" }}>
+                    <p
+                      className="text-[12px] transition-colors duration-300"
+                      style={{ color: "var(--accent-main)" }}
+                    >
                       ✨ {recommendationReason}
                     </p>
                   </div>
@@ -158,16 +276,46 @@ export default function WorkoutPage() {
 
       {/* 고정 CTA 바 - 바텀 네비처럼 하단 고정 (bt-m 적용) */}
       <div
-        className="fixed left-0 right-0 w-full max-w-[480px] mx-auto z-30 px-4 flex justify-center"
+        className="fixed left-0 right-0 w-full max-w-[480px] mx-auto z-30 px-4 flex items-center justify-center gap-3"
         style={{
           bottom: `calc(${bottomNavHeight}px + env(safe-area-inset-bottom, 0px) + ${ctaBottomMargin}px)`,
         }}
       >
+        {isInProgress && (
+          <div
+            className="flex items-center gap-3 shrink-0 rounded-xl border px-4 py-2.5"
+            style={{
+              backgroundColor: "var(--bg-card)",
+              borderColor: "var(--border-light)",
+            }}
+          >
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-bebas text-xl tracking-wider" style={{ color: "var(--accent-main)" }}>
+                {String(Math.floor(log.elapsedSec / 60)).padStart(2, "0")}:
+                {String(log.elapsedSec % 60).padStart(2, "0")}
+              </span>
+              <span className="text-[10px] font-bebas tracking-wider" style={{ color: "var(--text-sub)" }}>
+                경과
+              </span>
+            </div>
+            <span className="text-neutral-500">|</span>
+            <div className="flex items-baseline gap-1">
+              <span className="font-bebas text-lg tracking-wider" style={{ color: "var(--text-main)" }}>
+                목표 {log.estMinutes}분
+              </span>
+            </div>
+          </div>
+        )}
         <button
           type="button"
           onClick={handleButtonClick}
-          disabled={(isReady && !log.isWorkoutReady) || (isInProgress && !(log.allSetsChecked && log.allCardioChecked))}
-          className="w-full max-w-[calc(480px-2rem)] py-4 rounded-2xl font-bold text-base transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-40 disabled:pointer-events-none disabled:hover:scale-100"
+          disabled={
+            (isReady && !log.isWorkoutReady) ||
+            (isInProgress && !(log.allSetsChecked && log.allCardioChecked))
+          }
+          className={`py-4 rounded-2xl font-bold text-base transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-40 disabled:pointer-events-none disabled:hover:scale-100 ${
+            isInProgress ? "flex-1 min-w-0" : "w-full max-w-[calc(480px-2rem)]"
+          }`}
           style={{
             backgroundColor: "var(--accent-main)",
             color: "white",
@@ -187,6 +335,12 @@ export default function WorkoutPage() {
           )}
         </button>
       </div>
+
+      <NeedStrengthModal
+        open={showNeedStrengthModal}
+        onClose={() => setShowNeedStrengthModal(false)}
+        onGoToHome={handleGoToStrengthSetup}
+      />
 
       <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
         {showOverlay && !overlayExiting && (

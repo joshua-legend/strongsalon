@@ -14,7 +14,7 @@ import { useAuth } from "./AuthContext";
 
 interface InbodyContextValue {
   inbodyHistory: InbodyRecord[];
-  addInbodyRecord: (record: InbodyRecord) => void;
+  addInbodyRecord: (record: InbodyRecord, configuredAt?: string) => void;
   loadInbodyHistory: () => void;
 }
 
@@ -38,7 +38,7 @@ export function InbodyProvider({ children }: { children: React.ReactNode }) {
   }, [accountData]);
 
   const addInbodyRecord = useCallback(
-    (record: InbodyRecord) => {
+    (record: InbodyRecord, configuredAtOverride?: string) => {
       if (!accountData) return;
       const next = (() => {
         const prev = accountData.inbodyHistory;
@@ -48,7 +48,7 @@ export function InbodyProvider({ children }: { children: React.ReactNode }) {
       setInbodyHistory(next);
       updateAccountData((prev) => ({ ...prev, inbodyHistory: next }));
 
-      const configuredAt = accountData.categorySettings?.inbody?.configuredAt;
+      const configuredAt = configuredAtOverride ?? accountData.categorySettings?.inbody?.configuredAt;
       if (configuredAt) {
         appendChartPoint(
           "inbody.weight",

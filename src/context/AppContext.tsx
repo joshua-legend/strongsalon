@@ -16,6 +16,8 @@ interface AppState {
   selectedSplit: SplitId | null;
   /** 홈탭 진입 시 스트렝스 설정 시트 자동 오픈 */
   openStrengthSetup: boolean;
+  /** 홈탭 진입 시 추천용 통합 설정 시트 (인바디+스트렝스+체력) 자동 오픈 */
+  openRecommendationSetup: boolean;
 }
 
 type AppAction =
@@ -25,7 +27,8 @@ type AppAction =
   | { type: 'EXIT_WORKOUT' }
   | { type: 'SET_WORKOUT_SCREEN'; screen: WorkoutScreen }
   | { type: 'SET_SELECTED_SPLIT'; split: SplitId | null }
-  | { type: 'SET_OPEN_STRENGTH_SETUP'; open: boolean };
+  | { type: 'SET_OPEN_STRENGTH_SETUP'; open: boolean }
+  | { type: 'SET_OPEN_RECOMMENDATION_SETUP'; open: boolean };
 
 const initialState: AppState = {
   activeTab: 'home',
@@ -34,6 +37,7 @@ const initialState: AppState = {
   workoutScreen: 'mode',
   selectedSplit: null,
   openStrengthSetup: false,
+  openRecommendationSetup: false,
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -55,6 +59,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, selectedSplit: action.split };
     case 'SET_OPEN_STRENGTH_SETUP':
       return { ...state, openStrengthSetup: action.open };
+    case 'SET_OPEN_RECOMMENDATION_SETUP':
+      return { ...state, openRecommendationSetup: action.open };
     default:
       return state;
   }
@@ -68,6 +74,7 @@ interface AppContextValue extends AppState {
   setWorkoutScreen: (screen: WorkoutScreen) => void;
   setSelectedSplit: (split: SplitId | null) => void;
   setOpenStrengthSetup: (open: boolean) => void;
+  setOpenRecommendationSetup: (open: boolean) => void;
   scrollBodyRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -106,6 +113,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_OPEN_STRENGTH_SETUP', open });
   }, []);
 
+  const setOpenRecommendationSetup = useCallback((open: boolean) => {
+    dispatch({ type: 'SET_OPEN_RECOMMENDATION_SETUP', open });
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -117,6 +128,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setWorkoutScreen,
         setSelectedSplit,
         setOpenStrengthSetup,
+        setOpenRecommendationSetup,
         scrollBodyRef,
       }}
     >

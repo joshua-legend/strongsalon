@@ -70,6 +70,18 @@ const CARDIO_TREND_DATA = {
   ],
 };
 
+/** 체력 time(초) → 페이스(분/km) 변환. run5k=5km, row2k=2km, skierg=2km */
+const CARDIO_DISTANCE_KM: Record<string, number> = {
+  run5k: 5,
+  row2k: 2,
+  skierg: 2,
+};
+
+function cardioTimeToPace(option: string, timeSec: number): number {
+  const dist = CARDIO_DISTANCE_KM[option] ?? 5;
+  return timeSec / 60 / dist;
+}
+
 export interface GoalChartData {
   startValue: number;
   targetValue: number;
@@ -248,6 +260,43 @@ export function getInbodyChartData(
 
   const gs = goalSetting?.category === "inbody" ? goalSetting : null;
   const catSingle = categorySetting?.isConfigured && categorySetting?.goal ? categorySetting : null;
+
+  if (hasAnyInbodyConfig && !categorySetting?.goal && (dataPoints?.length ?? 0) > 0) {
+    const metricMap: Record<InbodyChartOption, InbodyMetricKey> = {
+      fatPercent: "fatPercent",
+      muscleMass: "muscleMass",
+      weight: "weight",
+    };
+    const metricKey = metricMap[option];
+    const startVal = (categorySetting!.startValues![metricKey] ?? 0) || (dataPoints![0]?.value ?? 0);
+    const unit = metricKey === "fatPercent" ? "%" : "kg";
+    const latestMetric = dataPoints![dataPoints!.length - 1].value;
+    if (startVal > 0 || (metricKey === "fatPercent" && startVal >= 5)) {
+      let targetVal: number;
+      let weeklyDeltaVal: number;
+      if (metricKey === "fatPercent") {
+        targetVal = Math.max(10, startVal - 4);
+        weeklyDeltaVal = (targetVal - startVal) / CYCLE_WEEKS;
+      } else if (metricKey === "muscleMass") {
+        targetVal = startVal + 1;
+        weeklyDeltaVal = (targetVal - startVal) / CYCLE_WEEKS;
+      } else {
+        targetVal = Math.max(40, startVal - 2);
+        weeklyDeltaVal = (targetVal - startVal) / CYCLE_WEEKS;
+      }
+      return {
+        startValue: startVal,
+        targetValue: targetVal,
+        weeklyDelta: weeklyDeltaVal,
+        history: [],
+        currentWeek: 1,
+        latestMetric,
+        unit,
+        dataPoints,
+      };
+    }
+  }
+
   if (gs || catSingle) {
     const startVal =
       gs?.target?.startValue ??
@@ -365,7 +414,7 @@ export function getStrengthChartData(
     ? autoPace.target
     : cat?.goal
       ? cat.goal.targetValue
-      : STRENGTH_TREND_DATA.slice(-1)[0][option];
+      : Math.max(STRENGTH_TREND_DATA.slice(-1)[0][option], startVal + 15);
   const weeklyDelta = autoPace
     ? autoPace.weeklyDelta
     : cat?.goal
@@ -420,17 +469,19 @@ export function getCardioChartData(
     ? autoPace.start
     : useReal
       ? (useReal[metricKey] ?? 0)
-      : CARDIO_TREND_DATA[option][0].time / 60;
+      : cardioTimeToPace(option, CARDIO_TREND_DATA[option][0].time);
   const targetVal = autoPace
     ? autoPace.target
     : cat?.goal
       ? cat.goal.targetValue
-      : CARDIO_TREND_DATA[option].slice(-1)[0].time / 60;
+      : useReal && (useReal[metricKey] ?? 0) > 0
+        ? Math.round(Math.max(3, (useReal[metricKey] ?? 0) * 0.98) * 100) / 100
+        : cardioTimeToPace(option, CARDIO_TREND_DATA[option].slice(-1)[0].time);
   const weeklyDelta = autoPace
     ? autoPace.weeklyDelta
     : cat?.goal
       ? cat.goal.weeklyDelta
-      : (targetVal - startVal) / 12;
+      : (targetVal - startVal) / CYCLE_WEEKS;
   const latestMetric = opts?.dataPoints && opts.dataPoints.length > 0
     ? opts.dataPoints[opts.dataPoints.length - 1].value
     : startVal;

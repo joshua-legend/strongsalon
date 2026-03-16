@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { exercisesInfo } from "@/data/exercises-info";
@@ -32,26 +32,64 @@ export default function ExerciseAddBottomSheet({
   onToggleFav,
   onToggleCardio,
 }: ExerciseAddBottomSheetProps) {
+  const [pendingStrength, setPendingStrength] = useState<Set<string>>(new Set());
+  const [pendingCardio, setPendingCardio] = useState<CardioType[]>([]);
+  const prevOpen = useRef(false);
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
+      if (!prevOpen.current) {
+        setPendingStrength(new Set(selectedNames));
+        setPendingCardio([...cardioTypes]);
+      }
+      prevOpen.current = true;
     } else {
       document.body.style.overflow = "";
+      prevOpen.current = false;
     }
     return () => {
       document.body.style.overflow = "";
     };
-  }, [open]);
+  }, [open, selectedNames, cardioTypes]);
 
   if (!open) return null;
 
   const handleStrengthClick = (icon: string, name: string) => {
-    onToggleFav(icon, name);
-    onClose();
+    setPendingStrength((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
   };
 
   const handleCardioClick = (type: CardioType) => {
-    onToggleCardio(type);
+    setPendingCardio((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  const handleConfirm = () => {
+    const pendingStrengthSet = new Set(pendingStrength);
+    const selectedNamesSet = new Set(selectedNames);
+
+    strengthExercises.forEach((ex) => {
+      const inPending = pendingStrengthSet.has(ex.name);
+      const wasSelected = selectedNamesSet.has(ex.name);
+      if (inPending && !wasSelected) onToggleFav(ex.icon, ex.name);
+      if (!inPending && wasSelected) onToggleFav(ex.icon, ex.name);
+    });
+
+    const pendingCardioSet = new Set(pendingCardio);
+    const cardioTypesSet = new Set(cardioTypes);
+    const allCardioTypes: CardioType[] = ["run", "cycle", "row", "skierg"];
+    allCardioTypes.forEach((t) => {
+      const inPending = pendingCardioSet.has(t);
+      const wasSelected = cardioTypesSet.has(t);
+      if (inPending !== wasSelected) onToggleCardio(t);
+    });
+
     onClose();
   };
 
@@ -113,7 +151,7 @@ export default function ExerciseAddBottomSheet({
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {items.map((ex) => {
-                      const isSelected = selectedNames.has(ex.name);
+                      const isSelected = pendingStrength.has(ex.name);
                       return (
                         <button
                           key={ex.id}
@@ -155,7 +193,7 @@ export default function ExerciseAddBottomSheet({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {cardioGroup.cardio.map((c) => {
-                    const isSelected = cardioTypes.includes(c.type);
+                    const isSelected = pendingCardio.includes(c.type);
                     return (
                       <button
                         key={c.type}
@@ -184,6 +222,24 @@ export default function ExerciseAddBottomSheet({
                 </div>
               </div>
             )}
+          </div>
+
+          {/* 선택완료 버튼 */}
+          <div
+            className="p-4 border-t shrink-0"
+            style={{ borderColor: "var(--border-light)" }}
+          >
+            <button
+              type="button"
+              onClick={handleConfirm}
+              className="w-full py-3.5 rounded-xl font-bold text-base transition-all hover:brightness-110 active:scale-[0.98]"
+              style={{
+                backgroundColor: "var(--accent-main)",
+                color: "#000",
+              }}
+            >
+              선택완료
+            </button>
           </div>
         </motion.div>
       </motion.div>

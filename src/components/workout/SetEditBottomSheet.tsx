@@ -85,6 +85,20 @@ export default function SetEditBottomSheet({
             </button>
           </div>
 
+          {/* KG 미입력 힌트 배너 */}
+          {exercise.sets.some((s) => s.weight === 0) && (
+            <div
+              className="mx-4 mt-3 px-3 py-2 rounded-xl text-[11px] font-bebas tracking-wider"
+              style={{
+                backgroundColor: "rgba(245, 158, 11, 0.08)",
+                border: "1px solid #f59e0b",
+                color: "#f59e0b",
+              }}
+            >
+              ⚡ KG를 입력하면 운동 준비가 완료돼요
+            </div>
+          )}
+
           {/* Sets list */}
           <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
             <div className="grid grid-cols-[32px_1fr_1fr_40px] gap-2 mb-2 px-1">
@@ -124,7 +138,7 @@ export default function SetEditBottomSheet({
                   className="w-full px-3 py-2 rounded-lg font-bebas text-sm text-center outline-none transition-colors"
                   style={{
                     backgroundColor: "var(--bg-body)",
-                    border: "1px solid var(--border-light)",
+                    border: set.weight === 0 ? "1px solid #f59e0b" : "1px solid var(--border-light)",
                     color: "var(--text-main)",
                   }}
                   placeholder="0"
@@ -168,6 +182,25 @@ export default function SetEditBottomSheet({
               }}
             >
               ＋ 세트 추가
+            </button>
+          </div>
+
+          {/* 완료 버튼 */}
+          <div
+            className="shrink-0 p-4 pt-3 border-t"
+            style={{ borderColor: "var(--border-light)" }}
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full py-3.5 rounded-xl font-bebas text-sm font-bold tracking-wider transition-all hover:opacity-90 active:scale-[0.98]"
+              style={{
+                backgroundColor: "var(--accent-main)",
+                color: "white",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+              }}
+            >
+              완료
             </button>
           </div>
         </motion.div>

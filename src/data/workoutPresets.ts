@@ -3,6 +3,71 @@
  * 친구네 헬스장 기구 기준
  */
 
+import type { WorkoutCondition } from "@/types";
+
+/** 컨디션별 1RM 대비 무게 비율 (낮을수록 가벼운 무게) */
+export const CONDITION_WEIGHT_RATIO: Record<WorkoutCondition, number> = {
+  최악: 0.6,
+  나쁨: 0.65,
+  좋음: 0.75,
+  최고: 0.85,
+  불타: 0.9,
+};
+
+/** 컨디션별 권장 횟수 (낮은 컨디션 = 가벼운 무게 + 많은 횟수, 높은 컨디션 = 무거운 무게 + 적은 횟수) */
+export const CONDITION_REPS: Record<WorkoutCondition, number> = {
+  최악: 12,
+  나쁨: 10,
+  좋음: 10,
+  최고: 8,
+  불타: 6,
+};
+
+/** 유산소 종목별 기본 거리(km) · 시간(분) - 컨디션·운동시간 반영 */
+export const CARDIO_BASE: Record<string, { distanceKm: number; timeMin: number; paceMinPerKm: number }> = {
+  run: { distanceKm: 2, timeMin: 12, paceMinPerKm: 6 },
+  row: { distanceKm: 2, timeMin: 9, paceMinPerKm: 4.5 },
+  skierg: { distanceKm: 2, timeMin: 10, paceMinPerKm: 5 },
+  cycle: { distanceKm: 5, timeMin: 15, paceMinPerKm: 3 },
+};
+
+/** 컨디션별 유산소 비율 (0.5~1.0) */
+export const CONDITION_CARDIO_RATIO: Record<WorkoutCondition, number> = {
+  최악: 0.5,
+  나쁨: 0.65,
+  좋음: 0.85,
+  최고: 0.95,
+  불타: 1,
+};
+
+export function getCardioAutoFill(
+  type: string,
+  condition: WorkoutCondition,
+  estMinutes: number
+): { distanceKm: number; timeMinutes: number } {
+  const base = CARDIO_BASE[type] ?? CARDIO_BASE.run;
+  const ratio = CONDITION_CARDIO_RATIO[condition] ?? 0.85;
+  const cardioShare = Math.min(0.35, estMinutes / 180);
+  const targetTime = Math.round(
+    Math.max(8, Math.min(25, base.timeMin * ratio * (1 + cardioShare)))
+  );
+  const targetDistance = Math.round((targetTime / base.paceMinPerKm) * 10) / 10;
+  return {
+    distanceKm: Math.max(0.5, Math.min(10, targetDistance)),
+    timeMinutes: targetTime,
+  };
+}
+
+/** 운동 시간별 종목당 세트 수 */
+export function getSetCountFromTime(estMinutes: number): number {
+  if (estMinutes <= 30) return 2;
+  if (estMinutes <= 45) return 3;
+  if (estMinutes <= 60) return 3;
+  if (estMinutes <= 75) return 4;
+  if (estMinutes <= 90) return 4;
+  return 5;
+}
+
 export type SplitId =
   | "lowerA"
   | "lowerB"

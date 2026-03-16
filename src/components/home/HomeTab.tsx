@@ -11,12 +11,14 @@ import GoalCompleteCard from "./GoalCompleteCard";
 import PtTicketCard from "./PtTicketCard";
 import GymTicketCard from "./GymTicketCard";
 import CategorySetupSheet from "./CategorySetupSheet";
+import RecommendationSetupSheet from "./RecommendationSetupSheet";
 
 export default function HomeTab() {
   const { user } = useUser();
   const { goalSetting, activeQuest, isGoalReached, primaryGoal } = useGoal();
-  const { openStrengthSetup, setOpenStrengthSetup } = useApp();
+  const { openStrengthSetup, setOpenStrengthSetup, openRecommendationSetup, setOpenRecommendationSetup } = useApp();
   const [showStrengthSheet, setShowStrengthSheet] = useState(false);
+  const [showRecommendationSheet, setShowRecommendationSheet] = useState(false);
 
   useEffect(() => {
     if (openStrengthSetup) {
@@ -24,6 +26,13 @@ export default function HomeTab() {
       setOpenStrengthSetup(false);
     }
   }, [openStrengthSetup, setOpenStrengthSetup]);
+
+  useEffect(() => {
+    if (openRecommendationSetup) {
+      setShowRecommendationSheet(true);
+      setOpenRecommendationSetup(false);
+    }
+  }, [openRecommendationSetup, setOpenRecommendationSetup]);
 
   const ptRemaining = user?.remainingSessions ?? 0;
   const ptTotal = user?.totalSessions ?? 0;
@@ -47,6 +56,12 @@ export default function HomeTab() {
         categoryId="strength"
         primaryGoal={primaryGoal}
         onComplete={() => setShowStrengthSheet(false)}
+      />
+
+      <RecommendationSetupSheet
+        open={showRecommendationSheet}
+        onClose={() => setShowRecommendationSheet(false)}
+        onComplete={() => setShowRecommendationSheet(false)}
       />
 
       <div className="space-y-3 pb-4">
