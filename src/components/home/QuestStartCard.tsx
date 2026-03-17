@@ -6,7 +6,11 @@ import { useGoal } from "@/context/GoalContext";
 import { goalOptions } from "@/config/goalOptions";
 import ResetGoalConfirmModal from "./ResetGoalConfirmModal";
 
-export default function QuestStartCard() {
+interface QuestStartCardProps {
+  onOpenFullSetup?: () => void;
+}
+
+export default function QuestStartCard({ onOpenFullSetup }: QuestStartCardProps) {
   const { goalSetting, setActiveQuest, resetGoal } = useGoal();
   const [showResetModal, setShowResetModal] = useState(false);
   if (!goalSetting) return null;
@@ -63,6 +67,22 @@ export default function QuestStartCard() {
           <RotateCcw className="w-4 h-4" />
           목표 다시 설정하기
         </button>
+        {onOpenFullSetup && (
+          <div className="mt-4 mb-2 flex justify-center">
+            <button
+              type="button"
+              onClick={onOpenFullSetup}
+              className="rounded-full px-5 py-2.5 text-xs font-medium transition-all hover:bg-[var(--accent-bg)] hover:text-[var(--accent-main)]"
+              style={{
+                backgroundColor: "var(--bg-body)",
+                color: "var(--text-sub)",
+                border: "1px solid var(--border-light)",
+              }}
+            >
+              전체 설정
+            </button>
+          </div>
+        )}
       </div>
       <ResetGoalConfirmModal
         open={showResetModal}

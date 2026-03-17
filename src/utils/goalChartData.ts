@@ -8,9 +8,9 @@ import type { CategorySetting } from "@/types/categorySettings";
 export type InbodyChartOption = "fatPercent" | "muscleMass" | "weight";
 
 export const INBODY_SUB_TABS: { id: InbodyChartOption; label: string }[] = [
-  { id: "fatPercent", label: "체지방률" },
-  { id: "muscleMass", label: "골격근" },
   { id: "weight", label: "체중" },
+  { id: "muscleMass", label: "골격근" },
+  { id: "fatPercent", label: "체지방률" },
 ];
 
 export interface InbodySession {
@@ -385,6 +385,18 @@ export function isMultiLineChart(
   return data !== null && "type" in data && (data as MultiLineChartData).type === "multiLine";
 }
 
+/** 최근 N회 중 최고치 사용 (1RM 변동성 완화) */
+const SMOOTH_WINDOW = 3;
+function getSmoothedLatest(
+  dataPoints: ChartDataPoint[] | undefined,
+  higherIsBetter: boolean
+): number | undefined {
+  if (!dataPoints || dataPoints.length === 0) return undefined;
+  const slice = dataPoints.slice(-SMOOTH_WINDOW);
+  const values = slice.map((p) => p.value);
+  return higherIsBetter ? Math.max(...values) : Math.min(...values);
+}
+
 const STRENGTH_KEYS = ["squat", "bench", "deadlift"] as const;
 const STRENGTH_LABELS: Record<string, string> = { squat: "스쿼트", bench: "벤치프레스", deadlift: "데드리프트" };
 const STRENGTH_COLORS: Record<string, string> = { squat: "#a3e635", bench: "#38bdf8", deadlift: "#fb923c" };
@@ -420,9 +432,9 @@ export function getStrengthChartData(
     : cat?.goal
       ? cat.goal.weeklyDelta
       : (targetVal - startVal) / 12;
-  const latestMetric = opts?.dataPoints && opts.dataPoints.length > 0
-    ? opts.dataPoints[opts.dataPoints.length - 1].value
-    : startVal;
+  const rawLatest = opts?.dataPoints?.[opts.dataPoints.length - 1]?.value;
+  const latestMetric =
+    getSmoothedLatest(opts?.dataPoints, true) ?? rawLatest ?? startVal;
 
   return {
     startValue: startVal,
@@ -482,9 +494,9 @@ export function getCardioChartData(
     : cat?.goal
       ? cat.goal.weeklyDelta
       : (targetVal - startVal) / CYCLE_WEEKS;
-  const latestMetric = opts?.dataPoints && opts.dataPoints.length > 0
-    ? opts.dataPoints[opts.dataPoints.length - 1].value
-    : startVal;
+  const rawLatest = opts?.dataPoints?.[opts.dataPoints.length - 1]?.value;
+  const latestMetric =
+    getSmoothedLatest(opts?.dataPoints, false) ?? rawLatest ?? startVal;
 
   return {
     startValue: startVal,

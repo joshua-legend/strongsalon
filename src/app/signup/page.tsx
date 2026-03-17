@@ -16,10 +16,11 @@ const GOAL_OPTIONS: { value: OnboardingProfile["goal"]; label: string }[] = [
 ];
 
 const EXPERIENCE_OPTIONS: { value: OnboardingProfile["experience"]; label: string }[] = [
-  { value: "first", label: "처음" },
-  { value: "under6m", label: "6개월 미만" },
-  { value: "6m_to_2y", label: "6개월~2년" },
-  { value: "over2y", label: "2년 이상" },
+  { value: "first", label: "퍼스트" },
+  { value: "under3m", label: "언더 3개월" },
+  { value: "3m_to_1y", label: "3개월~1년" },
+  { value: "1y_to_2y", label: "1년~2년" },
+  { value: "over2y", label: "오버 2년" },
 ];
 
 const DAYS_OPTIONS: { value: OnboardingProfile["daysPerWeek"]; label: string }[] = [
@@ -175,7 +176,7 @@ export default function SignupPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-[var(--text-sub)] block mb-1">운동 경험</label>
+                <label className="text-xs text-[var(--text-sub)] block mb-1">운동해온 기간</label>
                 <CustomSelect
                   value={onboarding.experience}
                   options={EXPERIENCE_OPTIONS}

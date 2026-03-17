@@ -16,6 +16,31 @@
   --accent-sub: #22c55e;
   --accent-bg: rgba(163, 230, 53, 0.1);
   --accent-text: #000000;
+
+  /* 골트래커 차트 - 다크 모드 */
+  --chart-frame: #1a1a1a;
+  --chart-grid-h: #2a2a2a;
+  --chart-grid-v: #1f1f1f;
+  --chart-tick: #404040;
+  --chart-tick-text: #a3a3a3;
+  --chart-tick-text-bold: #d4d4d4;
+  --chart-badge-bg: #0a0a0a;
+  --chart-dot-fill: #171717;
+  --chart-dot-stroke: #525252;
+  --chart-record-btn-bg: rgba(38, 38, 38, 0.8);
+  --chart-record-btn-border: rgba(64, 64, 64, 0.6);
+  --chart-record-btn-text: #d1d5db;
+  --chart-record-btn-hover-bg: rgba(55, 55, 55, 0.8);
+  --chart-record-btn-hover-border: rgba(82, 82, 82, 0.6);
+  --chart-pace-good: #a3e635;
+  --chart-pace-good-bg: rgba(163, 230, 53, 0.1);
+  --chart-pace-bad: #f97316;
+  --chart-pace-bad-bg: rgba(249, 115, 22, 0.1);
+  --chart-change-text: #ffffff;
+  --chart-change-label: #a3a3a3;
+  --chart-line-lime: #a3e635;
+  --chart-line-orange: #f97316;
+  --chart-line-sky: #38bdf8;
 }
 
 /* 라이브러리 탭 장식 아이콘 (덤벨) - 테마별 가시성 */
@@ -52,6 +77,31 @@
   --challenge-hero-border: var(--border-light);
   --challenge-rank-bg: var(--accent-bg);
   --challenge-rank-border: var(--border-light);
+
+  /* 골트래커 차트 - 라이트 모드 */
+  --chart-frame: #e5e7eb;
+  --chart-grid-h: #e5e7eb;
+  --chart-grid-v: #e5e7eb;
+  --chart-tick: #9ca3af;
+  --chart-tick-text: #6b7280;
+  --chart-tick-text-bold: #374151;
+  --chart-badge-bg: #ffffff;
+  --chart-dot-fill: #ffffff;
+  --chart-dot-stroke: #d1d5db;
+  --chart-record-btn-bg: #f9fafb;
+  --chart-record-btn-border: #e5e7eb;
+  --chart-record-btn-text: #374151;
+  --chart-record-btn-hover-bg: #f3f4f6;
+  --chart-record-btn-hover-border: #d1d5db;
+  --chart-pace-good: #16a34a;
+  --chart-pace-good-bg: rgba(22, 163, 74, 0.12);
+  --chart-pace-bad: #ea580c;
+  --chart-pace-bad-bg: rgba(234, 88, 12, 0.12);
+  --chart-change-text: #374151;
+  --chart-change-label: #6b7280;
+  --chart-line-lime: #16a34a;
+  --chart-line-orange: #ea580c;
+  --chart-line-sky: #0284c7;
 }
 
 @theme inline {
@@ -595,4 +645,55 @@ input[type="number"] {
   font-size: 0.875rem;
   background-color: var(--bg-card-hover);
   transition: background-color 0.3s;
+}
+
+/* 골트래커 기록 추가 버튼 - 테마 대응 */
+.goal-record-btn {
+  background-color: var(--chart-record-btn-bg);
+  border-color: var(--chart-record-btn-border);
+  color: var(--chart-record-btn-text);
+}
+.goal-record-btn:hover {
+  background-color: var(--chart-record-btn-hover-bg);
+  border-color: var(--chart-record-btn-hover-border);
+}
+.goal-record-btn-icon {
+  background-color: var(--chart-record-btn-hover-bg);
+  color: var(--chart-record-btn-text);
+}
+.goal-record-popover {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+}
+.goal-record-popover-label {
+  color: var(--text-sub);
+}
+.goal-record-input-label {
+  background-color: var(--bg-body);
+  border: 1px solid var(--border-light);
+  color: var(--text-sub);
+}
+.goal-record-input {
+  background-color: var(--bg-body);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
+}
+.goal-record-input::placeholder {
+  color: var(--text-sub);
+}
+.goal-record-input:focus {
+  border-color: var(--border-focus);
+}
+.goal-record-unit {
+  color: var(--text-sub);
+}
+.goal-record-cancel {
+  color: var(--text-sub);
+}
+.goal-record-cancel:hover {
+  color: var(--text-main);
+}
+.goal-record-save {
+  background-color: var(--accent-main);
+  color: var(--accent-text);
 }

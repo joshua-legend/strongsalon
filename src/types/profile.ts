@@ -1,6 +1,6 @@
 export type Gender = "male" | "female";
 
-export type Experience = "beginner" | "intermediate" | "advanced";
+export type Experience = "untrained" | "novice" | "intermediate" | "advanced" | "elite";
 
 export interface UserProfile {
   nickname: string;

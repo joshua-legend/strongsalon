@@ -13,11 +13,11 @@ const METRIC_LABELS: Record<InbodyMetricKey, string> = {
   fatPercent: "체지방률",
 };
 
-/** 통일 색상: 1번=초록, 2번=주황, 3번=파랑 */
+/** 통일 색상: 테마별 CSS 변수 (1번=초록, 2번=주황, 3번=파랑) */
 const METRIC_COLORS: Record<InbodyMetricKey, string> = {
-  fatPercent: "#a3e635",
-  muscleMass: "#f97316",
-  weight: "#38bdf8",
+  fatPercent: "var(--chart-line-lime)",
+  muscleMass: "var(--chart-line-orange)",
+  weight: "var(--chart-line-sky)",
 };
 
 interface InbodyPaceChartProps {
@@ -130,15 +130,22 @@ function InbodyDashboardCards({
             key={s.metricKey}
             type="button"
             onClick={() => onSelectMetric?.(s.metricKey as InbodyChartOption)}
-            className="bg-neutral-950/80 rounded-2xl p-3 text-center transition-all hover:bg-neutral-900/80 hover:border-neutral-700 border border-neutral-800/50"
+            className="rounded-2xl p-3 text-center transition-all border hover:opacity-90"
+            style={{
+              backgroundColor: "var(--bg-card)",
+              borderColor: "var(--border-light)",
+            }}
           >
-            <div className="text-[10px] text-neutral-500 font-mono uppercase mb-1">
+            <div className="text-[10px] font-mono uppercase mb-1" style={{ color: "var(--text-sub)" }}>
               {METRIC_LABELS[s.metricKey]}
             </div>
             <div className="font-bebas text-lg" style={{ color }}>
               {current}{s.unit}
             </div>
-            <div className={`text-[10px] font-bold flex items-center justify-center gap-0.5 ${isGood ? "text-lime-400" : "text-orange-400"}`}>
+            <div
+              className="text-[10px] font-bold flex items-center justify-center gap-0.5"
+              style={{ color: isGood ? "var(--chart-pace-good)" : "var(--chart-pace-bad)" }}
+            >
               {delta >= 0 ? (
                 <TrendingUp className="w-3 h-3" />
               ) : (
@@ -228,7 +235,7 @@ function InbodySingleChart({
           width={chartW}
           height={dims.chartH}
           fill="none"
-          stroke="#1a1a1a"
+          stroke="var(--chart-frame)"
           rx={2}
         />
         {Array.from({ length: 5 }, (_, i) => {
@@ -241,7 +248,7 @@ function InbodySingleChart({
               y1={py}
               x2={padLeft + chartW}
               y2={py}
-              stroke="#2a2a2a"
+              stroke="var(--chart-grid-h)"
               strokeWidth={0.5}
             />
           );
@@ -255,7 +262,7 @@ function InbodySingleChart({
               y1={dims.padTop}
               x2={x}
               y2={dims.padTop + dims.chartH}
-              stroke="#1f1f1f"
+              stroke="var(--chart-grid-v)"
               strokeWidth={0.5}
             />
           );
@@ -271,7 +278,7 @@ function InbodySingleChart({
                 y1={py}
                 x2={padLeft}
                 y2={py}
-                stroke="#404040"
+                stroke="var(--chart-tick)"
                 strokeWidth={1}
               />
               <text
@@ -280,7 +287,7 @@ function InbodySingleChart({
                 textAnchor="end"
                 fontSize={9}
                 fontWeight="bold"
-                fill="#a3a3a3"
+                fill="var(--chart-tick-text)"
               >
                 {y}
               </text>
@@ -298,7 +305,7 @@ function InbodySingleChart({
                 y1={dims.padTop + dims.chartH}
                 x2={x}
                 y2={dims.padTop + dims.chartH + 4}
-                stroke="#525252"
+                stroke="var(--chart-tick)"
                 strokeWidth={1}
               />
               <text
@@ -306,7 +313,7 @@ function InbodySingleChart({
                 y={dims.padTop + dims.chartH + 14}
                 textAnchor="middle"
                 fontSize={9}
-                fill={i === 0 ? "#d4d4d4" : "#737373"}
+                fill={i === 0 ? "var(--chart-tick-text-bold)" : "var(--chart-tick-text)"}
                 fontWeight={i === 0 ? "bold" : "normal"}
               >
                 {formatDateLabel(configuredAt, week)}
@@ -356,7 +363,7 @@ function InbodySingleChart({
                 width={badgeW}
                 height={badgeH}
                 rx={6}
-                fill="#0a0a0a"
+                fill="var(--chart-badge-bg)"
                 stroke={lineColor}
                 strokeWidth={1}
                 opacity={0.95}
@@ -394,8 +401,8 @@ function InbodySingleChart({
           cx={toX(0)}
           cy={toY(startValue)}
           r={3}
-          fill="#171717"
-          stroke="#525252"
+          fill="var(--chart-dot-fill)"
+          stroke="var(--chart-dot-stroke)"
           strokeWidth={1}
         />
 
@@ -421,14 +428,14 @@ function InbodySingleChart({
                   fill={lineColor}
                   filter="url(#inbodyDotGlow2)"
                 />
-                <circle cx={x} cy={y} r={3} fill="#0a0a0a" />
+                <circle cx={x} cy={y} r={3} fill="var(--chart-badge-bg)" />
                 <rect
                   x={rectX}
                   y={rectY}
                   width={boxW}
                   height={boxH}
                   rx={6}
-                  fill="#0a0a0a"
+                  fill="var(--chart-badge-bg)"
                   stroke={lineColor}
                   strokeWidth={1.5}
                   opacity={0.95}
@@ -453,7 +460,7 @@ function InbodySingleChart({
               cy={y}
               r={4}
               fill={lineColor}
-              stroke="#0a0a0a"
+              stroke="var(--chart-badge-bg)"
               strokeWidth={1}
             />
           );
@@ -462,24 +469,31 @@ function InbodySingleChart({
 
       {pointsToRender.length > 0 && (
         <div className="mt-2 space-y-1.5">
-          <div className="flex justify-between text-xs text-neutral-400">
-            <span>현재: <span className="font-mono text-white">{data.latestMetric}{unit}</span></span>
-            <span>이전: <span className="font-mono">{pointsToRender.length >= 2 ? pointsToRender[pointsToRender.length - 2].value : data.startValue}{unit}</span></span>
+          <div className="flex justify-between text-xs" style={{ color: "var(--chart-change-label)" }}>
+            <span>현재: <span className="font-mono" style={{ color: "var(--chart-change-text)" }}>{data.latestMetric}{unit}</span></span>
+            <span>이전: <span className="font-mono" style={{ color: "var(--chart-change-text)" }}>{pointsToRender.length >= 2 ? pointsToRender[pointsToRender.length - 2].value : data.startValue}{unit}</span></span>
           </div>
           <div className="flex items-center justify-between">
-            <span className={`text-xs font-bold ${(() => {
-              const prevVal = pointsToRender.length >= 2 ? pointsToRender[pointsToRender.length - 2].value : data.startValue;
-              const diff = data.latestMetric - prevVal;
-              const isGood = invertGood ? diff <= 0 : diff >= 0;
-              return isGood ? "text-lime-400" : "text-orange-400";
-            })()}`}>
+            <span
+              className="text-xs font-bold"
+              style={{
+                color: (() => {
+                  const prevVal = pointsToRender.length >= 2 ? pointsToRender[pointsToRender.length - 2].value : data.startValue;
+                  const diff = data.latestMetric - prevVal;
+                  const isGood = invertGood ? diff <= 0 : diff >= 0;
+                  return `var(${isGood ? "--chart-pace-good" : "--chart-pace-bad"})`;
+                })(),
+              }}
+            >
               변화: {(data.latestMetric - (pointsToRender.length >= 2 ? pointsToRender[pointsToRender.length - 2].value : data.startValue)) >= 0 ? "+" : ""}
               {(data.latestMetric - (pointsToRender.length >= 2 ? pointsToRender[pointsToRender.length - 2].value : data.startValue)).toFixed(1)}{unit}
             </span>
             <div
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
-                isAhead ? "bg-lime-400/10 text-lime-400" : "bg-orange-400/10 text-orange-400"
-              }`}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+              style={{
+                backgroundColor: isAhead ? "var(--chart-pace-good-bg)" : "var(--chart-pace-bad-bg)",
+                color: isAhead ? "var(--chart-pace-good)" : "var(--chart-pace-bad)",
+              }}
             >
               {weeklyDelta < 0 ? (
                 <TrendingDown className="w-3.5 h-3.5" />

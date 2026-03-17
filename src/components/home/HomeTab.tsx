@@ -40,10 +40,12 @@ export default function HomeTab() {
   const membershipDaysLeft = membershipExpiry ? Math.max(0, getDaysLeft(membershipExpiry)) : null;
   const membershipExpiryFmt = membershipExpiry ? formatExpiry(membershipExpiry) : null;
 
+  const openFullSetup = () => setShowRecommendationSheet(true);
+
   const questSection = (() => {
-    if (isGoalReached) return <GoalCompleteCard />;
-    if (goalSetting && !activeQuest) return <QuestStartCard />;
-    return <QuestGoalTracker />;
+    if (isGoalReached) return <GoalCompleteCard onOpenFullSetup={openFullSetup} />;
+    if (goalSetting && !activeQuest) return <QuestStartCard onOpenFullSetup={openFullSetup} />;
+    return <QuestGoalTracker onOpenFullSetup={openFullSetup} />;
   })();
 
   return (

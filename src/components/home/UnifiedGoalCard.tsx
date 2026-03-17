@@ -40,8 +40,8 @@ function mainTabToCategoryId(tab: MainTabId): CategoryId {
   return "fitness";
 }
 
-/** 통일 색상: 1번=초록, 2번=주황, 3번=파랑 */
-const UNIFIED_COLORS = { lime: "#a3e635", orange: "#f97316", sky: "#38bdf8" } as const;
+/** 통일 색상: 테마별 CSS 변수 사용 (1번=초록, 2번=주황, 3번=파랑) */
+const UNIFIED_COLORS = { lime: "var(--chart-line-lime)", orange: "var(--chart-line-orange)", sky: "var(--chart-line-sky)" } as const;
 
 const STRENGTH_SUB_TABS: { id: StrengthChartOption; label: string; color: "lime" | "orange" | "sky" }[] = [
   { id: "squat", label: "스쿼트", color: "lime" },
@@ -69,13 +69,13 @@ const CARDIO_LINE_COLORS: Record<CardioChartOption, string> = {
 
 const INBODY_SUB_TABS_WITH_COLOR = INBODY_SUB_TABS.map((t) => ({
   ...t,
-  color: (t.id === "fatPercent" ? "lime" : t.id === "muscleMass" ? "orange" : "sky") as "lime" | "orange" | "sky",
+  color: (t.id === "weight" ? "sky" : t.id === "muscleMass" ? "orange" : "lime") as "lime" | "orange" | "sky",
 }));
 
 const INBODY_LINE_COLORS: Record<InbodyChartOption, string> = {
-  fatPercent: UNIFIED_COLORS.lime,
-  muscleMass: UNIFIED_COLORS.orange,
   weight: UNIFIED_COLORS.sky,
+  muscleMass: UNIFIED_COLORS.orange,
+  fatPercent: UNIFIED_COLORS.lime,
 };
 
 function getMainTabFromGoalId(goalId: string): MainTabId {
@@ -85,7 +85,11 @@ function getMainTabFromGoalId(goalId: string): MainTabId {
   return "inbody";
 }
 
-export default function UnifiedGoalCard() {
+interface UnifiedGoalCardProps {
+  onOpenFullSetup?: () => void;
+}
+
+export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProps) {
   const {
     goalSetting,
     activeQuest,
@@ -95,7 +99,7 @@ export default function UnifiedGoalCard() {
     resetCategory,
   } = useGoal();
   const { inbodyHistory } = useInbody();
-  const { getChartPoints } = useChartData();
+  const { getChartPoints, chartDataPoints } = useChartData();
   const [showSetupSheet, setShowSetupSheet] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [chartDataVersion, setChartDataVersion] = useState(0);
@@ -115,7 +119,7 @@ export default function UnifiedGoalCard() {
   const [mainTab, setMainTab] = useState<MainTabId>(defaultMainTab);
   const [subTab, setSubTab] = useState<
     StrengthChartOption | CardioChartOption | InbodyChartOption
-  >(defaultMainTab === "inbody" ? "fatPercent" : defaultMainTab === "strength" ? "squat" : "run5k");
+  >(defaultMainTab === "inbody" ? "weight" : defaultMainTab === "strength" ? "squat" : "run5k");
 
   const categoryId = mainTabToCategoryId(mainTab);
   const catSetting = categorySettings[categoryId];
@@ -191,7 +195,13 @@ export default function UnifiedGoalCard() {
       );
     }
     if (mainTab === "strength") {
-      const configuredAt = catSetting?.configuredAt ?? null;
+      let configuredAt = catSetting?.configuredAt ?? null;
+      if (!configuredAt && strengthMetricKey) {
+        const arr = chartDataPoints[strengthMetricKey] ?? [];
+        if (arr.length > 0) {
+          configuredAt = arr.reduce((min, p) => (!min || p.date < min ? p.date : min), "");
+        }
+      }
       const dataPoints = strengthMetricKey ? getChartPoints(strengthMetricKey, configuredAt) : undefined;
       return getStrengthChartData(subTab as StrengthChartOption, {
         categorySetting: isMetricConfigured ? catSetting : undefined,
@@ -199,7 +209,13 @@ export default function UnifiedGoalCard() {
       });
     }
     if (mainTab === "cardio") {
-      const configuredAt = catSetting?.configuredAt ?? null;
+      let configuredAt = catSetting?.configuredAt ?? null;
+      if (!configuredAt && cardioMetricKey) {
+        const arr = chartDataPoints[cardioMetricKey] ?? [];
+        if (arr.length > 0) {
+          configuredAt = arr.reduce((min, p) => (!min || p.date < min ? p.date : min), "");
+        }
+      }
       const dataPoints = cardioMetricKey ? getChartPoints(cardioMetricKey, configuredAt) : undefined;
       return getCardioChartData(subTab as CardioChartOption, {
         categorySetting: isMetricConfigured ? catSetting : undefined,
@@ -299,7 +315,7 @@ export default function UnifiedGoalCard() {
               type="button"
               onClick={() => {
                 setMainTab(tab.id);
-                setSubTab(tab.id === "inbody" ? "fatPercent" : tab.id === "strength" ? "squat" : "run5k");
+                setSubTab(tab.id === "inbody" ? "weight" : tab.id === "strength" ? "squat" : "run5k");
               }}
               className={`flex-1 py-1.5 px-4 rounded-full text-xs font-bold transition-all ${
                 mainTab === tab.id
@@ -593,6 +609,24 @@ export default function UnifiedGoalCard() {
           }
           onComplete={() => setShowSetupSheet(false)}
         />
+
+        {/* 전체 설정 pill 버튼 */}
+        {onOpenFullSetup && (
+          <div className="mt-4 mb-2 flex justify-center">
+            <button
+              type="button"
+              onClick={onOpenFullSetup}
+              className="rounded-full px-5 py-2.5 text-xs font-medium transition-all hover:bg-[var(--accent-bg)] hover:text-[var(--accent-main)]"
+              style={{
+                backgroundColor: "var(--bg-body)",
+                color: "var(--text-sub)",
+                border: "1px solid var(--border-light)",
+              }}
+            >
+              전체 설정
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

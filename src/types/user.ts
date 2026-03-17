@@ -10,7 +10,7 @@ export interface User {
   birthDate: string;
   height: number;
   weight: number;
-  experience: "beginner" | "intermediate" | "advanced";
+  experience: "untrained" | "novice" | "intermediate" | "advanced" | "elite";
   avatarGradient?: string;
   createdAt: string;
 

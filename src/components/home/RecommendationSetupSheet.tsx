@@ -9,18 +9,9 @@ import { useChartData } from "@/context/ChartDataContext";
 import type { ChartMetricKey } from "@/types/chartData";
 import type { CategorySetting } from "@/types/categorySettings";
 import { estimate1RM } from "@/utils/estimate1RM";
-import type { Experience } from "@/types/profile";
+import { get4WeekTargetDelta } from "@/utils/strengthTargetDelta";
 
 const CYCLE_WEEKS = 4;
-
-function get4WeekTargetDelta(
-  experience: Experience,
-  isTotal: boolean
-): number {
-  if (experience === "beginner") return isTotal ? 28 : 10;
-  if (experience === "intermediate") return isTotal ? 20 : 6;
-  return isTotal ? 12 : 4;
-}
 
 function roundVal(v: number): number {
   return Math.round(v);
@@ -191,7 +182,7 @@ export default function RecommendationSetupSheet({
 }: RecommendationSetupSheetProps) {
   const { setCategorySetting } = useGoal();
   const { profile } = useProfile();
-  const experience = profile?.experience ?? "beginner";
+  const experience = profile?.experience ?? "novice";
   const { addInbodyRecord } = useInbody();
   const { addStartPoint } = useChartData();
 
@@ -237,6 +228,18 @@ export default function RecommendationSetupSheet({
       : 0;
 
   const allValid = inbodyValid && strengthValid && fitnessValid;
+
+  const handleTestFill = () => {
+    setWeight(72);
+    setFatPercent(18);
+    setMuscleMass(32);
+    setSquat({ weight: 100, reps: 5 });
+    setBench({ weight: 80, reps: 5 });
+    setDeadlift({ weight: 120, reps: 5 });
+    setRunning({ distance: 2, time: 10 });
+    setRowing({ distance: 2, time: 8 });
+    setSkierg({ distance: 2, time: 9 });
+  };
 
   const handleComplete = () => {
     if (!allValid) return;
@@ -359,14 +362,20 @@ export default function RecommendationSetupSheet({
           <button
             type="button"
             onClick={onClose}
-            className="text-neutral-500 hover:text-white transition-colors text-sm"
+            className="text-neutral-500 hover:text-white transition-colors text-sm shrink-0"
           >
             ← 닫기
           </button>
-          <h2 className="font-bebas text-xl text-white tracking-wider">
+          <h2 className="font-bebas text-xl text-white tracking-wider truncate">
             추천을 위한 데이터 설정
           </h2>
-          <div className="w-12" />
+          <button
+            type="button"
+            onClick={handleTestFill}
+            className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-colors border border-neutral-700"
+          >
+            테스트
+          </button>
         </div>
 
         <p className="text-[11px] text-neutral-600 mb-5">

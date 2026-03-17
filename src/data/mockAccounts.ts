@@ -87,7 +87,7 @@ const 민준: AccountData = {
   workoutRecords: [],
   onboarding: {
     goal: "bulk",
-    experience: "6m_to_2y",
+    experience: "3m_to_1y",
     daysPerWeek: "3",
     sessionMinutes: "60",
     injury: "none",
@@ -107,7 +107,7 @@ const 지현: AccountData = {
     birthDate: "1998-08-22",
     height: 165,
     weight: 0,
-    experience: "beginner",
+    experience: "novice",
     createdAt: "2026-02-01",
     lifts: [],
     cardio: [],
@@ -119,7 +119,7 @@ const 지현: AccountData = {
     birthDate: "1998-08-22",
     height: 165,
     weight: 0,
-    experience: "beginner",
+    experience: "novice",
     createdAt: "2026-02-01",
   },
   attendance: [],
@@ -157,10 +157,12 @@ export const TEST_CREDENTIALS: Record<string, string> = {
 /** 메모리 기반 동적 계정 (회원가입) */
 const registeredAccounts = new Map<string, { accountData: AccountData; password: string }>();
 
-function onboardingToExperience(o: OnboardingProfile): "beginner" | "intermediate" | "advanced" {
-  if (o.experience === "first" || o.experience === "under6m") return "beginner";
-  if (o.experience === "6m_to_2y") return "intermediate";
-  return "advanced";
+function onboardingToExperience(o: OnboardingProfile): "untrained" | "novice" | "intermediate" | "advanced" | "elite" {
+  if (o.experience === "first") return "untrained";
+  if (o.experience === "under3m") return "novice";
+  if (o.experience === "3m_to_1y") return "intermediate";
+  if (o.experience === "1y_to_2y") return "advanced";
+  return "elite";
 }
 
 function createAccountFromOnboarding(

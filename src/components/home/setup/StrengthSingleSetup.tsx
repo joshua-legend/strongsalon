@@ -5,6 +5,7 @@ import type { UserProfile } from "@/types/profile";
 import type { CategorySetting } from "@/types/categorySettings";
 import type { StrengthChartOption } from "@/utils/goalChartData";
 import { estimate1RM } from "@/utils/estimate1RM";
+import { get4WeekTargetDelta } from "@/utils/strengthTargetDelta";
 
 const STRENGTH_LABELS: Record<StrengthChartOption, string> = {
   squat: "스쿼트",
@@ -13,14 +14,6 @@ const STRENGTH_LABELS: Record<StrengthChartOption, string> = {
 };
 
 const CYCLE_WEEKS = 4;
-
-function get4WeekTargetDelta(
-  experience: "beginner" | "intermediate" | "advanced"
-): number {
-  if (experience === "beginner") return 10;
-  if (experience === "intermediate") return 6;
-  return 4;
-}
 
 interface StrengthSingleSetupProps {
   metric: StrengthChartOption;
@@ -52,8 +45,8 @@ export default function StrengthSingleSetup({
     : existingStart;
   const currentValue = oneRM;
 
-  const experience = profile?.experience ?? "beginner";
-  const delta = get4WeekTargetDelta(experience);
+  const experience = profile?.experience ?? "novice";
+  const delta = get4WeekTargetDelta(experience, false);
   const defaultTarget = currentValue > 0 ? currentValue + delta : 0;
   const effectiveTarget = targetValue > 0 ? targetValue : defaultTarget;
 

@@ -6,6 +6,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  useRef,
 } from "react";
 import type { ChartDataPoint, ChartMetricKey } from "@/types/chartData";
 import type { CategoryId } from "@/types/categorySettings";
@@ -45,15 +46,21 @@ interface ChartDataContextValue {
 const ChartDataContext = createContext<ChartDataContextValue | null>(null);
 
 export function ChartDataProvider({ children }: { children: React.ReactNode }) {
-  const { accountData, updateAccountData } = useAuth();
+  const { accountData, updateAccountData, currentAccountId } = useAuth();
   const [chartDataPoints, setChartDataPoints] = useState<ChartDataHistory>(() =>
     structuredClone(accountData?.chartDataPoints ?? EMPTY_CHART)
   );
 
+  // 계정이 실제로 변경될 때만 차트 데이터를 accountData에서 재동기화.
+  // accountData의 다른 필드(workoutRecords 등)가 바뀔 때는 로컬 chartDataPoints를 덮어쓰지 않음.
+  const prevAccountIdRef = useRef<string | null | undefined>(undefined);
   useEffect(() => {
-    const source = accountData?.chartDataPoints ?? EMPTY_CHART;
-    setChartDataPoints(structuredClone(source));
-  }, [accountData]);
+    if (currentAccountId !== prevAccountIdRef.current) {
+      prevAccountIdRef.current = currentAccountId;
+      const source = accountData?.chartDataPoints ?? EMPTY_CHART;
+      setChartDataPoints(structuredClone(source));
+    }
+  }, [accountData, currentAccountId]);
 
   const getChartPoints = useCallback(
     (metricKey: ChartMetricKey, configuredAt: string | null): ChartDataPoint[] => {

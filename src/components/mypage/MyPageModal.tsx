@@ -5,6 +5,27 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import { useProfile } from "@/context/ProfileContext";
 import { useAuth } from "@/context/AuthContext";
+import { useInbody } from "@/context/InbodyContext";
+import { useGoal } from "@/context/GoalContext";
+import { useChartData } from "@/context/ChartDataContext";
+import type { OnboardingExperience } from "@/types/onboarding";
+import type { Experience } from "@/types/profile";
+
+const ONBOARDING_EXPERIENCE_LABELS: Record<OnboardingExperience, string> = {
+  first: "퍼스트",
+  under3m: "언더 3개월",
+  "3m_to_1y": "3개월~1년",
+  "1y_to_2y": "1년~2년",
+  over2y: "오버 2년",
+};
+
+const EXPERIENCE_LABELS: Record<Experience, string> = {
+  untrained: "언트레인드",
+  novice: "노비스",
+  intermediate: "인터미디어트",
+  advanced: "어드밴스드",
+  elite: "엘리트",
+};
 
 interface MyPageModalProps {
   open: boolean;
@@ -22,29 +43,49 @@ function formatDate(iso: string): string {
 
 export default function MyPageModal({ open, onClose }: MyPageModalProps) {
   const router = useRouter();
-  const { user, setUser } = useUser();
-  const { profile, setProfile } = useProfile();
-  const { logout } = useAuth();
+  const { user } = useUser();
+  const { profile } = useProfile();
+  const { logout, accountData, updateAccountData } = useAuth();
+  const { inbodyHistory } = useInbody();
+  const { categorySettings } = useGoal();
+  const { chartDataPoints } = useChartData();
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editHeight, setEditHeight] = useState("");
   const [editWeight, setEditWeight] = useState("");
 
+  const inbodyStart = categorySettings?.inbody?.startValues;
+  const latestInbody = inbodyHistory?.[0];
+  const weightFromChart = (() => {
+    const arr = chartDataPoints?.["inbody.weight"] ?? [];
+    if (arr.length === 0) return null;
+    const latest = arr.reduce((a, b) => (a.date >= b.date ? a : b));
+    return latest?.value ?? null;
+  })();
+  const resolvedWeight =
+    profile?.weight ??
+    latestInbody?.weight ??
+    inbodyStart?.weight ??
+    user?.bodyComp?.weight ??
+    user?.weight ??
+    weightFromChart ??
+    null;
+
   useEffect(() => {
     if (open) {
       setEditName(user?.name ?? "");
       setEditHeight(String(profile?.height ?? user?.height ?? ""));
-      setEditWeight(String(profile?.weight ?? user?.bodyComp?.weight ?? user?.weight ?? ""));
+      setEditWeight(String(resolvedWeight ?? ""));
     }
-  }, [open, user?.name, user?.height, user?.weight, profile?.height, profile?.weight, user?.bodyComp?.weight]);
+  }, [open, user?.name, user?.height, profile?.height, resolvedWeight]);
 
   if (!open) return null;
 
+  const weight = resolvedWeight;
+  const muscleMass = latestInbody?.muscleMass ?? user?.bodyComp?.muscle ?? inbodyStart?.muscleMass ?? null;
+  const fatPercent =
+    latestInbody?.fatPercent ?? user?.bodyComp?.fatPct ?? inbodyStart?.fatPercent ?? null;
   const height = profile?.height ?? null;
-  const weight = profile?.weight ?? user?.bodyComp?.weight ?? null;
-  const bodyFatPct = user?.bodyComp?.fatPct ?? null;
-  const muscleMass = user?.bodyComp?.muscle ?? null;
-  const liftTotal = user?.liftTotal ?? null;
   const createdAt = profile?.createdAt ?? user?.membershipStart ?? null;
 
   const handleSave = () => {
@@ -52,43 +93,46 @@ export default function MyPageModal({ open, onClose }: MyPageModalProps) {
     const heightNum = parseFloat(editHeight);
     const weightNum = parseFloat(editWeight);
 
-    if (user) {
-      setUser({ ...user, name });
-    }
-    if (profile) {
-      setProfile({
-        ...profile,
-        height: Number.isFinite(heightNum) ? heightNum : profile.height,
-        weight: Number.isFinite(weightNum) ? weightNum : profile.weight,
-      });
-    } else if (user && (Number.isFinite(heightNum) || Number.isFinite(weightNum))) {
-      setProfile({
-        nickname: user.nickname,
-        gender: user.gender,
-        birthDate: user.birthDate,
-        height: Number.isFinite(heightNum) ? heightNum : user.height,
-        weight: Number.isFinite(weightNum) ? weightNum : user.weight,
-        experience: user.experience,
-        createdAt: user.createdAt,
-      });
+    if (accountData) {
+      const newHeight = Number.isFinite(heightNum) ? heightNum : (profile?.height ?? user?.height);
+      const newWeight = Number.isFinite(weightNum) ? weightNum : (profile?.weight ?? user?.bodyComp?.weight ?? user?.weight);
+      updateAccountData((prev) => ({
+        ...prev,
+        user: { ...prev.user, name },
+        profile: {
+          ...prev.profile,
+          height: newHeight ?? prev.profile.height,
+          weight: newWeight ?? prev.profile.weight,
+        },
+      }));
     }
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setEditName(user?.name ?? "");
-    setEditHeight(String(profile?.height ?? user?.bodyComp?.weight ?? ""));
-    setEditWeight(String(profile?.weight ?? user?.bodyComp?.weight ?? ""));
+    setEditHeight(String(profile?.height ?? user?.height ?? ""));
+    setEditWeight(String(resolvedWeight ?? ""));
     setIsEditing(false);
   };
+
+  const exerciseDuration =
+    accountData?.onboarding?.experience != null
+      ? ONBOARDING_EXPERIENCE_LABELS[accountData.onboarding.experience]
+      : null;
+  const proficiency =
+    (profile?.experience ?? user?.experience) != null
+      ? EXPERIENCE_LABELS[(profile?.experience ?? user?.experience)!]
+      : null;
 
   const rows: { label: string; value: string | number | null }[] = [
     { label: "회원명", value: user?.name ?? null },
     { label: "키", value: height != null ? `${height} cm` : null },
-    { label: "몸무게", value: weight != null ? `${weight} kg` : null },
-    { label: "체지방량", value: bodyFatPct != null ? `${bodyFatPct}%` : null },
+    { label: "체중", value: weight != null ? `${weight} kg` : null },
     { label: "골격근량", value: muscleMass != null ? `${muscleMass} kg` : null },
-    { label: "1RM 중량", value: liftTotal != null ? `${liftTotal} kg` : null },
+    { label: "체지방률", value: fatPercent != null ? `${fatPercent}%` : null },
+    { label: "운동 경력", value: exerciseDuration },
+    { label: "숙련도", value: proficiency },
     { label: "가입날짜", value: createdAt ? formatDate(createdAt) : null },
   ];
 
@@ -138,13 +182,13 @@ export default function MyPageModal({ open, onClose }: MyPageModalProps) {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-xs text-neutral-500 font-mono">몸무게 (kg)</label>
+              <label className="text-xs text-neutral-500 font-mono">체중 (kg)</label>
               <input
                 type="number"
                 value={editWeight}
                 onChange={(e) => setEditWeight(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700 text-sm text-white font-mono focus:outline-none focus:border-lime-500"
-                placeholder="몸무게"
+                placeholder="체중"
                 min={30}
                 max={200}
               />

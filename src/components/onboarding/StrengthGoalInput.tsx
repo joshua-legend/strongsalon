@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { UserProfile } from "@/types/profile";
 import type { GoalSetting, StrengthMainMetric } from "@/types/goalSetting";
 import { estimate1RM } from "@/utils/estimate1RM";
+import { getWeeklyDelta } from "@/utils/strengthTargetDelta";
 
 const STRENGTH_LIFTS: {
   id: "squat" | "bench" | "deadlift";
@@ -20,17 +21,6 @@ const MAIN_METRIC_OPTIONS: { id: StrengthMainMetric; label: string }[] = [
   { id: "bench", label: "벤치" },
   { id: "deadlift", label: "데드" },
 ];
-
-function getWeeklyDelta(
-  experience: "beginner" | "intermediate" | "advanced",
-  isTotal: boolean
-): number {
-  if (experience === "beginner")
-    return isTotal ? 7 : 2.5;
-  if (experience === "intermediate")
-    return isTotal ? 5 : 1.5;
-  return isTotal ? 3 : 1;
-}
 
 interface StrengthGoalInputProps {
   profile?: UserProfile | null;
@@ -54,7 +44,7 @@ export default function StrengthGoalInput({
   const deadlift1RM = estimate1RM(deadlift.weight, deadlift.reps);
   const total1RM = squat1RM + bench1RM + deadlift1RM;
 
-  const experience = profile?.experience ?? "beginner";
+  const experience = profile?.experience ?? "novice";
   const isTotal = mainMetric === "total";
   const weeklyDelta = getWeeklyDelta(experience, isTotal);
 

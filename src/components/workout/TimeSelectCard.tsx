@@ -58,16 +58,16 @@ export default function TimeSelectCard({ value, onChange }: TimeSelectCardProps)
   }, [isOpen]);
 
   return (
-    <div ref={containerRef} className="relative w-full">
+    <div ref={containerRef} className="relative w-full h-full min-h-0">
       <div
         role="button"
         tabIndex={0}
         onClick={() => setIsOpen((o) => !o)}
         onKeyDown={(e) => e.key === "Enter" && setIsOpen((o) => !o)}
-        className="p-4 rounded-2xl border relative overflow-hidden transition-all duration-300 shadow-sm cursor-pointer hover:shadow-md"
+        className="h-full min-h-[100px] p-4 rounded-2xl border relative overflow-hidden transition-all duration-300 shadow-sm cursor-pointer hover:shadow-md flex flex-col"
         style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)" }}
       >
-        <div className="flex items-center justify-between mb-3 relative z-10">
+        <div className="flex items-center justify-between mb-3 relative z-10 shrink-0">
           <div className="flex items-center gap-1.5">
             <Timer
               className="w-4 h-4 transition-colors duration-300"
@@ -82,15 +82,17 @@ export default function TimeSelectCard({ value, onChange }: TimeSelectCardProps)
             style={{ color: "var(--text-sub)" }}
           />
         </div>
-        <p className="font-bebas text-4xl leading-none transition-colors duration-300 relative z-10" style={{ color: "var(--accent-main)" }}>
-          {selected.value}
-          <span className="text-base font-sans font-bold ml-1 transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
-            min
-          </span>
-        </p>
-        <p className="text-[10px] font-bold mt-2 transition-colors duration-300 relative z-10" style={{ color: "var(--accent-main)" }}>
-          {selected.label}
-        </p>
+        <div className="flex-1 flex flex-col justify-center">
+          <p className="font-bebas text-4xl leading-none transition-colors duration-300 relative z-10" style={{ color: "var(--accent-main)" }}>
+            {selected.value}
+            <span className="text-base font-sans font-bold ml-1 transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
+              min
+            </span>
+          </p>
+          <p className="text-[10px] font-bold mt-2 transition-colors duration-300 relative z-10" style={{ color: "var(--accent-main)" }}>
+            {selected.label}
+          </p>
+        </div>
         <div
           className="absolute bottom-0 left-0 right-0 h-1.5 opacity-0 transition-opacity duration-300 z-0"
           style={{ backgroundColor: "var(--accent-main)" }}

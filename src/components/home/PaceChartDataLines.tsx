@@ -79,16 +79,6 @@ export default function PaceChartDataLines({
     : (h: WeekRecord) => h.recorded;
   const getPointPassed = useDayMode ? () => true : (h: WeekRecord) => h.passed;
 
-  const lineRgb = lineColor.startsWith("#")
-    ? (() => {
-        const hex = lineColor.slice(1);
-        const r = parseInt(hex.slice(0, 2), 16);
-        const g = parseInt(hex.slice(2, 4), 16);
-        const b = parseInt(hex.slice(4, 6), 16);
-        return `rgba(${r},${g},${b},0.5)`;
-      })()
-    : "rgba(163,230,53,0.5)";
-
   const targetY = toY(targetValue);
 
   return (
@@ -121,7 +111,7 @@ export default function PaceChartDataLines({
               width={badgeW}
               height={badgeH}
               rx={6}
-              fill="#0a0a0a"
+              fill="var(--chart-badge-bg)"
               stroke={lineColor}
               strokeWidth={1}
               opacity={0.95}
@@ -144,9 +134,10 @@ export default function PaceChartDataLines({
       <path
         d={idealPathD}
         fill="none"
-        stroke={lineRgb}
+        stroke={lineColor}
         strokeWidth={2}
         strokeDasharray="6 4"
+        strokeOpacity={0.5}
         opacity={0.9}
       />
 
@@ -175,11 +166,11 @@ export default function PaceChartDataLines({
           return (
             <g key={`dot-${i}`}>
               <circle cx={x} cy={y} r={7} fill={lineColor} filter="url(#dotGlow)" />
-              <circle cx={x} cy={y} r={3} fill="#0a0a0a" />
+              <circle cx={x} cy={y} r={3} fill="var(--chart-badge-bg)" />
               <rect x={x - 25} y={y - 28} width={50} height={20} rx={4}
-                fill="#171717" stroke={lineColor} strokeWidth={1} />
+                fill="var(--chart-badge-bg)" stroke={lineColor} strokeWidth={1} />
               <polygon points={`${x - 4},${y - 8} ${x + 4},${y - 8} ${x},${y - 4}`}
-                fill="#171717" stroke={lineColor} strokeWidth={1} />
+                fill="var(--chart-badge-bg)" stroke={lineColor} strokeWidth={1} />
               <text x={x} y={y - 14} textAnchor="middle" fontSize={10} fontWeight="bold" fill={lineColor}>
                 {formatValue(val)}{unit}
               </text>
@@ -191,7 +182,7 @@ export default function PaceChartDataLines({
             {!passed && (
               <circle cx={x} cy={y} r={7} fill="none" stroke="#f97316" strokeWidth={1} opacity={0.3} />
             )}
-            <circle cx={x} cy={y} r={4} fill="#0a0a0a"
+            <circle cx={x} cy={y} r={4} fill="var(--chart-badge-bg)"
               stroke={passed ? lineColor : "#f97316"} strokeWidth={2} />
           </g>
         );
@@ -208,15 +199,6 @@ export default function PaceChartDataLines({
           startValue + (targetValue - startValue) * (currentIdx / maxIdx)
         );
         if (pointsToRender.length === 0 || currentIdx >= maxIdx) return null;
-        const ghostRgb = lineColor.startsWith("#")
-          ? (() => {
-              const hex = lineColor.slice(1);
-              const r = parseInt(hex.slice(0, 2), 16);
-              const g = parseInt(hex.slice(2, 4), 16);
-              const b = parseInt(hex.slice(4, 6), 16);
-              return `rgba(${r},${g},${b},0.6)`;
-            })()
-          : "rgba(163,230,53,0.6)";
         return (
           <g>
             <circle
@@ -224,7 +206,8 @@ export default function PaceChartDataLines({
               cy={ghostY}
               r={5}
               fill="none"
-              stroke={ghostRgb}
+              stroke={lineColor}
+              strokeOpacity={0.6}
               strokeWidth={1.5}
               strokeDasharray="3 3"
             />

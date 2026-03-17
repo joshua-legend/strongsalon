@@ -131,9 +131,11 @@ export default function PaceChart({
 
       {history.length > 0 && (
         <div
-          className={`mt-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
-            isAhead ? "bg-lime-400/10 text-lime-400" : "bg-orange-400/10 text-orange-400"
-          }`}
+          className="mt-2 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+          style={{
+            backgroundColor: isAhead ? "var(--chart-pace-good-bg)" : "var(--chart-pace-bad-bg)",
+            color: isAhead ? "var(--chart-pace-good)" : "var(--chart-pace-bad)",
+          }}
         >
           {weeklyDelta < 0 ? (
             <TrendingDown className="w-3.5 h-3.5" />

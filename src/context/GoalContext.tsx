@@ -56,7 +56,11 @@ interface GoalContextValue {
   setPrimaryGoal: (g: GoalId | null) => void;
   recordWeek: (inputValue: number) => void;
   extendGoal: () => void;
-  extendCategory: (categoryId: CategoryId, newStartValue: number) => void;
+  extendCategory: (
+    categoryId: CategoryId,
+    newStartValue: number,
+    options?: { strengthStartValues?: { squat: number; bench: number; deadlift: number; total: number } }
+  ) => void;
   resetCategory: (categoryId: CategoryId, cycleRecord?: { finalValue: number; achieved: boolean }) => void;
   resetGoal: () => void;
   isGoalReached: boolean;
@@ -202,20 +206,46 @@ export function GoalProvider({ children }: { children: React.ReactNode }) {
   const CYCLE_WEEKS = 4;
 
   const extendCategory = useCallback(
-    (categoryId: CategoryId, newStartValue: number) => {
+    (
+      categoryId: CategoryId,
+      newStartValue: number,
+      options?: { strengthStartValues?: { squat: number; bench: number; deadlift: number; total: number } }
+    ) => {
       const cat = categorySettings[categoryId];
       if (!cat?.isConfigured || !cat.goal) return;
 
       const { weeklyDelta } = cat.goal;
-      const newTargetValue = newStartValue + weeklyDelta * CYCLE_WEEKS;
       const configuredAt = new Date().toISOString().slice(0, 10);
       const endDate = new Date(configuredAt);
       endDate.setDate(endDate.getDate() + 28);
 
-      const newStartValues = cat.startValues ? { ...cat.startValues } : {};
-      const metric = cat.goal.metric;
-      if (metric) {
-        newStartValues[metric] = newStartValue;
+      let newStartValues: Record<string, number>;
+      let newTargetValue: number;
+      let newAutoPaces = cat.autoPaces;
+
+      if (categoryId === "strength" && options?.strengthStartValues) {
+        const sv = options.strengthStartValues;
+        newStartValues = { squat: sv.squat, bench: sv.bench, deadlift: sv.deadlift, total: sv.total };
+        const metricVal = sv[cat.goal.metric as keyof typeof sv] ?? sv.total;
+        newTargetValue = metricVal + weeklyDelta * CYCLE_WEEKS;
+        const ap = cat.autoPaces;
+        if (ap) {
+          const squatDelta = ap.squat?.weeklyDelta ?? weeklyDelta / 3;
+          const benchDelta = ap.bench?.weeklyDelta ?? weeklyDelta / 3;
+          const deadliftDelta = ap.deadlift?.weeklyDelta ?? weeklyDelta / 3;
+          newAutoPaces = {
+            squat: { start: sv.squat, target: sv.squat + squatDelta * CYCLE_WEEKS, weeklyDelta: squatDelta },
+            bench: { start: sv.bench, target: sv.bench + benchDelta * CYCLE_WEEKS, weeklyDelta: benchDelta },
+            deadlift: { start: sv.deadlift, target: sv.deadlift + deadliftDelta * CYCLE_WEEKS, weeklyDelta: deadliftDelta },
+          };
+        }
+      } else {
+        newStartValues = cat.startValues ? { ...cat.startValues } : {};
+        const metric = cat.goal.metric;
+        if (metric) {
+          newStartValues[metric] = newStartValue;
+        }
+        newTargetValue = newStartValue + weeklyDelta * CYCLE_WEEKS;
       }
 
       const newSetting: CategorySetting = {
@@ -224,12 +254,13 @@ export function GoalProvider({ children }: { children: React.ReactNode }) {
         startValues: newStartValues,
         goal: {
           ...cat.goal,
-          startValue: newStartValue,
+          startValue: newStartValues[cat.goal.metric] ?? newStartValue,
           targetValue: newTargetValue,
           weeklyDelta,
           estimatedWeeks: CYCLE_WEEKS,
           totalWeeks: CYCLE_WEEKS,
         },
+        autoPaces: newAutoPaces,
         cycleWeeks: CYCLE_WEEKS,
         cycleEndDate: endDate.toISOString().slice(0, 10),
       };
@@ -271,7 +302,7 @@ export function GoalProvider({ children }: { children: React.ReactNode }) {
           mainMetric: cat.goal.metric,
           startValues: newStartValues ?? {},
           target: newSetting.goal!,
-          autoPaces: cat.autoPaces,
+          autoPaces: newAutoPaces ?? cat.autoPaces,
         });
         setActiveQuest({
           currentWeek: 1,

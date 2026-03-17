@@ -5,22 +5,31 @@
 
 import type { WorkoutCondition } from "@/types";
 
-/** 컨디션별 1RM 대비 무게 비율 (낮을수록 가벼운 무게) */
+/** 컨디션별 1RM 대비 무게 비율 (목표 미설정 시 폴백용) */
 export const CONDITION_WEIGHT_RATIO: Record<WorkoutCondition, number> = {
-  최악: 0.6,
-  나쁨: 0.65,
-  좋음: 0.75,
-  최고: 0.85,
-  불타: 0.9,
+  최악: 0.52,
+  나쁨: 0.58,
+  좋음: 0.68,
+  최고: 0.78,
+  불타: 0.85,
 };
 
-/** 컨디션별 권장 횟수 (낮은 컨디션 = 가벼운 무게 + 많은 횟수, 높은 컨디션 = 무거운 무게 + 적은 횟수) */
+/** 컨디션별 목표 1RM 상향 비율: 보통=100%, 좋음=+2.5%, 최상=+5% */
+export const CONDITION_TARGET_MODIFIER: Record<WorkoutCondition, number> = {
+  최악: 0.9,
+  나쁨: 0.95,
+  좋음: 1.0, // 보통: 이상페이스 그대로
+  최고: 1.025, // 좋음: +2.5%
+  불타: 1.05, // 최상: +5%
+};
+
+/** 컨디션별 권장 횟수 (Epley 역산 보정: 비율×(1+횟수/30)=1.0 → 1RM 유지) */
 export const CONDITION_REPS: Record<WorkoutCondition, number> = {
-  최악: 12,
-  나쁨: 10,
+  최악: 20,
+  나쁨: 16,
   좋음: 10,
-  최고: 8,
-  불타: 6,
+  최고: 5,
+  불타: 3,
 };
 
 /** 유산소 종목별 기본 거리(km) · 시간(분) - 컨디션·운동시간 반영 */

@@ -5,7 +5,11 @@ import { Trophy } from "lucide-react";
 import { useGoal } from "@/context/GoalContext";
 import ResetGoalConfirmModal from "./ResetGoalConfirmModal";
 
-export default function GoalCompleteCard() {
+interface GoalCompleteCardProps {
+  onOpenFullSetup?: () => void;
+}
+
+export default function GoalCompleteCard({ onOpenFullSetup }: GoalCompleteCardProps) {
   const { goalSetting, activeQuest, extendGoal, resetGoal } = useGoal();
   const [showResetModal, setShowResetModal] = useState(false);
   if (!goalSetting || !activeQuest) return null;
@@ -41,6 +45,22 @@ export default function GoalCompleteCard() {
         >
           새로운 목표 설정하기
         </button>
+        {onOpenFullSetup && (
+          <div className="mt-4 mb-2 flex justify-center">
+            <button
+              type="button"
+              onClick={onOpenFullSetup}
+              className="rounded-full px-5 py-2.5 text-xs font-medium transition-all hover:bg-[var(--accent-bg)] hover:text-[var(--accent-main)]"
+              style={{
+                backgroundColor: "var(--bg-body)",
+                color: "var(--text-sub)",
+                border: "1px solid var(--border-light)",
+              }}
+            >
+              전체 설정
+            </button>
+          </div>
+        )}
       </div>
       <ResetGoalConfirmModal
         open={showResetModal}

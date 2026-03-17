@@ -105,24 +105,24 @@ export default function InbodyRecordInputPopover({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-neutral-800/80 hover:bg-neutral-700/80 text-neutral-300 hover:text-white transition-all border border-neutral-700/60 hover:border-neutral-600 shadow-sm"
+        className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all border shadow-sm goal-record-btn"
         aria-label="기록 추가"
       >
-        <span className="w-6 h-6 rounded-lg bg-neutral-700/80 flex items-center justify-center">
+        <span className="w-6 h-6 rounded-lg flex items-center justify-center goal-record-btn-icon">
           <Plus className="w-3.5 h-3.5" />
         </span>
         <span className="text-xs font-bold">기록 추가</span>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-xl bg-neutral-950 border border-neutral-700 shadow-xl p-4">
-          <div className="text-xs font-bold text-neutral-400 mb-3">
+        <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-xl shadow-xl p-4 goal-record-popover">
+          <div className="text-xs font-bold mb-3 goal-record-popover-label">
             {label} 기록 추가
           </div>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {Array.from({ length: CYCLE_WEEKS + 1 }, (_, i) => (
               <div key={i} className="flex items-center gap-2">
-                <label className="flex-1 min-w-0 px-2 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-[11px] font-mono text-neutral-400 flex items-center">
+                <label className="flex-1 min-w-0 px-2 py-1.5 rounded-lg text-[11px] font-mono flex items-center goal-record-input-label">
                   {formatDateLabel(configuredAt, i)}
                 </label>
                 <input
@@ -136,9 +136,9 @@ export default function InbodyRecordInputPopover({
                       [i]: Number(e.target.value) || 0,
                     }))
                   }
-                  className="w-20 px-2 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 font-mono text-xs text-white focus:outline-none focus:border-neutral-600 placeholder:text-neutral-600"
+                  className="w-20 px-2 py-1.5 rounded-lg font-mono text-xs focus:outline-none goal-record-input"
                 />
-                <span className="text-[10px] text-neutral-500 w-6">{unit}</span>
+                <span className="text-[10px] w-6 goal-record-unit">{unit}</span>
               </div>
             ))}
           </div>
@@ -146,7 +146,7 @@ export default function InbodyRecordInputPopover({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="flex-1 py-2 rounded-lg text-xs font-bold text-neutral-400 hover:text-white transition-colors"
+              className="flex-1 py-2 rounded-lg text-xs font-bold transition-colors goal-record-cancel"
             >
               취소
             </button>
@@ -154,7 +154,7 @@ export default function InbodyRecordInputPopover({
               type="button"
               onClick={handleSave}
               disabled={!hasAnyValue}
-              className="flex-1 py-2 rounded-lg text-xs font-bold bg-lime-500 text-black disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all"
+              className="flex-1 py-2 rounded-lg text-xs font-bold disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all goal-record-save"
             >
               저장
             </button>

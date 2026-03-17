@@ -16,9 +16,11 @@ import {
   PURPOSE_SET_REPS,
   CONDITION_WEIGHT_RATIO,
   CONDITION_REPS,
+  CONDITION_TARGET_MODIFIER,
   getSetCountFromTime,
   type PurposeId,
 } from "@/data/workoutPresets";
+import { estimate1RM, weightForTarget1RM } from "@/utils/estimate1RM";
 
 function nextId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -27,6 +29,8 @@ function nextId(prefix: string): string {
 export interface AutoFillOptions {
   getLastRecord: (name: string) => { weight: number; reps: number } | null;
   getStrength1RM: () => { squat: number; bench: number; deadlift: number };
+  /** 목표 1RM 상한 (추천 무게가 목표 초과 시 캡) */
+  getStrengthGoalTarget?: (lift: "squat" | "bench" | "deadlift") => number | null;
   /** 컨디션·운동시간으로 무게/횟수/세트수 조절 (자유 모드) */
   condition?: WorkoutCondition;
   estMinutes?: number;
@@ -65,17 +69,31 @@ export function useFreeExercises(
         if (!has1RM) {
           return { weight: 0, reps };
         }
-        const last = autoFillOptions.getLastRecord(name);
-        if (last) return last;
         const ratio = getRatioForExercise(name);
-        if (ratio) {
+        const last = autoFillOptions.getLastRecord(name);
+        let weight: number;
+        let effectiveReps: number;
+
+        // 목표(이상페이스) 기반: 보통=100%, 좋음=+2.5%, 최상=+5%
+        const target = ratio && autoFillOptions.getStrengthGoalTarget?.(ratio.lift);
+        if (ratio && target != null && target > 0) {
+          const modifier = CONDITION_TARGET_MODIFIER[condition];
+          const effectiveTarget = target * ratio.ratio * modifier;
+          weight = Math.max(0, weightForTarget1RM(effectiveTarget, reps));
+          effectiveReps = reps;
+        } else if (ratio && (rm[ratio.lift] ?? 0) > 0) {
+          // 목표 미설정 시 1RM 기반 폴백
           const oneRM = rm[ratio.lift] ?? 0;
-          const conditionMod = CONDITION_WEIGHT_RATIO[condition] / 0.75;
-          const effectiveRatio = Math.min(1, ratio.ratio * conditionMod);
-          const weight = calcWeightFrom1RM(oneRM, effectiveRatio);
-          return { weight, reps };
+          const effectiveRatio = Math.min(1, ratio.ratio * CONDITION_WEIGHT_RATIO[condition]);
+          weight = calcWeightFrom1RM(oneRM, effectiveRatio);
+          effectiveReps = reps;
+        } else if (last) {
+          weight = last.weight;
+          effectiveReps = last.reps;
+        } else {
+          return { weight: 0, reps };
         }
-        return { weight: 0, reps };
+        return { weight, reps: effectiveReps };
       }
       return { weight: 0, reps: 0 };
     },
@@ -270,21 +288,35 @@ export function useFreeExercises(
       exercises: PresetExercise[],
       strength1RM: { squat: number; bench: number; deadlift: number },
       purpose: PurposeId = "hypertrophy",
+      condition: WorkoutCondition = "좋음",
+      estMinutes: number = 60,
+      getStrengthGoalTarget?: (lift: "squat" | "bench" | "deadlift") => number | null,
     ) => {
       const plan = PURPOSE_SET_REPS[purpose];
+      const setCount = getSetCountFromTime(estMinutes);
+      const reps = CONDITION_REPS[condition];
+      const slicedPlan = plan.slice(0, setCount);
       const result: Record<string, FreeExercise> = {};
       const order: string[] = [];
       for (const ex of exercises) {
         const id = nextId("fx");
         order.push(id);
         const ratio = getRatioForExercise(ex.name);
-        const oneRM = ratio ? (strength1RM[ratio.lift] ?? 0) : 0;
-        const baseWeight =
-          oneRM > 0 && ratio ? calcWeightFrom1RM(oneRM, ratio.ratio) : 0;
-        const sets: SetRecord[] = plan.map((sr) => ({
+        const target = ratio && getStrengthGoalTarget?.(ratio.lift);
+        let baseWeight = 0;
+        if (ratio && target != null && target > 0) {
+          const modifier = CONDITION_TARGET_MODIFIER[condition];
+          const effectiveTarget = target * ratio.ratio * modifier;
+          baseWeight = Math.max(0, weightForTarget1RM(effectiveTarget, reps));
+        } else if (ratio && (strength1RM[ratio.lift] ?? 0) > 0) {
+          const oneRM = strength1RM[ratio.lift] ?? 0;
+          const effectiveRatio = Math.min(1, ratio.ratio * CONDITION_WEIGHT_RATIO[condition]);
+          baseWeight = calcWeightFrom1RM(oneRM, effectiveRatio);
+        }
+        const sets: SetRecord[] = slicedPlan.map(() => ({
           id: nextId("fs"),
           weight: baseWeight,
-          reps: sr.reps,
+          reps,
           status: "pending" as const,
         }));
         result[id] = { icon: ex.icon, name: ex.name, sets };

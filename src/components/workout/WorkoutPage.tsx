@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Hand } from "lucide-react";
+import { Hand, Dumbbell } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { useGoal } from "@/context/GoalContext";
 import { useWorkoutLog } from "./useWorkoutLog";
@@ -164,7 +164,7 @@ export default function WorkoutPage() {
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="grid grid-cols-2 gap-3 relative z-20"
+                  className="grid grid-cols-2 gap-3 relative z-20 items-stretch"
                   style={{ overflow: "visible" }}
                 >
                   <TimeSelectCard
@@ -179,48 +179,42 @@ export default function WorkoutPage() {
               )}
             </AnimatePresence>
 
-            {/* 자유 모드 시: 1RM 자동 입력 힌트 */}
-            {mode === "free" && (
+            {/* 자유 모드 시: 1RM 미설정 시에만 안내 표시 */}
+            {mode === "free" && !has1RM && (
               <div
-                className="rounded-xl px-4 py-2.5 border"
+                className="rounded-xl px-4 py-3 border flex items-start gap-3"
                 style={{
-                  backgroundColor: has1RM
-                    ? "var(--accent-bg)"
-                    : "var(--bg-card)",
+                  backgroundColor: "var(--bg-card)",
                   borderColor: "var(--border-light)",
                 }}
               >
-                {has1RM ? (
-                  <p
-                    className="text-[11px] font-bebas tracking-wider"
-                    style={{ color: "var(--accent-main)" }}
-                  >
-                    ✓ 3대 1RM 기반으로 권장 무게가 자동 입력되었어요
+                <div
+                  className="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center"
+                  style={{
+                    backgroundColor: "var(--bg-body)",
+                    color: "var(--accent-main)",
+                  }}
+                >
+                  <Dumbbell className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-main)" }}>
+                    홈에서 3대 운동(스쿼트·벤치·데드) 1RM을 설정하면
+                    <br />
+                    운동 시 권장 무게가 자동으로 채워져요
                   </p>
-                ) : (
                   <button
                     type="button"
                     onClick={() => {
                       setTab("home");
                       setOpenStrengthSetup(true);
                     }}
-                    className="w-full text-left"
+                    className="mt-2 text-[11px] font-semibold transition-opacity hover:opacity-80"
+                    style={{ color: "var(--accent-main)" }}
                   >
-                    <p
-                      className="text-[11px] font-bebas tracking-wider"
-                      style={{ color: "var(--text-sub)" }}
-                    >
-                      ⓘ 홈에서 3대 운동 1RM을 설정하면 권장 무게가 자동으로
-                      채워져요
-                    </p>
-                    <p
-                      className="text-[10px] mt-0.5"
-                      style={{ color: "var(--accent-main)" }}
-                    >
-                      ㅡ 1RM 설정하러 가기
-                    </p>
+                    1RM 설정하러 가기 →
                   </button>
-                )}
+                </div>
               </div>
             )}
 

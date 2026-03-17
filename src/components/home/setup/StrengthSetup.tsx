@@ -5,6 +5,7 @@ import type { UserProfile } from "@/types/profile";
 import type { CategorySetting } from "@/types/categorySettings";
 import type { GoalId, StrengthMainMetric } from "@/types/goalSetting";
 import { estimate1RM } from "@/utils/estimate1RM";
+import { get4WeekTargetDelta } from "@/utils/strengthTargetDelta";
 
 const STRENGTH_LIFTS: {
   id: "squat" | "bench" | "deadlift";
@@ -17,15 +18,6 @@ const STRENGTH_LIFTS: {
 ];
 
 const CYCLE_WEEKS = 4;
-
-function get4WeekTargetDelta(
-  experience: "beginner" | "intermediate" | "advanced",
-  isTotal: boolean
-): number {
-  if (experience === "beginner") return isTotal ? 28 : 10;
-  if (experience === "intermediate") return isTotal ? 20 : 6;
-  return isTotal ? 12 : 4;
-}
 
 function CompactInput({
   label,
@@ -152,7 +144,7 @@ export default function StrengthSetup({
   const deadlift1RM = estimate1RM(deadlift.weight, deadlift.reps);
   const total1RM = squat1RM + bench1RM + deadlift1RM;
 
-  const experience = profile?.experience ?? "beginner";
+  const experience = profile?.experience ?? "novice";
   const delta = get4WeekTargetDelta(experience, false);
   const totalDelta = get4WeekTargetDelta(experience, true);
 

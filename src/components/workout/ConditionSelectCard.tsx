@@ -5,12 +5,12 @@ import { createPortal } from "react-dom";
 import { Activity, ChevronDown } from "lucide-react";
 import type { WorkoutCondition } from "@/types";
 
-const CONDITION_OPTIONS: { value: WorkoutCondition; percent: number; emoji: string; label: string }[] = [
-  { value: "최악", percent: 20, emoji: "😫", label: "최악 (휴식 권장)" },
-  { value: "나쁨", percent: 40, emoji: "😕", label: "나쁨 (리커버리)" },
-  { value: "좋음", percent: 60, emoji: "😊", label: "보통 (루틴 유지)" },
-  { value: "최고", percent: 80, emoji: "💪", label: "좋음 (과부하 도전)" },
-  { value: "불타", percent: 100, emoji: "🔥", label: "최고 (PR 갱신)" },
+const CONDITION_OPTIONS: { value: WorkoutCondition; emoji: string; main: string; sub: string }[] = [
+  { value: "최악", emoji: "😫", main: "레스트", sub: "오프데이" },
+  { value: "나쁨", emoji: "😕", main: "리커버리", sub: "가벼운 무게" },
+  { value: "좋음", emoji: "😊", main: "워킹", sub: "메인 세트" },
+  { value: "최고", emoji: "💪", main: "오버로드", sub: "프로그레스" },
+  { value: "불타", emoji: "🔥", main: "피크", sub: "PR 시도" },
 ];
 
 interface ConditionSelectCardProps {
@@ -58,23 +58,23 @@ export default function ConditionSelectCard({ value, onChange }: ConditionSelect
   }, [isOpen]);
 
   return (
-    <div ref={containerRef} className="relative w-full">
+    <div ref={containerRef} className="relative w-full h-full min-h-0">
       <div
         role="button"
         tabIndex={0}
         onClick={() => setIsOpen((o) => !o)}
         onKeyDown={(e) => e.key === "Enter" && setIsOpen((o) => !o)}
-        className="p-4 rounded-2xl border relative overflow-hidden transition-all duration-300 shadow-sm cursor-pointer hover:shadow-md"
+        className="h-full min-h-[100px] p-4 rounded-2xl border relative overflow-hidden transition-all duration-300 shadow-sm cursor-pointer hover:shadow-md flex flex-col"
         style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)" }}
       >
-        <div className="flex items-center justify-between mb-3 relative z-10">
+        <div className="flex items-center justify-between mb-3 relative z-10 shrink-0">
           <div className="flex items-center gap-1.5">
             <Activity
               className="w-4 h-4 transition-colors duration-300"
               style={{ color: "var(--text-sub)" }}
             />
             <p className="text-[12px] font-bold transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
-              컨디션
+              오늘의 컨디션
             </p>
           </div>
           <ChevronDown
@@ -82,18 +82,20 @@ export default function ConditionSelectCard({ value, onChange }: ConditionSelect
             style={{ color: "var(--text-sub)" }}
           />
         </div>
-        <p className="font-bebas text-4xl leading-none transition-colors duration-300 relative z-10" style={{ color: "var(--accent-sub)" }}>
-          {selected.percent}
-          <span className="text-base font-sans font-bold ml-1 transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
-            %
-          </span>
-        </p>
-        <p className="text-[11px] font-bold mt-2 transition-colors duration-300 relative z-10 flex items-center gap-1" style={{ color: "var(--accent-sub)" }}>
-          <span>{selected.emoji}</span> {selected.label}
-        </p>
+        <div className="flex-1 flex flex-col justify-center">
+          <p className="text-xl font-extrabold leading-none transition-colors duration-300 relative z-10" style={{ color: "var(--accent-main)" }}>
+            {selected.main}
+            <span className="text-sm font-extrabold ml-1 transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
+              {selected.emoji}
+            </span>
+          </p>
+          <p className="text-[10px] font-extrabold mt-2 transition-colors duration-300 relative z-10" style={{ color: "var(--accent-main)" }}>
+            {selected.sub}
+          </p>
+        </div>
         <div
           className="absolute bottom-0 left-0 right-0 h-1.5 opacity-0 transition-opacity duration-300 z-0"
-          style={{ backgroundColor: "var(--accent-sub)" }}
+          style={{ backgroundColor: "var(--accent-main)" }}
         />
       </div>
 
@@ -119,11 +121,8 @@ export default function ConditionSelectCard({ value, onChange }: ConditionSelect
                   className="w-full flex items-center justify-between px-4 py-3 text-left transition-colors hover:bg-[var(--bg-card-hover)]"
                   style={{ backgroundColor: opt.value === value ? "var(--bg-card-hover)" : undefined }}
                 >
-                  <span className="font-bold text-[13px] flex items-center gap-2" style={{ color: "var(--text-main)" }}>
-                    <span>{opt.emoji}</span> {opt.label}
-                  </span>
-                  <span className="font-bebas text-lg" style={{ color: "var(--accent-sub)" }}>
-                    {opt.percent} <span className="text-xs" style={{ color: "var(--text-sub)" }}>%</span>
+                  <span className="font-medium text-[13px] flex items-center gap-2" style={{ color: "var(--text-main)" }}>
+                    <span>{opt.emoji}</span> {opt.main} ({opt.sub})
                   </span>
                 </button>
               ))}

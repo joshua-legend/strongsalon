@@ -8,10 +8,11 @@ export type OnboardingGoal =
   | "maintain"; // 유지
 
 export type OnboardingExperience =
-  | "first"     // 처음
-  | "under6m"   // 6개월 미만
-  | "6m_to_2y"  // 6개월~2년
-  | "over2y";   // 2년 이상
+  | "first"      // 퍼스트 (처음)
+  | "under3m"    // 3개월 미만
+  | "3m_to_1y"   // 3개월~1년
+  | "1y_to_2y"   // 1년~2년
+  | "over2y";    // 2년 이상
 
 export type OnboardingDaysPerWeek = "2" | "3" | "4" | "5+";
 

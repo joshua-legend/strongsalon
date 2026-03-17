@@ -9,9 +9,11 @@ interface ProfileSetupProps {
 }
 
 const EXPERIENCE_OPTIONS: { id: Experience; label: string }[] = [
-  { id: "beginner", label: "초보" },
-  { id: "intermediate", label: "중급" },
-  { id: "advanced", label: "상급" },
+  { id: "untrained", label: "언트레인드" },
+  { id: "novice", label: "노비스" },
+  { id: "intermediate", label: "인터미디어트" },
+  { id: "advanced", label: "어드밴스드" },
+  { id: "elite", label: "엘리트" },
 ];
 
 export default function ProfileSetup({ onComplete }: ProfileSetupProps) {
@@ -22,7 +24,7 @@ export default function ProfileSetup({ onComplete }: ProfileSetupProps) {
   const [birthDay, setBirthDay] = useState("");
   const [height, setHeight] = useState(170);
   const [weight, setWeight] = useState(70);
-  const [experience, setExperience] = useState<Experience>("beginner");
+  const [experience, setExperience] = useState<Experience>("novice");
 
   const birthDate =
     birthYear && birthMonth && birthDay
@@ -172,9 +174,9 @@ export default function ProfileSetup({ onComplete }: ProfileSetupProps) {
 
         <div>
           <label className="text-xs text-neutral-500 block mb-2">
-            운동 경력 (선택)
+            훈련 수준 (선택)
           </label>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-5 gap-2">
             {EXPERIENCE_OPTIONS.map((opt) => (
               <button
                 key={opt.id}

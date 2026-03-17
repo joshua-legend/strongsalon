@@ -78,10 +78,10 @@ const ACCOUNTS_WITHOUT_DEMO_HISTORY = ['민준'] as const;
 export function useWorkoutLog() {
   const { showToast } = useToast();
   const { addAttendance } = useAttendance();
-  const { appendChartPoint } = useChartData();
+  const { appendChartPoint, chartDataPoints } = useChartData();
   const { selectedSplit } = useApp();
   const { currentAccountId } = useAuth();
-  const { categorySettings } = useGoal();
+  const { categorySettings, extendCategory } = useGoal();
   const { appendWorkoutRecord, getLastRecordForExercise, getUserWorkoutRecords } = useWorkoutRecords();
   const [workoutPhase, setWorkoutPhase] = useState<WorkoutPhase>('ready');
   const [completedElapsedSec, setCompletedElapsedSec] = useState(0);
@@ -93,11 +93,24 @@ export function useWorkoutLog() {
 
   const strength1RM = (() => {
     const sv = categorySettings.strength?.startValues;
-    if (!sv) return { squat: 0, bench: 0, deadlift: 0 };
+    const fallback = { squat: 0, bench: 0, deadlift: 0 };
+    if (!sv) return fallback;
+
+    const getLatest1RM = (
+      metricKey: 'squat' | 'bench' | 'deadlift',
+    ): number | null => {
+      const key: ChartMetricKey = `strength.${metricKey}`;
+      const points = chartDataPoints?.[key] ?? [];
+      if (points.length === 0) return null;
+      const sorted = [...points].sort((a, b) => b.date.localeCompare(a.date));
+      const latest = sorted[0];
+      return latest.value > 0 ? latest.value : null;
+    };
+
     return {
-      squat: sv.squat ?? 0,
-      bench: sv.bench ?? 0,
-      deadlift: sv.deadlift ?? 0,
+      squat: getLatest1RM('squat') ?? sv.squat ?? 0,
+      bench: getLatest1RM('bench') ?? sv.bench ?? 0,
+      deadlift: getLatest1RM('deadlift') ?? sv.deadlift ?? 0,
     };
   })();
 
@@ -106,10 +119,33 @@ export function useWorkoutLog() {
       ? getUserWorkoutRecords()
       : [...getUserWorkoutRecords(), ...workoutHistory];
 
+  const getStrengthGoalTarget = useCallback(
+    (lift: 'squat' | 'bench' | 'deadlift'): number | null => {
+      const ap = categorySettings.strength?.autoPaces?.[lift];
+      if (!ap?.start || !ap?.target || ap.target <= 0) {
+        const g = categorySettings.strength?.goal;
+        if (g?.metric === lift && g.targetValue > 0) return g.targetValue;
+        return null;
+      }
+      const configuredAt = categorySettings.strength?.configuredAt;
+      const cycleWeeks = categorySettings.strength?.cycleWeeks ?? 4;
+      if (!configuredAt) return ap.target;
+      const today = workoutDate || new Date().toISOString().split('T')[0];
+      const startMs = new Date(configuredAt).getTime();
+      const todayMs = new Date(today).getTime();
+      const daysElapsed = Math.max(0, (todayMs - startMs) / (24 * 60 * 60 * 1000));
+      const weeksElapsed = Math.min(daysElapsed / 7, cycleWeeks);
+      const currentTarget = ap.start + ap.weeklyDelta * weeksElapsed;
+      return Math.min(currentTarget, ap.target);
+    },
+    [categorySettings.strength, workoutDate]
+  );
+
   const autoFillOptions = {
     getLastRecord: (name: string) =>
       getLastRecordForExercise(name, workoutRecordsForLastRecord),
     getStrength1RM: () => strength1RM,
+    getStrengthGoalTarget,
     condition,
     estMinutes,
   };
@@ -123,10 +159,17 @@ export function useWorkoutLog() {
     if (selectedSplit && exercises.loadPreset) {
       const preset = SPLIT_PRESETS.find((p) => p.id === selectedSplit);
       if (preset && strength1RM.squat + strength1RM.bench + strength1RM.deadlift > 0) {
-        exercises.loadPreset(preset.exercises, strength1RM);
+        exercises.loadPreset(
+          preset.exercises,
+          strength1RM,
+          "hypertrophy",
+          condition,
+          estMinutes,
+          getStrengthGoalTarget
+        );
       }
     }
-  }, [selectedSplit]);
+  }, [selectedSplit, condition, estMinutes, getStrengthGoalTarget, strength1RM.squat, strength1RM.bench, strength1RM.deadlift, exercises.loadPreset]);
 
   const startWorkout = useCallback(() => {
     setWorkoutPhase('inProgress');
@@ -184,16 +227,51 @@ export function useWorkoutLog() {
       if (best1RM > strengthPoints[metric]) strengthPoints[metric] = best1RM;
     }
     const total1RM = strengthPoints.squat + strengthPoints.bench + strengthPoints.deadlift;
-    const strengthConfiguredAt = categorySettings?.strength?.configuredAt;
-    if (strengthConfiguredAt) {
-      if (strengthPoints.squat > 0)
-        appendChartPoint('strength.squat', { day: 0, value: strengthPoints.squat, date }, strengthConfiguredAt);
-      if (strengthPoints.bench > 0)
-        appendChartPoint('strength.bench', { day: 0, value: strengthPoints.bench, date }, strengthConfiguredAt);
-      if (strengthPoints.deadlift > 0)
-        appendChartPoint('strength.deadlift', { day: 0, value: strengthPoints.deadlift, date }, strengthConfiguredAt);
-      if (total1RM > 0)
-        appendChartPoint('strength.total', { day: 0, value: total1RM, date }, strengthConfiguredAt);
+    const strengthConfiguredAt = (() => {
+      if (categorySettings?.strength?.configuredAt) return categorySettings.strength.configuredAt;
+      let minDate: string | null = null;
+      for (const key of ['strength.squat', 'strength.bench', 'strength.deadlift'] as const) {
+        const arr = chartDataPoints[key] ?? [];
+        for (const p of arr) {
+          if (!minDate || p.date < minDate) minDate = p.date;
+        }
+      }
+      return minDate ?? date;
+    })();
+    if (strengthPoints.squat > 0)
+      appendChartPoint('strength.squat', { day: 0, value: strengthPoints.squat, date }, strengthConfiguredAt);
+    if (strengthPoints.bench > 0)
+      appendChartPoint('strength.bench', { day: 0, value: strengthPoints.bench, date }, strengthConfiguredAt);
+    if (strengthPoints.deadlift > 0)
+      appendChartPoint('strength.deadlift', { day: 0, value: strengthPoints.deadlift, date }, strengthConfiguredAt);
+    if (total1RM > 0)
+      appendChartPoint('strength.total', { day: 0, value: total1RM, date }, strengthConfiguredAt);
+
+    // 목표 초과 시 자동 갱신: 기록된 1RM이 목표를 넘으면 새 목표로 갱신
+    const strengthGoal = categorySettings?.strength?.goal;
+    const metric = strengthGoal?.metric;
+    const exceeded =
+      strengthGoal &&
+      (metric === "total"
+        ? total1RM >= strengthGoal.targetValue
+        : metric === "squat"
+          ? strengthPoints.squat >= strengthGoal.targetValue
+          : metric === "bench"
+            ? strengthPoints.bench >= strengthGoal.targetValue
+            : metric === "deadlift"
+              ? strengthPoints.deadlift >= strengthGoal.targetValue
+              : false);
+    if (exceeded) {
+      const sv = categorySettings.strength?.startValues ?? {};
+      const merged = {
+        squat: strengthPoints.squat > 0 ? strengthPoints.squat : (sv.squat ?? 0),
+        bench: strengthPoints.bench > 0 ? strengthPoints.bench : (sv.bench ?? 0),
+        deadlift: strengthPoints.deadlift > 0 ? strengthPoints.deadlift : (sv.deadlift ?? 0),
+        total: 0,
+      };
+      merged.total = merged.squat + merged.bench + merged.deadlift;
+      const metricStart = merged[metric as keyof typeof merged] ?? merged.total;
+      extendCategory('strength', metricStart, { strengthStartValues: merged });
     }
 
     // 체력: 페이스(분/km) → fitness.running/rowing/skierg/total
@@ -207,17 +285,25 @@ export function useWorkoutLog() {
     }
     const pacesArr = Object.values(fitnessPaces).filter((p) => p > 0);
     const totalPace = pacesArr.length > 0 ? pacesArr.reduce((a, b) => a + b, 0) / pacesArr.length : 0;
-    const fitnessConfiguredAt = categorySettings?.fitness?.configuredAt;
-    if (fitnessConfiguredAt) {
-      if (fitnessPaces.running > 0)
-        appendChartPoint('fitness.running', { day: 0, value: fitnessPaces.running, date }, fitnessConfiguredAt);
-      if (fitnessPaces.rowing > 0)
-        appendChartPoint('fitness.rowing', { day: 0, value: fitnessPaces.rowing, date }, fitnessConfiguredAt);
-      if (fitnessPaces.skierg > 0)
-        appendChartPoint('fitness.skierg', { day: 0, value: fitnessPaces.skierg, date }, fitnessConfiguredAt);
-      if (totalPace > 0)
-        appendChartPoint('fitness.total', { day: 0, value: totalPace, date }, fitnessConfiguredAt);
-    }
+    const fitnessConfiguredAt = (() => {
+      if (categorySettings?.fitness?.configuredAt) return categorySettings.fitness.configuredAt;
+      let minDate: string | null = null;
+      for (const key of ['fitness.running', 'fitness.rowing', 'fitness.skierg'] as const) {
+        const arr = chartDataPoints[key] ?? [];
+        for (const p of arr) {
+          if (!minDate || p.date < minDate) minDate = p.date;
+        }
+      }
+      return minDate ?? date;
+    })();
+    if (fitnessPaces.running > 0)
+      appendChartPoint('fitness.running', { day: 0, value: fitnessPaces.running, date }, fitnessConfiguredAt);
+    if (fitnessPaces.rowing > 0)
+      appendChartPoint('fitness.rowing', { day: 0, value: fitnessPaces.rowing, date }, fitnessConfiguredAt);
+    if (fitnessPaces.skierg > 0)
+      appendChartPoint('fitness.skierg', { day: 0, value: fitnessPaces.skierg, date }, fitnessConfiguredAt);
+    if (totalPace > 0)
+      appendChartPoint('fitness.total', { day: 0, value: totalPace, date }, fitnessConfiguredAt);
 
     addAttendance(toAttendanceDateKey(date), 'self');
 
@@ -244,10 +330,12 @@ export function useWorkoutLog() {
     }
     appendWorkoutRecord(workoutRecord);
 
+    window.dispatchEvent(new Event('chartRefresh'));
     setCompletedElapsedSec(elapsedSec);
     setWorkoutPhase('completed');
-    showToast('✅ 오운완! 챌린지 +1회 🥕');
-  }, [exercises.freeExercises, cardioEntries, workoutDate, showToast, addAttendance, elapsedSec, categorySettings, appendChartPoint, appendWorkoutRecord]);
+    const goalExtended = !!exceeded;
+    showToast(goalExtended ? '✅ 오운완! 목표 달성 → 새 목표로 갱신됐어요 🎯' : '✅ 오운완! 챌린지 +1회 🥕');
+  }, [exercises.freeExercises, cardioEntries, workoutDate, showToast, addAttendance, elapsedSec, categorySettings, chartDataPoints, appendChartPoint, appendWorkoutRecord, extendCategory]);
 
   const addCardio = useCallback((type: CardioType) => {
     const { distanceKm, timeMinutes } = getCardioAutoFill(type, condition, estMinutes);

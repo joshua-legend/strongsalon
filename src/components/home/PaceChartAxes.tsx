@@ -82,20 +82,20 @@ export default function PaceChartAxes({
     <>
       {/* Chart frame */}
       <rect x={padLeft} y={padTop} width={chartW} height={chartH}
-        fill="none" stroke="#1a1a1a" rx={2} />
+        fill="none" stroke="var(--chart-frame)" rx={2} />
 
       {/* Horizontal grid lines */}
       {Array.from({ length: 5 }, (_, i) => {
         const y = yMinNice + (i / 4) * yRangeNice;
         const py = toY(y);
         return <line key={`h-${i}`} x1={padLeft} y1={py} x2={padLeft + chartW} y2={py}
-          stroke="#2a2a2a" strokeWidth={0.5} />;
+          stroke="var(--chart-grid-h)" strokeWidth={0.5} />;
       })}
 
       {/* Vertical grid lines */}
       {verticalGridSource.map((x, i) => (
         <line key={`v-${i}`} x1={x} y1={padTop} x2={x} y2={padTop + chartH}
-          stroke="#1f1f1f" strokeWidth={0.5} />
+          stroke="var(--chart-grid-v)" strokeWidth={0.5} />
       ))}
 
       {/* Y-axis ticks */}
@@ -104,8 +104,8 @@ export default function PaceChartAxes({
         const py = toY(y);
         return (
           <g key={`ytick-${i}`}>
-            <line x1={padLeft - 4} y1={py} x2={padLeft} y2={py} stroke="#404040" strokeWidth={1} />
-            <text x={padLeft - 6} y={py + 3} textAnchor="end" fontSize={9} fontWeight="bold" fill="#a3a3a3">
+            <line x1={padLeft - 4} y1={py} x2={padLeft} y2={py} stroke="var(--chart-tick)" strokeWidth={1} />
+            <text x={padLeft - 6} y={py + 3} textAnchor="end" fontSize={9} fontWeight="bold" fill="var(--chart-tick-text)">
               {formatValue(y)}
             </text>
           </g>
@@ -120,7 +120,7 @@ export default function PaceChartAxes({
             y1={padTop + chartH}
             x2={tick.x}
             y2={padTop + chartH + 4}
-            stroke="#525252"
+            stroke="var(--chart-tick)"
             strokeWidth={1}
           />
           <text
@@ -128,7 +128,7 @@ export default function PaceChartAxes({
             y={padTop + chartH + 14}
             textAnchor="middle"
             fontSize={9}
-            fill={i === 0 ? "#d4d4d4" : "#737373"}
+            fill={i === 0 ? "var(--chart-tick-text-bold)" : "var(--chart-tick-text)"}
             fontWeight={i === 0 ? "bold" : "normal"}
           >
             {tick.label}
