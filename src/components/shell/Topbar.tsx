@@ -25,7 +25,7 @@ export default function Topbar() {
   const { currentAccountId, accountData } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { attendance } = useAttendance();
-  const { records, getUserWorkoutRecords } = useWorkoutRecords();
+  const { records, getUserWorkoutRecords, getWorkoutRecordByDate } = useWorkoutRecords();
   const [showMyPage, setShowMyPage] = useState(false);
 
   const userRecords = getUserWorkoutRecords();
@@ -35,10 +35,18 @@ export default function Topbar() {
     const year = now.getFullYear();
     const month = now.getMonth();
 
-    // 1. 캘린더(출석) 데이터: 날짜별 pt/self/both
-    const calendar: Record<string, string> = {};
+    const allRecords = [...workoutHistory, ...records];
+
+    // 1. 캘린더(출석) 데이터: 날짜별 pt/self/both + 당일 운동 기록
+    const attendMap: Record<string, string> = {};
     attendance.forEach((a) => {
-      calendar[a.date] = a.type === "both" ? "pt" : a.type;
+      attendMap[a.date] = a.type === "both" ? "pt" : a.type;
+    });
+    const allDates = new Set<string>([...attendance.map((a) => a.date), ...allRecords.map((r) => r.date)]);
+    const recordsByDate: Record<string, (typeof allRecords)[0] | undefined> = {};
+    allDates.forEach((dateKey) => {
+      const record = getWorkoutRecordByDate(dateKey, workoutHistory);
+      recordsByDate[dateKey] = record;
     });
 
     // 2. 월별 통계
@@ -49,7 +57,6 @@ export default function Topbar() {
     CONDITION_META.forEach((c) => {
       conditionCounts[c.value] = 0;
     });
-    const allRecords = [...workoutHistory, ...records];
     const seen = new Set<string>();
     for (const r of allRecords) {
       if (seen.has(r.date)) continue;
@@ -75,11 +82,13 @@ export default function Topbar() {
 
     const payload = {
       currentAccountId,
+      accountData: accountData ?? null,
       year,
       month: month + 1,
       calendar: {
-        attendMap: calendar,
+        attendMap,
         attendanceList: attendance,
+        recordsByDate,
       },
       monthlyStats: {
         ptDays: monthlyStats.ptDays,

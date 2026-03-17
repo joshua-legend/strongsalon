@@ -13,11 +13,19 @@ const WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] as const;
 const typeColor: Record<string, string> = {
   pt: "var(--accent-main)",
   self: "var(--accent-sub)",
+  both: "#f97316",
 };
 
 const typeLabel: Record<string, string> = {
   pt: "PT수업",
   self: "개인운동",
+  both: "풀코스",
+};
+
+const typeBg: Record<string, string> = {
+  pt: "rgba(163,230,53,0.12)",
+  self: "rgba(34,197,94,0.12)",
+  both: "rgba(249,115,22,0.12)",
 };
 
 function formatDateKey(year: number, month: number, day: number): string {
@@ -41,11 +49,7 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
   const attendMap = useMemo(() => {
     const map: Record<string, string> = {};
     attendance.forEach((a) => {
-      if (a.type === "both") {
-        map[a.date] = "pt";
-      } else {
-        map[a.date] = a.type;
-      }
+      map[a.date] = a.type;
     });
     return map;
   }, [attendance]);
@@ -56,25 +60,18 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
       style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)" }}
     >
       {/* 범례 */}
-      <div className="flex items-center gap-4 mb-4 justify-center">
-        <div className="flex items-center gap-1.5">
-          <div
-            className="w-2 h-2 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: "var(--accent-main)" }}
-          />
-          <span className="font-bebas text-[11px] tracking-wider transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
-            PT수업
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div
-            className="w-2 h-2 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: "var(--accent-sub)" }}
-          />
-          <span className="font-bebas text-[11px] tracking-wider transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
-            개인운동
-          </span>
-        </div>
+      <div className="flex items-center gap-3 mb-4 justify-center flex-wrap">
+        {(["pt", "self", "both"] as const).map((t) => (
+          <div key={t} className="flex items-center gap-1.5">
+            <div
+              className="w-2 h-2 rounded-full transition-colors duration-300 shrink-0"
+              style={{ backgroundColor: typeColor[t] }}
+            />
+            <span className="font-bebas text-[11px] tracking-wider transition-colors duration-300" style={{ color: "var(--text-sub)" }}>
+              {typeLabel[t]}
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* 월 변경 */}
@@ -125,14 +122,14 @@ export default function AttendCalendar({ year, month, onPrevMonth, onNextMonth }
                 isSelected
                   ? {
                       borderWidth: 2,
-                      borderColor: "var(--accent-main)",
-                      color: "var(--accent-main)",
-                      backgroundColor: "var(--accent-bg)",
+                      borderColor: type ? typeColor[type] : "var(--accent-main)",
+                      color: type ? typeColor[type] : "var(--accent-main)",
+                      backgroundColor: type ? typeBg[type] : "var(--accent-bg)",
                       boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
                     }
                   : {
                       color: "var(--text-main)",
-                      backgroundColor: type ? (type === "pt" ? "rgba(163,230,53,0.1)" : "rgba(34,197,94,0.1)" as string) : undefined,
+                      backgroundColor: type ? typeBg[type] : undefined,
                     }
               }
             >

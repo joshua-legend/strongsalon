@@ -115,7 +115,7 @@ export function useWorkoutLog() {
   })();
 
   const workoutRecordsForLastRecord =
-    currentAccountId && ACCOUNTS_WITHOUT_DEMO_HISTORY.includes(currentAccountId)
+    currentAccountId && (ACCOUNTS_WITHOUT_DEMO_HISTORY as readonly string[]).includes(currentAccountId)
       ? getUserWorkoutRecords()
       : [...getUserWorkoutRecords(), ...workoutHistory];
 
