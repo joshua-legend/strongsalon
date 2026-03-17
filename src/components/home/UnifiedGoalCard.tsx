@@ -28,10 +28,10 @@ import {
 
 type MainTabId = "inbody" | "strength" | "cardio";
 
-const MAIN_TABS: { id: MainTabId; label: string }[] = [
-  { id: "inbody", label: "인바디" },
-  { id: "strength", label: "스트렝스" },
-  { id: "cardio", label: "체력" },
+const MAIN_TABS: { id: MainTabId; label: string; color: "lime" | "orange" | "sky" }[] = [
+  { id: "inbody", label: "인바디", color: "lime" },
+  { id: "strength", label: "스트렝스", color: "orange" },
+  { id: "cardio", label: "체력", color: "sky" },
 ];
 
 function mainTabToCategoryId(tab: MainTabId): CategoryId {
@@ -42,6 +42,9 @@ function mainTabToCategoryId(tab: MainTabId): CategoryId {
 
 /** 통일 색상: 테마별 CSS 변수 사용 (1번=초록, 2번=주황, 3번=파랑) */
 const UNIFIED_COLORS = { lime: "var(--chart-line-lime)", orange: "var(--chart-line-orange)", sky: "var(--chart-line-sky)" } as const;
+/** 탭 선택 시 배경/테두리 (다크/라이트 대응) */
+const CHART_TAB_BG = { lime: "var(--chart-tab-lime-bg)", orange: "var(--chart-tab-orange-bg)", sky: "var(--chart-tab-sky-bg)" } as const;
+const CHART_TAB_BORDER = { lime: "var(--chart-tab-lime-border)", orange: "var(--chart-tab-orange-border)", sky: "var(--chart-tab-sky-border)" } as const;
 
 const STRENGTH_SUB_TABS: { id: StrengthChartOption; label: string; color: "lime" | "orange" | "sky" }[] = [
   { id: "squat", label: "스쿼트", color: "lime" },
@@ -117,6 +120,7 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
     : "inbody";
 
   const [mainTab, setMainTab] = useState<MainTabId>(defaultMainTab);
+  const [chartZoom, setChartZoom] = useState(1);
   const [subTab, setSubTab] = useState<
     StrengthChartOption | CardioChartOption | InbodyChartOption
   >(defaultMainTab === "inbody" ? "weight" : defaultMainTab === "strength" ? "squat" : "run5k");
@@ -309,78 +313,108 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
       <div className="relative z-10 p-5 space-y-4">
         {/* 1. 메인 탭: 인바디 | 스트렝스 | 체력 */}
         <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex">
-          {MAIN_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => {
-                setMainTab(tab.id);
-                setSubTab(tab.id === "inbody" ? "weight" : tab.id === "strength" ? "squat" : "run5k");
-              }}
-              className={`flex-1 py-1.5 px-4 rounded-full text-xs font-bold transition-all ${
-                mainTab === tab.id
-                  ? "bg-[var(--accent-bg)] text-[var(--accent-main)] border border-[var(--accent-main)]/40 shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
-                  : "text-[var(--text-sub)]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {MAIN_TABS.map((tab) => {
+            const isSelected = mainTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setMainTab(tab.id);
+                  setSubTab(tab.id === "inbody" ? "weight" : tab.id === "strength" ? "squat" : "run5k");
+                }}
+                className={`flex-1 py-1.5 px-4 rounded-full text-xs font-bold transition-all ${
+                  isSelected ? "shadow-[0_2px_8px_rgba(0,0,0,0.08)]" : "text-[var(--text-sub)]"
+                }`}
+                style={
+                  isSelected
+                    ? {
+                        backgroundColor: CHART_TAB_BG[tab.color],
+                        color: UNIFIED_COLORS[tab.color],
+                        borderWidth: 1,
+                        borderStyle: "solid",
+                        borderColor: CHART_TAB_BORDER[tab.color],
+                      }
+                    : undefined
+                }
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* 2-1. 인바디/스트렝스/체력 하위 버튼 */}
         {mainTab === "inbody" && (
           <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex flex-wrap gap-1">
-            {INBODY_SUB_TABS_WITH_COLOR.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setSubTab(tab.id)}
-                className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
-                  subTab === tab.id
-                    ? "bg-[var(--accent-bg)] text-[var(--accent-main)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
-                    : "text-[var(--text-sub)]"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            {INBODY_SUB_TABS_WITH_COLOR.map((tab) => {
+              const isSelected = subTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setSubTab(tab.id)}
+                  className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
+                    isSelected ? "shadow-[0_2px_8px_rgba(0,0,0,0.08)]" : "text-[var(--text-sub)]"
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: CHART_TAB_BG[tab.color], color: UNIFIED_COLORS[tab.color] }
+                      : undefined
+                  }
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
         )}
         {mainTab === "strength" && (
           <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex flex-wrap gap-1">
-            {STRENGTH_SUB_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setSubTab(tab.id)}
-                className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
-                  subTab === tab.id
-                    ? "bg-[var(--accent-bg)] text-[var(--accent-main)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
-                    : "text-[var(--text-sub)]"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            {STRENGTH_SUB_TABS.map((tab) => {
+              const isSelected = subTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setSubTab(tab.id)}
+                  className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
+                    isSelected ? "shadow-[0_2px_8px_rgba(0,0,0,0.08)]" : "text-[var(--text-sub)]"
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: CHART_TAB_BG[tab.color], color: UNIFIED_COLORS[tab.color] }
+                      : undefined
+                  }
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
         )}
         {mainTab === "cardio" && (
           <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex flex-wrap gap-1">
-            {CARDIO_SUB_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setSubTab(tab.id)}
-                className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
-                  subTab === tab.id
-                    ? "bg-[var(--accent-bg)] text-[var(--accent-main)] shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
-                    : "text-[var(--text-sub)]"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            {CARDIO_SUB_TABS.map((tab) => {
+              const isSelected = subTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setSubTab(tab.id)}
+                  className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
+                    isSelected ? "shadow-[0_2px_8px_rgba(0,0,0,0.08)]" : "text-[var(--text-sub)]"
+                  }`}
+                  style={
+                    isSelected
+                      ? { backgroundColor: CHART_TAB_BG[tab.color], color: UNIFIED_COLORS[tab.color] }
+                      : undefined
+                  }
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
         )}
 
@@ -479,11 +513,35 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
                       </span>
                       <span className="flex items-center gap-1">
                         <span
-                          className="w-5 h-0.5 rounded"
-                          style={{ borderTop: `1.5px dashed ${activeColor}80` }}
+                          className="w-5 h-1 inline-block rounded border-t border-dashed shrink-0"
+                          style={{ borderTopColor: activeColor, borderTopWidth: 1.5, opacity: 0.6 }}
                         />
                         이상페이스
                       </span>
+                      {/* 줌 테스트 버튼 */}
+                      <div className="flex items-center gap-1 ml-auto">
+                        <button
+                          type="button"
+                          onClick={() => setChartZoom((z) => Math.max(0.5, z - 0.25))}
+                          className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold transition-colors duration-300"
+                          style={{ backgroundColor: "var(--bg-card-hover)", color: "var(--text-sub)" }}
+                          aria-label="축소"
+                        >
+                          −
+                        </button>
+                        <span className="w-6 text-center font-mono text-[10px]" style={{ color: "var(--text-sub)" }}>
+                          {chartZoom.toFixed(1)}×
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setChartZoom((z) => Math.min(2, z + 0.25))}
+                          className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold transition-colors duration-300"
+                          style={{ backgroundColor: "var(--bg-card-hover)", color: "var(--text-sub)" }}
+                          aria-label="확대"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   );
                 })()}
@@ -532,6 +590,7 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
                   }
                   onSelectMetric={(metric) => setSubTab(metric as InbodyChartOption)}
                   configuredAt={catSetting?.configuredAt ?? null}
+                  zoomLevel={chartZoom}
                 />
               ) : chartData && !isInbodyMultiLine ? (
                 <PaceChart
@@ -552,6 +611,7 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
                   }
                   formatValue={mainTab === "cardio" ? (v) => v.toFixed(1) : undefined}
                   configuredAt={catSetting?.configuredAt ?? null}
+                  zoomLevel={chartZoom}
                 />
               ) : (
                 <div className="py-12 text-center text-xs text-[var(--text-sub)]">

@@ -5,7 +5,7 @@ import { CYCLE_WEEKS } from "@/utils/chartConstants";
 import type { GoalChartData, InbodyChartOption } from "@/utils/goalChartData";
 import type { InbodyMultiLineChartData } from "@/utils/goalChartData";
 import type { InbodyGoal, InbodyMetricKey } from "@/types/quest";
-import { usePaceChartData } from "./usePaceChartData";
+import { usePaceChartData, usePaceChartDataDay } from "./usePaceChartData";
 
 const METRIC_LABELS: Record<InbodyMetricKey, string> = {
   weight: "체중",
@@ -28,6 +28,8 @@ interface InbodyPaceChartProps {
   onSelectMetric?: (metric: InbodyChartOption) => void;
   /** 목표 설정일 (YYYY-MM-DD) - X축 mm-dd 라벨용 */
   configuredAt?: string | null;
+  /** Y축 줌 (1=기본, 2=확대, 0.5=축소) */
+  zoomLevel?: number;
 }
 
 function isMultiLine(
@@ -43,6 +45,7 @@ export default function InbodyPaceChart({
   inbodyGoal,
   onSelectMetric,
   configuredAt,
+  zoomLevel = 1,
 }: InbodyPaceChartProps) {
   if (!data) {
     return (
@@ -64,6 +67,7 @@ export default function InbodyPaceChart({
       isMain={inbodyGoal?.mainMetric === mainMetric}
       lineColor={lineColor ?? METRIC_COLORS[mainMetric]}
       configuredAt={configuredAt}
+      zoomLevel={zoomLevel}
     />
   );
 }
@@ -178,12 +182,14 @@ function InbodySingleChart({
   isMain,
   lineColor,
   configuredAt,
+  zoomLevel = 1,
 }: {
   data: GoalChartData;
   mainMetric: InbodyMetricKey;
   isMain: boolean;
   lineColor: string;
   configuredAt?: string | null;
+  zoomLevel?: number;
 }) {
   const invertGood = mainMetric === "weight" || mainMetric === "fatPercent";
   const {
@@ -195,14 +201,27 @@ function InbodySingleChart({
     unit,
     dataPoints,
   } = data;
-  const maxWeek = CYCLE_WEEKS;
-  const { dims, yMinNice, yRangeNice, toX, toY, paceDiff, isAhead } =
-    usePaceChartData(startValue, targetValue, weeklyDelta, history, maxWeek);
-  const { padLeft, chartW, padTop } = dims;
-
-  const pointsToRender = dataPoints && dataPoints.length > 0
+  const useDayMode = dataPoints != null && dataPoints.length > 0;
+  const pointsToRender = useDayMode
     ? dataPoints!.sort((a, b) => a.day - b.day)
     : history.map((h) => ({ day: h.week * 7, value: h.recorded, date: "" }));
+
+  const weekCalc = usePaceChartData(startValue, targetValue, weeklyDelta, history, CYCLE_WEEKS, zoomLevel);
+  const dayCalc = usePaceChartDataDay(
+    startValue,
+    targetValue,
+    weeklyDelta,
+    dataPoints ?? [],
+    undefined,
+    zoomLevel
+  );
+  const calc = useDayMode ? dayCalc : weekCalc;
+  const { dims, yMinNice, yRangeNice, toY, paceDiff, isAhead } = calc;
+  const { padLeft, chartW, padTop } = dims;
+  const maxWeek = useDayMode ? dayCalc.maxWeeks : CYCLE_WEEKS;
+  const maxDays = useDayMode ? dayCalc.maxDays : CYCLE_WEEKS * 7;
+  const toX = useDayMode ? (w: number) => dayCalc.toXDay(w * 7) : weekCalc.toX;
+  const toXOrDay = useDayMode ? (day: number) => dayCalc.toXDay(day) : (day: number) => weekCalc.toX(day / 7);
 
   return (
     <div className="w-full min-h-[240px] overflow-visible">
@@ -253,20 +272,23 @@ function InbodySingleChart({
             />
           );
         })}
-        {Array.from({ length: maxWeek + 1 }, (_, i) => {
-          const x = toX(i);
-          return (
-            <line
-              key={`v-${i}`}
-              x1={x}
-              y1={dims.padTop}
-              x2={x}
-              y2={dims.padTop + dims.chartH}
-              stroke="var(--chart-grid-v)"
-              strokeWidth={0.5}
-            />
-          );
-        })}
+        {Array.from(
+          { length: useDayMode ? Math.floor(maxDays / 7) + 1 : maxWeek + 1 },
+          (_, i) => {
+            const x = useDayMode ? dayCalc.toXDay(i * 7) : weekCalc.toX(i);
+            return (
+              <line
+                key={`v-${i}`}
+                x1={x}
+                y1={dims.padTop}
+                x2={x}
+                y2={dims.padTop + dims.chartH}
+                stroke="var(--chart-grid-v)"
+                strokeWidth={0.5}
+              />
+            );
+          }
+        )}
 
         {Array.from({ length: 5 }, (_, i) => {
           const y = yMinNice + (i / 4) * yRangeNice;
@@ -295,39 +317,48 @@ function InbodySingleChart({
           );
         })}
 
-        {Array.from({ length: maxWeek + 1 }, (_, i) => {
-          const week = i;
-          const x = toX(week);
-          return (
-            <g key={`xtick-${i}`}>
-              <line
-                x1={x}
-                y1={dims.padTop + dims.chartH}
-                x2={x}
-                y2={dims.padTop + dims.chartH + 4}
-                stroke="var(--chart-tick)"
-                strokeWidth={1}
-              />
-              <text
-                x={x}
-                y={dims.padTop + dims.chartH + 14}
-                textAnchor="middle"
-                fontSize={9}
-                fill={i === 0 ? "var(--chart-tick-text-bold)" : "var(--chart-tick-text)"}
-                fontWeight={i === 0 ? "bold" : "normal"}
-              >
-                {formatDateLabel(configuredAt, week)}
-              </text>
-            </g>
-          );
-        })}
+        {Array.from(
+          { length: useDayMode ? Math.floor(maxDays / 7) + 1 : maxWeek + 1 },
+          (_, i) => {
+            const week = i;
+            const x = useDayMode ? dayCalc.toXDay(i * 7) : weekCalc.toX(i);
+            return (
+              <g key={`xtick-${i}`}>
+                <line
+                  x1={x}
+                  y1={dims.padTop + dims.chartH}
+                  x2={x}
+                  y2={dims.padTop + dims.chartH + 4}
+                  stroke="var(--chart-tick)"
+                  strokeWidth={1}
+                />
+                <text
+                  x={x}
+                  y={dims.padTop + dims.chartH + 14}
+                  textAnchor="middle"
+                  fontSize={9}
+                  fill={i === 0 ? "var(--chart-tick-text-bold)" : "var(--chart-tick-text)"}
+                  fontWeight={i === 0 ? "bold" : "normal"}
+                >
+                  {formatDateLabel(configuredAt, week)}
+                </text>
+              </g>
+            );
+          }
+        )}
 
         {/* Ideal pace line (dashed) */}
         <polyline
-          points={Array.from({ length: maxWeek + 1 }, (_, i) => {
-            const val = startValue + (targetValue - startValue) * (i / maxWeek);
-            return `${toX(i)},${toY(val)}`;
-          }).join(" ")}
+          points={Array.from(
+            { length: useDayMode ? Math.floor(maxDays / 7) + 1 : maxWeek + 1 },
+            (_, i) => {
+              const val = useDayMode
+                ? startValue + (targetValue - startValue) * ((i * 7) / maxDays)
+                : startValue + (targetValue - startValue) * (i / maxWeek);
+              const x = useDayMode ? dayCalc.toXDay(i * 7) : weekCalc.toX(i);
+              return `${x},${toY(val)}`;
+            }
+          ).join(" ")}
           fill="none"
           stroke={lineColor}
           strokeWidth={isMain ? 1.5 : 1}
@@ -386,8 +417,8 @@ function InbodySingleChart({
         {pointsToRender.length > 0 && (
           <polyline
             points={[
-              `${toX(0)},${toY(startValue)}`,
-              ...pointsToRender.map((p) => `${toX(p.day / 7)},${toY(p.value)}`),
+              `${toXOrDay(0)},${toY(startValue)}`,
+              ...pointsToRender.map((p) => `${toXOrDay(p.day)},${toY(p.value)}`),
             ].join(" ")}
             fill="none"
             stroke={lineColor}
@@ -398,7 +429,7 @@ function InbodySingleChart({
         )}
 
         <circle
-          cx={toX(0)}
+          cx={toXOrDay(0)}
           cy={toY(startValue)}
           r={3}
           fill="var(--chart-dot-fill)"
@@ -408,7 +439,7 @@ function InbodySingleChart({
 
         {pointsToRender.map((p, i) => {
           const isCurrent = i === pointsToRender.length - 1;
-          const x = toX(p.day / 7);
+          const x = toXOrDay(p.day);
           const y = toY(p.value);
           const boxH = 24;
           const boxTop = y - 36;

@@ -41,6 +41,13 @@
   --chart-line-lime: #a3e635;
   --chart-line-orange: #f97316;
   --chart-line-sky: #38bdf8;
+  /* 골트래커 탭 선택 배경/테두리 (다크) */
+  --chart-tab-lime-bg: rgba(163, 230, 53, 0.12);
+  --chart-tab-orange-bg: rgba(249, 115, 22, 0.12);
+  --chart-tab-sky-bg: rgba(56, 189, 248, 0.12);
+  --chart-tab-lime-border: rgba(163, 230, 53, 0.4);
+  --chart-tab-orange-border: rgba(249, 115, 22, 0.4);
+  --chart-tab-sky-border: rgba(56, 189, 248, 0.4);
 }
 
 /* 라이브러리 탭 장식 아이콘 (덤벨) - 테마별 가시성 */
@@ -102,6 +109,13 @@
   --chart-line-lime: #16a34a;
   --chart-line-orange: #ea580c;
   --chart-line-sky: #0284c7;
+  /* 골트래커 탭 선택 배경/테두리 (라이트) */
+  --chart-tab-lime-bg: rgba(22, 163, 74, 0.12);
+  --chart-tab-orange-bg: rgba(234, 88, 12, 0.12);
+  --chart-tab-sky-bg: rgba(2, 132, 199, 0.12);
+  --chart-tab-lime-border: rgba(22, 163, 74, 0.4);
+  --chart-tab-orange-border: rgba(234, 88, 12, 0.4);
+  --chart-tab-sky-border: rgba(2, 132, 199, 0.4);
 }
 
 @theme inline {

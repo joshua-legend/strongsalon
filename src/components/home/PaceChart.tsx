@@ -24,6 +24,8 @@ interface PaceChartProps {
   formatValue?: (v: number) => string;
   /** 목표 설정일 (YYYY-MM-DD) - X축 mm-dd 라벨용 */
   configuredAt?: string | null;
+  /** Y축 줌 (1=기본, 2=확대, 0.5=축소) */
+  zoomLevel?: number;
 }
 
 export default function PaceChart({
@@ -36,16 +38,18 @@ export default function PaceChart({
   lineColor = "#a3e635",
   formatValue = (v) => String(v),
   configuredAt,
+  zoomLevel = 1,
 }: PaceChartProps) {
   const useDayMode = dataPoints != null && dataPoints.length > 0;
 
-  const weekCalc = usePaceChartData(startValue, targetValue, weeklyDelta, history, CYCLE_WEEKS);
+  const weekCalc = usePaceChartData(startValue, targetValue, weeklyDelta, history, CYCLE_WEEKS, zoomLevel);
   const dayCalc = usePaceChartDataDay(
     startValue,
     targetValue,
     weeklyDelta,
     dataPoints ?? [],
-    undefined
+    undefined,
+    zoomLevel
   );
 
   const calc = useDayMode ? dayCalc : weekCalc;

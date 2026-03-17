@@ -35,12 +35,57 @@ function niceRound(step: number): number {
   return 10 * mag;
 }
 
+/** Y축 범위 계산: 패딩 + 최소 범위로 한눈에 보기 좋게. zoomLevel: 1=기본, 2=확대, 0.5=축소 */
+function computeYDomain(
+  values: number[],
+  zoomLevel = 1
+): { yMinNice: number; yMaxNice: number; yRangeNice: number; niceStep: number } {
+  if (values.length === 0) {
+    return { yMinNice: 0, yMaxNice: 100, yRangeNice: 100, niceStep: 20 };
+  }
+  const rawMin = Math.min(...values);
+  const rawMax = Math.max(...values);
+  let yRange = rawMax - rawMin || 1;
+
+  // 매우 작은 편차: 최소 시각적 범위 보장 (값의 5% 또는 1)
+  const minRange = Math.max(1, Math.abs(rawMax) * 0.05, Math.abs(rawMin) * 0.05);
+  if (yRange < minRange) yRange = minRange;
+
+  // 상하 8% 패딩 (라인이 가장자리에 붙지 않도록)
+  const padding = yRange * 0.08;
+  const yMin = rawMin - padding;
+  const yMax = rawMax + padding;
+  let paddedRange = yMax - yMin;
+
+  // zoomLevel: 2=확대(범위 축소), 0.5=축소(범위 확대)
+  if (zoomLevel > 0 && zoomLevel !== 1) {
+    const center = (yMin + yMax) / 2;
+    paddedRange = paddedRange / zoomLevel;
+    const half = paddedRange / 2;
+    const newYMin = center - half;
+    const newYMax = center + half;
+    const niceStep = niceRound(paddedRange / 5);
+    const yMinNice = Math.floor(newYMin / niceStep) * niceStep;
+    const yMaxNice = Math.ceil(newYMax / niceStep) * niceStep;
+    const yRangeNice = Math.max(yMaxNice - yMinNice, niceStep);
+    return { yMinNice, yMaxNice, yRangeNice, niceStep };
+  }
+
+  const niceStep = niceRound(paddedRange / 5);
+  const yMinNice = Math.floor(yMin / niceStep) * niceStep;
+  const yMaxNice = Math.ceil(yMax / niceStep) * niceStep;
+  const yRangeNice = Math.max(yMaxNice - yMinNice, niceStep);
+
+  return { yMinNice, yMaxNice, yRangeNice, niceStep };
+}
+
 export function usePaceChartData(
   startValue: number,
   targetValue: number,
   weeklyDelta: number,
   history: WeekRecord[],
-  maxWeekOverride?: number
+  maxWeekOverride?: number,
+  zoomLevel?: number
 ): PaceChartCalculations {
   const dims: PaceChartDimensions = {
     width: 400, height: 240,
@@ -56,13 +101,7 @@ export function usePaceChartData(
     Math.max(6, Math.ceil(totalDelta / deltaStep) || 1);
 
   const allValues = [startValue, targetValue, ...history.map((h) => h.recorded)];
-  const yMin = Math.min(...allValues);
-  const yMax = Math.max(...allValues);
-  const yRange = yMax - yMin || 1;
-  const niceStep = niceRound(yRange / 5);
-  const yMinNice = Math.floor(yMin / niceStep) * niceStep;
-  const yMaxNice = Math.ceil(yMax / niceStep) * niceStep;
-  const yRangeNice = yMaxNice - yMinNice || niceStep;
+  const { yMinNice, yMaxNice, yRangeNice, niceStep } = computeYDomain(allValues, zoomLevel ?? 1);
 
   const toX = (week: number) => dims.padLeft + (week / maxWeek) * dims.chartW;
   const toY = (val: number) =>
@@ -96,7 +135,8 @@ export function usePaceChartDataDay(
   targetValue: number,
   weeklyDelta: number,
   dataPoints: ChartDataPoint[],
-  maxDaysOverride?: number
+  maxDaysOverride?: number,
+  zoomLevel?: number
 ): PaceChartDayCalculations {
   const dims: PaceChartDimensions = {
     width: 400,
@@ -121,13 +161,7 @@ export function usePaceChartDataDay(
     targetValue,
     ...dataPoints.map((p) => p.value),
   ];
-  const yMin = Math.min(...allValues);
-  const yMax = Math.max(...allValues);
-  const yRange = yMax - yMin || 1;
-  const niceStep = niceRound(yRange / 5);
-  const yMinNice = Math.floor(yMin / niceStep) * niceStep;
-  const yMaxNice = Math.ceil(yMax / niceStep) * niceStep;
-  const yRangeNice = yMaxNice - yMinNice || niceStep;
+  const { yMinNice, yMaxNice, yRangeNice, niceStep } = computeYDomain(allValues, zoomLevel ?? 1);
 
   const toXDay = (day: number) =>
     dims.padLeft + (day / maxDays) * dims.chartW;
