@@ -1,689 +1,751 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowDownRight,
-  ArrowUpRight,
-  BarChart2,
+  Activity,
   Dumbbell,
-  FingerprintPattern,
-  Flame,
+  Fingerprint,
+  HeartPulse,
   Minus,
-  Shield,
+  TrendingDown,
+  TrendingUp,
   type LucideIcon,
 } from "lucide-react";
-import { useUser } from "@/context/UserContext";
-import type { User } from "@/types/user";
 
-type TierId = "standard" | "advanced" | "pro" | "elite" | "the-strong";
-type StatId = "strength" | "stamina" | "inbody";
+type MembershipTier = "standard" | "advanced" | "pro" | "elite" | "strong";
+type StatTab = "strength" | "stamina" | "inbody";
 
-interface TierMeta {
-  id: TierId;
+interface TierTheme {
+  id: MembershipTier;
   label: string;
-  displayName: string;
+  cardName: string;
+  score: number;
+  rank: string;
   color: string;
-  glowBg: string;
+  softBg: string;
   gradient: string;
-  rankLabel: string;
+  borderColor: string;
 }
 
-interface StatSeriesPoint {
-  label: string;
+interface TrackPoint {
+  date: string;
   value: number;
 }
 
-interface StatModel {
-  id: StatId;
+interface StatConfig {
+  id: StatTab;
   label: string;
   icon: LucideIcon;
-  grade: string;
-  points: number;
+  basePoints: number;
   unit: string;
-  currentValue: number;
-  previousValue: number;
-  targetValue: number;
+  target: number;
   higherIsBetter: boolean;
-  series: StatSeriesPoint[];
+  data: TrackPoint[];
 }
 
-const TIERS: TierMeta[] = [
+const BRAND_NAME = "STRONG SALON";
+
+const TIERS: TierTheme[] = [
   {
     id: "standard",
-    label: "Standard",
-    displayName: "STANDARD",
+    label: "STANDARD",
+    cardName: "Standard",
+    score: 18420,
+    rank: "TOP 18%",
     color: "#94a3b8",
-    glowBg: "rgba(148, 163, 184, 0.18)",
-    gradient:
-      "linear-gradient(140deg, #09090b 0%, #18181b 34%, #27272a 70%, #3f3f46 100%)",
-    rankLabel: "TOP 18%",
+    softBg: "rgba(148, 163, 184, 0.18)",
+    gradient: "linear-gradient(135deg, #151b24 0%, #0f1520 100%)",
+    borderColor: "rgba(148, 163, 184, 0.32)",
   },
   {
     id: "advanced",
-    label: "Advanced",
-    displayName: "ADVANCED",
+    label: "ADVANCED",
+    cardName: "Advanced",
+    score: 22180,
+    rank: "TOP 9%",
     color: "#38bdf8",
-    glowBg: "rgba(56, 189, 248, 0.18)",
-    gradient:
-      "linear-gradient(140deg, #082f49 0%, #0f172a 32%, #1d4ed8 70%, #38bdf8 100%)",
-    rankLabel: "TOP 9%",
+    softBg: "rgba(56, 189, 248, 0.18)",
+    gradient: "linear-gradient(135deg, #111a29 0%, #12283d 100%)",
+    borderColor: "rgba(56, 189, 248, 0.34)",
   },
   {
     id: "pro",
-    label: "Pro",
-    displayName: "PRO",
+    label: "PRO",
+    cardName: "Pro",
+    score: 25630,
+    rank: "TOP 4%",
     color: "#a3e635",
-    glowBg: "rgba(163, 230, 53, 0.18)",
-    gradient:
-      "linear-gradient(140deg, #0a0a0a 0%, #14532d 34%, #365314 68%, #84cc16 100%)",
-    rankLabel: "TOP 4%",
+    softBg: "rgba(163, 230, 53, 0.2)",
+    gradient: "linear-gradient(135deg, #141d14 0%, #1f2d17 100%)",
+    borderColor: "rgba(163, 230, 53, 0.32)",
   },
   {
     id: "elite",
-    label: "Elite",
-    displayName: "ELITE",
-    color: "#fb7185",
-    glowBg: "rgba(251, 113, 133, 0.18)",
-    gradient:
-      "linear-gradient(140deg, #111827 0%, #3f0d24 34%, #7f1d1d 70%, #fb7185 100%)",
-    rankLabel: "TOP 1%",
+    label: "ELITE",
+    cardName: "Elite",
+    score: 27410,
+    rank: "TOP 2%",
+    color: "#f97316",
+    softBg: "rgba(249, 115, 22, 0.2)",
+    gradient: "linear-gradient(135deg, #1d1a18 0%, #3a2419 100%)",
+    borderColor: "rgba(249, 115, 22, 0.35)",
   },
   {
-    id: "the-strong",
-    label: "The Strong",
-    displayName: "THE STRONG",
-    color: "#f5d061",
-    glowBg: "rgba(245, 208, 97, 0.2)",
-    gradient:
-      "linear-gradient(140deg, #120d06 0%, #2b2112 32%, #6b4f1d 70%, #f5d061 100%)",
-    rankLabel: "TOP 0.3%",
+    id: "strong",
+    label: "THE STRONG",
+    cardName: "The Strong",
+    score: 28950,
+    rank: "TOP 1%",
+    color: "#d4af37",
+    softBg: "rgba(212, 175, 55, 0.2)",
+    gradient: "linear-gradient(135deg, #1a1917 0%, #2e2618 100%)",
+    borderColor: "rgba(212, 175, 55, 0.36)",
   },
 ];
 
-const SERIES_LABELS = ["SEP", "OCT", "NOV", "DEC", "JAN", "FEB"];
+const STATS: StatConfig[] = [
+  {
+    id: "strength",
+    label: "Strength",
+    icon: Dumbbell,
+    basePoints: 9800,
+    unit: "kg",
+    target: 80,
+    higherIsBetter: true,
+    data: [
+      { date: "03-17", value: 55 },
+      { date: "03-24", value: 60 },
+      { date: "03-31", value: 60 },
+      { date: "04-07", value: 65 },
+      { date: "04-14", value: 70 },
+    ],
+  },
+  {
+    id: "stamina",
+    label: "Stamina",
+    icon: HeartPulse,
+    basePoints: 9500,
+    unit: "pt",
+    target: 78,
+    higherIsBetter: true,
+    data: [
+      { date: "03-17", value: 64 },
+      { date: "03-24", value: 66 },
+      { date: "03-31", value: 67 },
+      { date: "04-07", value: 69 },
+      { date: "04-14", value: 71 },
+    ],
+  },
+  {
+    id: "inbody",
+    label: "Inbody",
+    icon: Activity,
+    basePoints: 9650,
+    unit: "%",
+    target: 20.5,
+    higherIsBetter: false,
+    data: [
+      { date: "03-17", value: 24.2 },
+      { date: "03-24", value: 23.8 },
+      { date: "03-31", value: 23.4 },
+      { date: "04-07", value: 22.9 },
+      { date: "04-14", value: 22.3 },
+    ],
+  },
+];
+
+const TIER_POINT_BONUS: Record<MembershipTier, number> = {
+  standard: -850,
+  advanced: -350,
+  pro: 150,
+  elite: 520,
+  strong: 0,
+};
+
+function getGrade(points: number) {
+  if (points >= 9600) return "MASTER";
+  if (points >= 9200) return "ELITE";
+  if (points >= 8600) return "PRO";
+  if (points >= 7900) return "ADVANCED";
+  return "STANDARD";
+}
+
+function getTickStep(span: number) {
+  if (span <= 5) return 1;
+  if (span <= 12) return 2;
+  if (span <= 30) return 5;
+  if (span <= 80) return 10;
+  return 20;
+}
+
+function formatValue(value: number, unit: string) {
+  const numeric = Number.isInteger(value) ? value.toFixed(0) : value.toFixed(1);
+  return `${numeric} ${unit}`;
+}
 
 function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function formatMetric(value: number, unit: string) {
-  if (unit === "%") return `${value.toFixed(1)}%`;
-  if (unit === "kg") return `${Math.round(value)}kg`;
-  return `${Math.round(value)}pt`;
-}
-
-function gradeFromPoints(points: number) {
-  if (points >= 96) return "S";
-  if (points >= 90) return "A+";
-  if (points >= 84) return "A";
-  if (points >= 76) return "B+";
-  if (points >= 68) return "B";
-  if (points >= 60) return "C+";
-  return "C";
-}
-
-function getInitialTier(level?: User["level"]): TierId {
-  if (level === "ADVANCED") return "elite";
-  if (level === "INTERMEDIATE") return "pro";
-  return "advanced";
-}
-
-function buildDashboardStats(user: User | null): StatModel[] {
-  const liftTotal = user?.liftTotal ?? 320;
-  const bodyFat = user?.bodyComp?.fatPct ?? 18.4;
-  const muscle = user?.bodyComp?.muscle ?? 33.2;
-  const attendRate = user?.monthAttendRate ?? 72;
-  const streak = user?.streak ?? 10;
-
-  const strengthPoints = clamp(Math.round(liftTotal / 4.15), 52, 99);
-  const staminaPoints = clamp(Math.round(attendRate * 0.72 + streak * 0.8), 48, 98);
-  const inbodyPoints = clamp(Math.round(64 + muscle * 0.56 - bodyFat * 0.48), 45, 97);
-
-  const strengthCurrent = liftTotal;
-  const strengthSeries = [
-    strengthCurrent - 44,
-    strengthCurrent - 31,
-    strengthCurrent - 22,
-    strengthCurrent - 14,
-    strengthCurrent - 8,
-    strengthCurrent,
-  ];
-
-  const staminaCurrent = clamp(Math.round(attendRate * 0.9 + streak * 1.05), 48, 98);
-  const staminaSeries = [
-    staminaCurrent - 16,
-    staminaCurrent - 12,
-    staminaCurrent - 9,
-    staminaCurrent - 7,
-    staminaCurrent - 3,
-    staminaCurrent,
-  ];
-
-  const inbodyCurrent = Number(bodyFat.toFixed(1));
-  const inbodySeries = [
-    Number((inbodyCurrent + 3.1).toFixed(1)),
-    Number((inbodyCurrent + 2.4).toFixed(1)),
-    Number((inbodyCurrent + 1.8).toFixed(1)),
-    Number((inbodyCurrent + 1.1).toFixed(1)),
-    Number((inbodyCurrent + 0.4).toFixed(1)),
-    inbodyCurrent,
-  ];
-
-  return [
-    {
-      id: "strength",
-      label: "Strength",
-      icon: Dumbbell,
-      grade: gradeFromPoints(strengthPoints),
-      points: strengthPoints,
-      unit: "kg",
-      currentValue: strengthCurrent,
-      previousValue: strengthSeries[strengthSeries.length - 2],
-      targetValue: strengthCurrent + 20,
-      higherIsBetter: true,
-      series: SERIES_LABELS.map((label, index) => ({
-        label,
-        value: strengthSeries[index],
-      })),
-    },
-    {
-      id: "stamina",
-      label: "Stamina",
-      icon: Flame,
-      grade: gradeFromPoints(staminaPoints),
-      points: staminaPoints,
-      unit: "pt",
-      currentValue: staminaCurrent,
-      previousValue: staminaSeries[staminaSeries.length - 2],
-      targetValue: staminaCurrent + 8,
-      higherIsBetter: true,
-      series: SERIES_LABELS.map((label, index) => ({
-        label,
-        value: staminaSeries[index],
-      })),
-    },
-    {
-      id: "inbody",
-      label: "Inbody",
-      icon: Shield,
-      grade: gradeFromPoints(inbodyPoints),
-      points: inbodyPoints,
-      unit: "%",
-      currentValue: inbodyCurrent,
-      previousValue: inbodySeries[inbodySeries.length - 2],
-      targetValue: Number(Math.max(inbodyCurrent - 2.2, 10).toFixed(1)),
-      higherIsBetter: false,
-      series: SERIES_LABELS.map((label, index) => ({
-        label,
-        value: inbodySeries[index],
-      })),
-    },
-  ];
-}
-
-function LevelChart({ stat }: { stat: StatModel }) {
-  const width = 328;
-  const height = 212;
-  const padTop = 20;
-  const padRight = 24;
-  const padBottom = 38;
-  const padLeft = 22;
-  const chartWidth = width - padLeft - padRight;
-  const chartHeight = height - padTop - padBottom;
-
-  const allValues = [...stat.series.map((item) => item.value), stat.targetValue];
-  const minValue = Math.min(...allValues);
-  const maxValue = Math.max(...allValues);
-  const range = Math.max(maxValue - minValue, stat.unit === "%" ? 2.4 : 10);
-  const paddedMin = stat.unit === "%"
-    ? Math.max(0, minValue - range * 0.2)
-    : Math.max(0, minValue - range * 0.18);
-  const paddedMax = maxValue + range * 0.22;
-
-  const toX = (index: number) =>
-    padLeft + (index / Math.max(stat.series.length - 1, 1)) * chartWidth;
-  const toY = (value: number) =>
-    padTop + chartHeight - ((value - paddedMin) / (paddedMax - paddedMin)) * chartHeight;
-
-  const polylinePoints = stat.series
-    .map((point, index) => `${toX(index)},${toY(point.value)}`)
-    .join(" ");
-
-  const targetY = toY(stat.targetValue);
-  const lastIndex = stat.series.length - 1;
-  const lastPoint = stat.series[lastIndex];
-  const lastX = toX(lastIndex);
-  const lastY = toY(lastPoint.value);
-
-  return (
-    <svg
-      className="h-[220px] w-full"
-      viewBox={`0 0 ${width} ${height}`}
-      fill="none"
-      aria-hidden="true"
-    >
-      {[0, 1, 2, 3].map((step) => {
-        const y = padTop + (chartHeight / 3) * step;
-        return (
-          <line
-            key={step}
-            x1={padLeft}
-            x2={width - padRight}
-            y1={y}
-            y2={y}
-            stroke="var(--border-light)"
-            strokeDasharray="4 6"
-            opacity="0.7"
-          />
-        );
-      })}
-
-      {stat.series.map((point, index) => (
-        <text
-          key={point.label}
-          x={toX(index)}
-          y={height - 12}
-          textAnchor="middle"
-          className="font-bebas"
-          fontSize="10"
-          fill="var(--text-sub)"
-        >
-          {point.label}
-        </text>
-      ))}
-
-      <line
-        x1={padLeft}
-        x2={width - padRight}
-        y1={targetY}
-        y2={targetY}
-        stroke="var(--dynamic-theme-color)"
-        strokeDasharray="6 6"
-        opacity="0.75"
-      />
-      <g transform={`translate(${width - padRight - 74}, ${targetY - 16})`}>
-        <rect
-          width="74"
-          height="22"
-          rx="11"
-          fill="var(--bg-card)"
-          stroke="var(--dynamic-theme-color)"
-        />
-        <text
-          x="37"
-          y="14"
-          textAnchor="middle"
-          className="font-bebas"
-          fontSize="11"
-          fill="var(--dynamic-theme-color)"
-        >
-          TARGET
-        </text>
-      </g>
-
-      <polyline
-        points={polylinePoints}
-        stroke="var(--dynamic-theme-color)"
-        strokeWidth="3"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        fill="none"
-      />
-
-      {stat.series.map((point, index) => {
-        const x = toX(index);
-        const y = toY(point.value);
-        const isLast = index === lastIndex;
-        return (
-          <g key={`${point.label}-${point.value}`}>
-            {isLast ? (
-              <>
-                <circle cx={x} cy={y} r="15" fill="var(--dynamic-theme-bg)" />
-                <circle
-                  cx={x}
-                  cy={y}
-                  r="8"
-                  fill="transparent"
-                  stroke="var(--dynamic-theme-color)"
-                  opacity="0.32"
-                />
-              </>
-            ) : null}
-            <circle
-              cx={x}
-              cy={y}
-              r={isLast ? 5.2 : 3.6}
-              fill="var(--bg-card)"
-              stroke="var(--dynamic-theme-color)"
-              strokeWidth={isLast ? 3 : 2.2}
-            />
-          </g>
-        );
-      })}
-
-      <g transform={`translate(${lastX - 30}, ${lastY - 40})`}>
-        <rect
-          width="60"
-          height="24"
-          rx="12"
-          fill="var(--bg-card)"
-          stroke="var(--dynamic-theme-color)"
-        />
-        <text
-          x="30"
-          y="15"
-          textAnchor="middle"
-          className="font-bebas"
-          fontSize="11"
-          fill="var(--text-main)"
-        >
-          {formatMetric(lastPoint.value, stat.unit)}
-        </text>
-      </g>
-    </svg>
-  );
+  return Math.min(max, Math.max(min, value));
 }
 
 export default function PremiumLevelDashboard() {
-  const { user } = useUser();
-  const [selectedTier, setSelectedTier] = useState<TierId>(getInitialTier(user?.level));
-  const [selectedStat, setSelectedStat] = useState<StatId>("strength");
+  const [selectedTier, setSelectedTier] = useState<MembershipTier>("strong");
+  const [selectedStat, setSelectedStat] = useState<StatTab>("strength");
 
-  const stats = buildDashboardStats(user);
-  const activeTier = TIERS.find((tier) => tier.id === selectedTier) ?? TIERS[2];
-  const activeStat = stats.find((stat) => stat.id === selectedStat) ?? stats[0];
+  const activeTier = TIERS.find((tier) => tier.id === selectedTier) ?? TIERS[TIERS.length - 1];
+  const pointBonus = TIER_POINT_BONUS[selectedTier];
 
-  const totalScore = Math.round(
-    stats.reduce((acc, stat) => acc + stat.points * 12, 0) + (user?.streak ?? 0) * 8
-  );
+  const statModels = STATS.map((stat) => {
+    const points = stat.basePoints + pointBonus;
+    return {
+      ...stat,
+      points,
+      grade: getGrade(points),
+    };
+  });
 
-  const delta = Number(
-    (activeStat.currentValue - activeStat.previousValue).toFixed(
-      activeStat.unit === "%" ? 1 : 0
-    )
-  );
-  const isPositive = activeStat.higherIsBetter ? delta > 0 : delta < 0;
+  const activeStat = statModels.find((stat) => stat.id === selectedStat) ?? statModels[0];
+
+  const xStart = 48;
+  const xEnd = 384;
+  const yTop = 24;
+  const yBottom = 200;
+  const plotHeight = yBottom - yTop;
+  const plotWidth = xEnd - xStart;
+
+  const values = activeStat.data.map((point) => point.value);
+  const minRaw = Math.min(...values, activeStat.target);
+  const maxRaw = Math.max(...values, activeStat.target);
+  const span = Math.max(maxRaw - minRaw, 1);
+  const step = getTickStep(span);
+  const yMin = Math.floor((minRaw - step) / step) * step;
+  const yMax = Math.ceil((maxRaw + step) / step) * step;
+  const ySpan = Math.max(yMax - yMin, step);
+
+  const points = activeStat.data.map((point, index) => {
+    const x = xStart + (index / Math.max(activeStat.data.length - 1, 1)) * plotWidth;
+    const y = yBottom - ((point.value - yMin) / ySpan) * plotHeight;
+    return { ...point, x, y };
+  });
+
+  const targetY = yBottom - ((activeStat.target - yMin) / ySpan) * plotHeight;
+  const polyline = points.map((point) => `${point.x},${point.y}`).join(" ");
+
+  const yTicks = Array.from({ length: 5 }, (_, index) => {
+    const value = yMax - (ySpan / 4) * index;
+    const y = yTop + (plotHeight / 4) * index;
+    return { value, y };
+  });
+
+  const current = points[points.length - 1]?.value ?? 0;
+  const previous = points[points.length - 2]?.value ?? current;
+  const delta = Number((current - previous).toFixed(activeStat.unit === "%" ? 1 : 0));
   const isNeutral = delta === 0;
-  const deltaLabel = isNeutral
-    ? "유지 중"
+  const isPositive = activeStat.higherIsBetter ? delta > 0 : delta < 0;
+  const TrendIcon = isNeutral ? Minus : isPositive ? TrendingUp : TrendingDown;
+  const trendLabel = isNeutral
+    ? "\uBCC0\uD654 \uC5C6\uC74C"
     : isPositive
-      ? "목표에 가까워지고 있어요"
-      : "리듬을 다시 끌어올릴 시점이에요";
-  const DeltaIcon = isNeutral ? Minus : isPositive ? ArrowUpRight : ArrowDownRight;
+      ? "\uAFB8\uC900\uD788 \uC131\uC7A5\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4"
+      : "\uB9AC\uB4EC\uC744 \uB2E4\uC2DC \uB9DE\uCDB0\uBCF4\uC138\uC694";
 
-  const themeStyle = {
+  const deltaColor = isNeutral
+    ? "var(--text-sub)"
+    : isPositive
+      ? activeTier.color
+      : "var(--accent-danger)";
+
+  const targetBadgeY = clamp(targetY - 12, 26, 172);
+
+  const rootVars = {
     "--dynamic-theme-color": activeTier.color,
-    "--dynamic-theme-bg": activeTier.glowBg,
+    "--dynamic-theme-bg": activeTier.softBg,
   } as CSSProperties;
 
   return (
-    <section className="space-y-4" style={themeStyle}>
-      <div className="hide-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 fade-up fade-in-1">
-        {TIERS.map((tier) => {
-          const isActive = tier.id === selectedTier;
-          return (
-            <button
-              key={tier.id}
-              type="button"
-              onClick={() => setSelectedTier(tier.id)}
-              className="shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 active:scale-95"
-              style={{
-                backgroundColor: isActive ? "var(--bg-card)" : "transparent",
-                color: isActive ? "var(--text-main)" : "var(--text-sub)",
-                boxShadow: isActive
-                  ? "0 10px 24px rgba(0, 0, 0, 0.14)"
-                  : "none",
-                border: `1px solid ${isActive ? "var(--border-light)" : "transparent"}`,
-              }}
+    <div id="tab-level" className="block flex-1 space-y-6 px-5 py-6" style={rootVars}>
+      <div id="view-card" className="block space-y-4">
+        <div className="custom-scrollbar flex gap-1.5 overflow-x-auto pb-2">
+          {TIERS.map((tier) => {
+            const isActive = selectedTier === tier.id;
+            return (
+              <button
+                key={tier.id}
+                id={`btn-tier-${tier.id}`}
+                type="button"
+                onClick={() => setSelectedTier(tier.id)}
+                className={`shrink-0 rounded-lg border px-3 py-1.5 text-[10px] font-bold transition-all ${
+                  isActive ? "shadow-sm" : ""
+                }`}
+                style={{
+                  backgroundColor: isActive ? "var(--bg-card)" : "transparent",
+                  color: isActive ? "var(--text-main)" : "var(--text-sub)",
+                  borderColor: isActive ? "var(--border-light)" : "transparent",
+                }}
+              >
+                {tier.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div
+          id="membership-card"
+          className="card-shine relative overflow-hidden rounded-[1.25rem] border p-6 shadow-2xl transition-all duration-700"
+          style={{
+            background: activeTier.gradient,
+            borderColor: activeTier.borderColor,
+          }}
+        >
+          <div className="iron-texture pointer-events-none absolute inset-0 opacity-[0.05]" />
+
+          <div className="relative z-10 flex items-start justify-between">
+            <span
+              id="card-brand"
+              className="text-[10px] font-bold uppercase tracking-[0.2em] drop-shadow-sm transition-colors duration-700"
+              style={{ color: activeTier.color }}
             >
-              {tier.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <article
-        className="premium-level-card rounded-[1.25rem] border p-5 shadow-2xl fade-up fade-in-2"
-        style={{
-          borderColor: "rgba(255,255,255,0.1)",
-          background: activeTier.gradient,
-        }}
-      >
-        <svg className="premium-level-noise" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <filter id="level-noise-filter">
-            <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" stitchTiles="stitch" />
-            <feColorMatrix type="saturate" values="0" />
-          </filter>
-          <rect width="100" height="100" filter="url(#level-noise-filter)" opacity="0.95" />
-        </svg>
-
-        <div className="relative z-[2]">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-[11px] font-semibold tracking-[0.24em] text-white/66">
-                FITLOG PRIME
-              </p>
-              <p className="mt-1 text-xs text-white/46">Premium Membership Dashboard</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-              <FingerprintPattern className="h-5 w-5 text-white/80" />
-            </div>
+              {BRAND_NAME}
+            </span>
+            <Fingerprint
+              id="card-icon"
+              className="h-5 w-5 transition-colors duration-700"
+              style={{ color: activeTier.color }}
+            />
           </div>
 
-          <div className="mt-10">
-            <h2
-              className="text-[2rem] leading-none text-white sm:text-[2.35rem]"
-              style={{
-                fontFamily: '"Iowan Old Style", "Times New Roman", serif',
-                fontStyle: "italic",
-                letterSpacing: "0.04em",
-              }}
+          <div className="relative z-10 mb-7 mt-8">
+            <h3
+              id="card-tier-name"
+              className="font-serif text-[32px] italic font-bold tracking-wide transition-colors duration-700"
+              style={{ color: activeTier.color }}
             >
-              {activeTier.displayName}
-            </h2>
+              {activeTier.cardName}
+            </h3>
           </div>
 
-          <div className="mt-12 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[10px] tracking-[0.24em] text-white/48">TOTAL SCORE</p>
-              <p className="font-bebas text-[4.4rem] leading-[0.82] text-white">
-                {totalScore.toLocaleString()}
-              </p>
+          <div className="relative z-10 flex items-end justify-between">
+            <div className="flex flex-col">
+              <span
+                id="card-score-label"
+                className="mb-0.5 text-[8px] uppercase tracking-widest transition-colors duration-700"
+                style={{ color: `${activeTier.color}B3` }}
+              >
+                Total Score
+              </span>
+              <span
+                id="card-score"
+                className="font-bebas text-[30px] leading-none tracking-[0.08em] transition-colors duration-700"
+                style={{ color: "#fef08a" }}
+              >
+                {activeTier.score.toLocaleString()}
+              </span>
             </div>
-            <div className="text-right">
-              <p className="text-[10px] tracking-[0.24em] text-white/48">OVERALL RANK</p>
-              <p className="font-bebas text-[2.35rem] leading-none text-white">
-                {activeTier.rankLabel}
-              </p>
+            <div className="flex flex-col text-right">
+              <span
+                id="card-rank-label"
+                className="mb-0.5 text-[8px] uppercase tracking-widest transition-colors duration-700"
+                style={{ color: `${activeTier.color}B3` }}
+              >
+                Overall Rank
+              </span>
+              <span
+                id="card-rank"
+                className="font-bebas text-[24px] leading-none tracking-[0.08em] transition-colors duration-700"
+                style={{ color: activeTier.color }}
+              >
+                {activeTier.rank}
+              </span>
             </div>
           </div>
         </div>
-      </article>
 
-      <div className="grid grid-cols-3 gap-3 fade-up fade-in-3">
-        {stats.map((stat) => {
-          const isActive = stat.id === selectedStat;
-          const Icon = stat.icon;
-          return (
-            <button
-              key={stat.id}
-              type="button"
-              onClick={() => setSelectedStat(stat.id)}
-              className="relative overflow-hidden rounded-[1.15rem] border p-3 text-left transition-all duration-300 active:scale-[0.98]"
-              style={{
-                transform: isActive ? "translateY(-4px)" : "translateY(0px)",
-                borderColor: isActive ? "var(--dynamic-theme-color)" : "var(--border-light)",
-                backgroundColor: "var(--bg-card)",
-                boxShadow: isActive ? "0 18px 30px rgba(0, 0, 0, 0.18)" : "none",
-              }}
-            >
-              {isActive ? (
-                <div
-                  className="pointer-events-none absolute -right-4 -top-4 h-16 w-16 rounded-full blur-2xl"
-                  style={{ backgroundColor: "var(--dynamic-theme-bg)" }}
-                />
-              ) : null}
-
-              <div className="relative z-[1]">
-                <Icon
-                  className="h-4 w-4 transition-colors duration-300"
-                  style={{ color: isActive ? "var(--dynamic-theme-color)" : "var(--text-sub)" }}
-                />
-                <p
-                  className="mt-3 text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-300"
-                  style={{ color: isActive ? "var(--dynamic-theme-color)" : "var(--text-sub)" }}
-                >
-                  {stat.label}
-                </p>
-                <div className="mt-2 flex items-end justify-between gap-2">
-                  <div>
-                    <p
-                      className="font-bebas text-[1.35rem] leading-none transition-colors duration-300"
-                      style={{ color: isActive ? "var(--text-main)" : "var(--text-main)" }}
-                    >
-                      {stat.grade}
-                    </p>
-                    <p className="mt-1 text-[10px]" style={{ color: "var(--text-sub)" }}>
-                      Grade
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p
-                      className="font-bebas text-[1.65rem] leading-none transition-colors duration-300"
-                      style={{ color: isActive ? "var(--dynamic-theme-color)" : "var(--text-main)" }}
-                    >
-                      {stat.points}
-                    </p>
-                    <p className="mt-1 text-[10px]" style={{ color: "var(--text-sub)" }}>
-                      Points
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      <div
-        className="relative overflow-hidden rounded-[1.35rem] border p-4 fade-up fade-in-4"
-        style={{
-          borderColor: "var(--border-light)",
-          background:
-            "radial-gradient(circle at top right, var(--dynamic-theme-bg), transparent 34%), var(--bg-card)",
-        }}
-      >
-        <div
-          className="pointer-events-none absolute right-5 top-5 h-24 w-24 rounded-full blur-3xl"
-          style={{ backgroundColor: "var(--dynamic-theme-bg)" }}
-        />
-        <div className="relative z-[1]">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p
-                className="text-[11px] font-semibold uppercase tracking-[0.22em]"
-                style={{ color: "var(--dynamic-theme-color)" }}
+        <div className="relative z-10 mt-4 grid w-full grid-cols-3 gap-2">
+          {statModels.map((stat) => {
+            const isActive = selectedStat === stat.id;
+            const Icon = stat.icon;
+            return (
+              <button
+                key={stat.id}
+                id={`card-btn-${stat.id}`}
+                type="button"
+                onClick={() => setSelectedStat(stat.id)}
+                className="group relative flex flex-col justify-between gap-3 overflow-hidden rounded-[1.25rem] border p-3.5 text-left transition-all duration-500"
+                style={{
+                  background: isActive
+                    ? "linear-gradient(145deg, var(--bg-card) 0%, var(--bg-body) 100%)"
+                    : "var(--bg-body)",
+                  borderColor: isActive ? activeTier.color : "var(--border-light)",
+                  boxShadow: isActive
+                    ? "0 8px 20px -4px rgba(0,0,0,0.3), 0 1px 1px rgba(255,255,255,0.05) inset"
+                    : "none",
+                  transform: isActive ? "translateY(-4px) scale(1.02)" : "translateY(0) scale(1)",
+                }}
               >
-                Tracking Dashboard
-              </p>
-              <h3
-                className="mt-2 text-lg font-semibold"
-                style={{ color: "var(--text-main)" }}
-              >
-                {activeStat.label} Progress
-              </h3>
-            </div>
-            <div
-              className="rounded-2xl border px-3 py-2"
-              style={{
-                borderColor: "var(--border-light)",
-                backgroundColor: "rgba(255,255,255,0.04)",
-              }}
-            >
-              <BarChart2 className="h-4 w-4" style={{ color: "var(--dynamic-theme-color)" }} />
-            </div>
-          </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeStat.id}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 18 }}
-              transition={{ duration: 0.28, ease: "easeOut" }}
-              className="mt-4 space-y-4"
-            >
-              <LevelChart stat={activeStat} />
-
-              <div className="grid grid-cols-2 gap-3">
                 <div
-                  className="rounded-2xl border p-4"
+                  id={`card-glow-${stat.id}`}
+                  className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full blur-2xl transition-colors duration-500"
                   style={{
-                    borderColor: "var(--border-light)",
-                    backgroundColor: "rgba(255,255,255,0.03)",
+                    opacity: isActive ? 0.15 : 0,
+                    backgroundColor: activeTier.color,
                   }}
-                >
-                  <p className="text-[10px] uppercase tracking-[0.22em]" style={{ color: "var(--text-sub)" }}>
-                    Current
-                  </p>
-                  <p className="mt-2 font-bebas text-[2rem] leading-none" style={{ color: "var(--text-main)" }}>
-                    {formatMetric(activeStat.currentValue, activeStat.unit)}
-                  </p>
-                  <p className="mt-3 text-xs" style={{ color: "var(--text-sub)" }}>
-                    이전 기록 {formatMetric(activeStat.previousValue, activeStat.unit)}
-                  </p>
-                </div>
-
-                <div
-                  className="rounded-2xl border p-4"
-                  style={{
-                    borderColor: isPositive
-                      ? "var(--dynamic-theme-color)"
-                      : isNeutral
-                        ? "var(--border-light)"
-                        : "var(--accent-danger)",
-                    backgroundColor: "rgba(255,255,255,0.03)",
-                  }}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-[10px] uppercase tracking-[0.22em]" style={{ color: "var(--text-sub)" }}>
-                      Summary
-                    </p>
+                />
+                <div className="relative z-10 flex w-full flex-col gap-1">
+                  <div className="mb-1 flex items-center gap-1.5">
+                    <Icon
+                      id={`card-icon-${stat.id}`}
+                      className="h-3.5 w-3.5 transition-colors duration-300"
+                      style={{ color: isActive ? activeTier.color : "var(--text-sub)" }}
+                    />
                     <span
-                      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold"
-                      style={{
-                        color: isPositive
-                          ? "var(--dynamic-theme-color)"
-                          : isNeutral
-                            ? "var(--text-sub)"
-                            : "var(--accent-danger)",
-                        backgroundColor: isPositive
-                          ? "var(--dynamic-theme-bg)"
-                          : isNeutral
-                            ? "rgba(255,255,255,0.05)"
-                            : "rgba(251,113,133,0.12)",
-                      }}
+                      id={`card-lbl-${stat.id}`}
+                      className="font-bebas text-[11px] tracking-wider transition-colors duration-300"
+                      style={{ color: isActive ? activeTier.color : "var(--text-sub)" }}
                     >
-                      <DeltaIcon className="h-3.5 w-3.5" />
-                      {isNeutral
-                        ? "0"
-                        : `${delta > 0 ? "+" : ""}${delta.toFixed(activeStat.unit === "%" ? 1 : 0)}`}
+                      {stat.label.toUpperCase()}
                     </span>
                   </div>
-                  <p className="mt-3 text-sm font-medium" style={{ color: "var(--text-main)" }}>
-                    {deltaLabel}
-                  </p>
-                  <p className="mt-2 text-xs leading-5" style={{ color: "var(--text-sub)" }}>
-                    목표 {formatMetric(activeStat.targetValue, activeStat.unit)}까지의 흐름을
-                    추적 중입니다.
-                  </p>
+                  <div className="mt-0.5">
+                    <span
+                      id={`card-grade-${stat.id}`}
+                      className="font-bebas text-[24px] leading-none transition-all duration-500"
+                      style={{
+                        color: isActive ? activeTier.color : "var(--text-sub)",
+                        textShadow: isActive ? `0 0 12px ${activeTier.color}60` : "none",
+                      }}
+                    >
+                      {stat.grade}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+                <div
+                  className="relative z-10 w-full border-t pt-2.5 transition-colors duration-300"
+                  style={{ borderColor: "var(--border-light)" }}
+                >
+                  <span
+                    id={`card-pts-${stat.id}`}
+                    className="font-mono text-[11px] font-bold transition-colors duration-300"
+                    style={{ color: isActive ? activeTier.color : "var(--text-sub)" }}
+                  >
+                    {stat.points.toLocaleString()}
+                    <span className="ml-0.5 text-[9px] font-normal">pts</span>
+                  </span>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
-    </section>
+
+      <section id="tracking-section" className="space-y-3 pt-2">
+        <h2
+          id="dashboard-title"
+          className="text-xs font-semibold uppercase tracking-wider transition-colors duration-300"
+          style={{ color: "var(--text-sub)" }}
+        >
+          {activeStat.label} Dashboard
+        </h2>
+
+        <div
+          className="relative overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300"
+          style={{
+            backgroundColor: "var(--bg-card)",
+            borderColor: "var(--border-light)",
+          }}
+        >
+          <div
+            id="chart-glow"
+            className="pointer-events-none absolute left-1/2 top-0 h-32 w-64 -translate-x-1/2 rounded-full opacity-[0.08] blur-3xl transition-colors duration-500"
+            style={{ backgroundColor: activeTier.color }}
+          />
+
+          <div className="relative z-10 space-y-4 p-5">
+            <div
+              id="main-tabs"
+              className="hidden rounded-full p-1 transition-colors duration-300"
+              style={{
+                backgroundColor: "var(--bg-body)",
+                border: "1px solid var(--border-light)",
+              }}
+            />
+
+            <div
+              id="sub-tabs"
+              className="flex flex-wrap gap-1 rounded-full p-1 transition-colors duration-300"
+              style={{
+                backgroundColor: "var(--bg-body)",
+                border: "1px solid var(--border-light)",
+              }}
+            >
+              {statModels.map((stat) => {
+                const isActive = selectedStat === stat.id;
+                return (
+                  <button
+                    key={`sub-${stat.id}`}
+                    type="button"
+                    onClick={() => setSelectedStat(stat.id)}
+                    className="rounded-full border px-3 py-1.5 text-[10px] font-bold transition-all"
+                    style={{
+                      backgroundColor: isActive ? activeTier.softBg : "transparent",
+                      color: isActive ? activeTier.color : "var(--text-sub)",
+                      borderColor: isActive ? `${activeTier.color}66` : "transparent",
+                    }}
+                  >
+                    {stat.label.toUpperCase()}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="pt-3">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div
+                  className="flex items-center gap-4 text-[10px] font-bold transition-colors duration-300"
+                  style={{ color: "var(--text-sub)" }}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      id="chart-legend-actual"
+                      className="h-0.5 w-4 rounded transition-colors duration-300"
+                      style={{ backgroundColor: activeTier.color }}
+                    />
+                    {"\uC2E4\uC81C\uAE30\uB85D"}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      id="chart-legend-target"
+                      className="inline-block h-1 w-4 shrink-0 rounded border-t border-dashed transition-colors duration-300"
+                      style={{
+                        borderTopColor: "var(--text-sub)",
+                        borderTopWidth: "1.5px",
+                        opacity: 0.6,
+                      }}
+                    />
+                    {"\uBAA9\uD45C(\uC774\uC0C1)"}
+                  </span>
+                </div>
+              </div>
+
+              <div
+                key={`chart-${selectedTier}-${selectedStat}`}
+                id="chart-container"
+                className="chart-animate relative -mt-4 min-h-[240px] w-full overflow-visible"
+              >
+                <svg
+                  viewBox="0 0 400 240"
+                  className="h-auto min-h-[240px] w-full overflow-visible transition-colors duration-300"
+                  preserveAspectRatio="xMidYMid meet"
+                  style={{ overflow: "visible" }}
+                >
+                  <defs>
+                    <filter id="levelDotGlow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="2" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+
+                  <rect
+                    x="48"
+                    y="24"
+                    width="336"
+                    height="176"
+                    rx="4"
+                    fill="none"
+                    style={{ stroke: "var(--border-light)" }}
+                    strokeWidth="1"
+                  />
+
+                  <g
+                    style={{
+                      stroke: "var(--border-light)",
+                      strokeWidth: 0.5,
+                      opacity: 0.5,
+                    }}
+                  >
+                    {yTicks.map((tick) => (
+                      <line key={`h-${tick.y}`} x1="48" y1={tick.y} x2="384" y2={tick.y} />
+                    ))}
+                    {points.map((point) => (
+                      <line key={`v-${point.date}`} x1={point.x} y1="24" x2={point.x} y2="200" />
+                    ))}
+                  </g>
+
+                  <g style={{ fill: "var(--text-sub)", fontSize: "10px", fontWeight: "bold" }}>
+                    {yTicks.map((tick) => (
+                      <text key={`yt-${tick.y}`} x="40" y={tick.y} textAnchor="end">
+                        {Number(tick.value.toFixed(1))}
+                      </text>
+                    ))}
+                  </g>
+
+                  <g style={{ fontSize: "10px" }}>
+                    {points.map((point, index) => (
+                      <text
+                        key={`xt-${point.date}`}
+                        x={point.x}
+                        y="218"
+                        textAnchor="middle"
+                        style={{
+                          fill: index === points.length - 1 ? "var(--text-main)" : "var(--text-sub)",
+                          fontWeight: index === points.length - 1 ? "bold" : "normal",
+                        }}
+                      >
+                        {point.date}
+                      </text>
+                    ))}
+                  </g>
+
+                  <line
+                    x1="48"
+                    y1={targetY}
+                    x2="384"
+                    y2={targetY}
+                    style={{ stroke: "var(--text-sub)" }}
+                    strokeWidth="1.5"
+                    strokeDasharray="4 4"
+                    opacity="0.4"
+                  />
+
+                  <rect
+                    x="276"
+                    y={targetBadgeY}
+                    width="100"
+                    height="24"
+                    rx="6"
+                    style={{ fill: "var(--bg-body)", stroke: "var(--border-light)" }}
+                    strokeWidth="1"
+                    opacity="0.95"
+                  />
+                  <text
+                    x="326"
+                    y={targetBadgeY + 16}
+                    textAnchor="middle"
+                    fontSize="11"
+                    fontWeight="bold"
+                    style={{ fill: "var(--text-sub)" }}
+                  >
+                    {"\uBAA9\uD45C"} {formatValue(activeStat.target, activeStat.unit)}
+                  </text>
+
+                  <polyline
+                    points={polyline}
+                    fill="none"
+                    style={{ stroke: activeTier.color }}
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  {points.map((point) => (
+                    <circle
+                      key={`dot-${point.date}`}
+                      cx={point.x}
+                      cy={point.y}
+                      r="3"
+                      style={{ fill: "var(--bg-body)", stroke: activeTier.color }}
+                      strokeWidth="1.5"
+                    />
+                  ))}
+
+                  {points.length > 0 ? (
+                    <g>
+                      <circle
+                        cx={points[points.length - 1].x}
+                        cy={points[points.length - 1].y}
+                        r="8"
+                        style={{ fill: activeTier.color }}
+                        filter="url(#levelDotGlow)"
+                        opacity="0.4"
+                      />
+                      <circle
+                        cx={points[points.length - 1].x}
+                        cy={points[points.length - 1].y}
+                        r="4"
+                        style={{ fill: activeTier.color }}
+                      />
+                      <rect
+                        x={points[points.length - 1].x - 48}
+                        y={points[points.length - 1].y - 34}
+                        width="96"
+                        height="26"
+                        rx="6"
+                        style={{ fill: "var(--bg-body)", stroke: activeTier.color }}
+                        strokeWidth="1.5"
+                        opacity="0.95"
+                      />
+                      <text
+                        x={points[points.length - 1].x}
+                        y={points[points.length - 1].y - 17}
+                        textAnchor="middle"
+                        fontSize="12"
+                        fontWeight="bold"
+                        style={{ fill: activeTier.color }}
+                      >
+                        {formatValue(points[points.length - 1].value, activeStat.unit)}
+                      </text>
+                    </g>
+                  ) : null}
+                </svg>
+              </div>
+
+              <div
+                key={`summary-${selectedTier}-${selectedStat}`}
+                id="summary-section"
+                className="chart-animate mt-2 space-y-2 border-t pt-4 transition-colors duration-300"
+                style={{ borderColor: "var(--border-light)" }}
+              >
+                <div
+                  className="flex justify-between text-xs font-bold transition-colors duration-300"
+                  style={{ color: "var(--text-sub)" }}
+                >
+                  <span>
+                    {"\uD604\uC7AC"}:{" "}
+                    <span
+                      className="font-mono text-[13px] transition-colors duration-300"
+                      style={{ color: "var(--text-main)" }}
+                    >
+                      {formatValue(current, activeStat.unit)}
+                    </span>
+                  </span>
+                  <span>
+                    {"\uC774\uC804"}:{" "}
+                    <span
+                      className="font-mono text-[13px] transition-colors duration-300"
+                      style={{ color: "var(--text-main)" }}
+                    >
+                      {formatValue(previous, activeStat.unit)}
+                    </span>
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span
+                    className="text-xs font-bold transition-colors duration-300"
+                    style={{ color: "var(--text-main)" }}
+                  >
+                    {"\uBCC0\uD654"}:{" "}
+                    <span style={{ color: deltaColor }}>
+                      {delta > 0 ? "+" : ""}
+                      {delta.toFixed(activeStat.unit === "%" ? 1 : 0)} {activeStat.unit}
+                    </span>
+                  </span>
+                  <div
+                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors duration-300"
+                    style={{
+                      backgroundColor: "var(--bg-card-hover)",
+                      color: deltaColor,
+                    }}
+                  >
+                    <TrendIcon className="h-3.5 w-3.5" />
+                    <span>{trendLabel}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
