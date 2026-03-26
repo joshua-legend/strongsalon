@@ -16,6 +16,9 @@
   --accent-sub: #22c55e;
   --accent-bg: rgba(163, 230, 53, 0.1);
   --accent-text: #000000;
+  --accent-danger: #fb7185;
+  --dynamic-theme-color: #a3e635;
+  --dynamic-theme-bg: rgba(163, 230, 53, 0.16);
 
   /* 골트래커 차트 - 다크 모드 */
   --chart-frame: #1a1a1a;
@@ -80,6 +83,9 @@
   --accent-sub: #22c55e;
   --accent-bg: #eff6ff;
   --accent-text: #ffffff;
+  --accent-danger: #e11d48;
+  --dynamic-theme-color: #3b82f6;
+  --dynamic-theme-bg: rgba(59, 130, 246, 0.14);
   --challenge-hero-bg: var(--accent-bg);
   --challenge-hero-border: var(--border-light);
   --challenge-rank-bg: var(--accent-bg);
@@ -232,6 +238,27 @@ input {
   }
   100% {
     transform: translateX(100%);
+  }
+}
+
+@keyframes premiumCardShine {
+  0% {
+    transform: translate3d(-160%, 0, 0) rotate(18deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.08;
+  }
+  22% {
+    opacity: 0.42;
+  }
+  42% {
+    transform: translate3d(150%, 0, 0) rotate(18deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(150%, 0, 0) rotate(18deg);
+    opacity: 0;
   }
 }
 
@@ -396,6 +423,50 @@ input[type=range].slider-emerald::-webkit-slider-thumb { background: #34d399; bo
   to { transform: translateY(0); opacity: 1; }
 }
 .fade-slide-up { animation: fadeSlideUp 0.3s ease-out forwards; }
+
+.premium-level-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.premium-level-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.16), transparent 34%),
+    radial-gradient(circle at 82% 78%, var(--dynamic-theme-bg), transparent 32%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.premium-level-card::after {
+  content: "";
+  position: absolute;
+  inset: -30% -18%;
+  background: linear-gradient(
+    108deg,
+    transparent 26%,
+    rgba(255, 255, 255, 0.06) 38%,
+    rgba(255, 255, 255, 0.34) 48%,
+    rgba(255, 255, 255, 0.08) 57%,
+    transparent 70%
+  );
+  pointer-events: none;
+  mix-blend-mode: screen;
+  animation: premiumCardShine 6.2s ease-in-out infinite;
+  z-index: 1;
+}
+
+.premium-level-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  opacity: 0.22;
+  z-index: 1;
+}
 
 @keyframes pulseGlow {
   0%, 100% { box-shadow: 0 0 8px rgba(163,230,53,0.3); }

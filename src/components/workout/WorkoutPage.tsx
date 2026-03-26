@@ -80,7 +80,7 @@ export default function WorkoutPage() {
 
   const handleGoToStrengthSetup = () => {
     setShowNeedStrengthModal(false);
-    setTab("home");
+    setTab("level");
     setOpenRecommendationSetup(true);
   };
 
@@ -199,20 +199,20 @@ export default function WorkoutPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-main)" }}>
-                    홈에서 3대 운동(스쿼트·벤치·데드) 1RM을 설정하면
+                    레벨 탭에서 3대 운동(스쿼트·벤치·데드) 1RM을 설정하면
                     <br />
                     운동 시 권장 무게가 자동으로 채워져요
                   </p>
                   <button
                     type="button"
                     onClick={() => {
-                      setTab("home");
+                      setTab("level");
                       setOpenStrengthSetup(true);
                     }}
                     className="mt-2 text-[11px] font-semibold transition-opacity hover:opacity-80"
                     style={{ color: "var(--accent-main)" }}
                   >
-                    1RM 설정하러 가기 →
+                    레벨 탭에서 설정하기 →
                   </button>
                 </div>
               </div>

@@ -100,18 +100,29 @@ export default function InbodyRecordInputPopover({
 
   const hasAnyValue = Object.values(values).some((v) => v > 0);
 
+  const [hover, setHover] = useState(false);
   return (
     <div className="relative" ref={popoverRef}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all border shadow-sm goal-record-btn"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all duration-300 shadow-sm border active:scale-95"
+        style={{
+          backgroundColor: "var(--bg-card)",
+          color: hover ? "var(--accent-main)" : "var(--text-main)",
+          borderColor: hover ? "var(--accent-main)" : "var(--border-light)",
+        }}
         aria-label="기록 추가"
       >
-        <span className="w-6 h-6 rounded-lg flex items-center justify-center goal-record-btn-icon">
-          <Plus className="w-3.5 h-3.5" />
+        <span
+          className="w-4 h-4 rounded flex items-center justify-center transition-colors duration-300"
+          style={{ backgroundColor: "var(--accent-bg)", color: "var(--accent-main)" }}
+        >
+          <Plus className="w-3 h-3" />
         </span>
-        <span className="text-xs font-bold">기록 추가</span>
+        <span className="text-[11px] font-bold">기록 추가</span>
       </button>
 
       {open && (

@@ -9,6 +9,8 @@ import { useProfile } from "@/context/ProfileContext";
 import { ToastProvider } from "@/components/ui/Toast";
 import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 import HomeTab from "@/components/home/HomeTab";
+import LevelTab from "@/components/level/LevelTab";
+import RecordTab from "@/components/record/RecordTab";
 import StatsTab from "@/components/stats/StatsTab";
 import PerformanceTab from "@/components/performance/PerformanceTab";
 import ExerciseInfoTab from "@/components/exercise-info/ExerciseInfoTab";
@@ -41,6 +43,7 @@ function PageContent() {
   if (needsOnboarding) {
     return <OnboardingWizard />;
   }
+
   return (
     <AppShell>
       <TabContent />
@@ -59,6 +62,12 @@ function TabContent() {
     <>
       <div style={{ display: activeTab === "home" ? "block" : "none" }}>
         <HomeTab />
+      </div>
+      <div style={{ display: activeTab === "level" ? "block" : "none" }}>
+        <LevelTab />
+      </div>
+      <div style={{ display: activeTab === "record" ? "block" : "none" }}>
+        <RecordTab />
       </div>
       <div style={{ display: activeTab === "stats" ? "block" : "none" }}>
         <StatsTab />

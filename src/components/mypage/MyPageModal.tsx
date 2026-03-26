@@ -8,6 +8,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useInbody } from "@/context/InbodyContext";
 import { useGoal } from "@/context/GoalContext";
 import { useChartData } from "@/context/ChartDataContext";
+import { getDaysLeft, formatExpiry } from "@/utils/homeUtils";
+import PtTicketCard from "@/components/home/PtTicketCard";
+import GymTicketCard from "@/components/home/GymTicketCard";
 import type { OnboardingExperience } from "@/types/onboarding";
 import type { Experience } from "@/types/profile";
 
@@ -125,6 +128,12 @@ export default function MyPageModal({ open, onClose }: MyPageModalProps) {
       ? EXPERIENCE_LABELS[(profile?.experience ?? user?.experience)!]
       : null;
 
+  const ptRemaining = user?.remainingSessions ?? 0;
+  const ptTotal = user?.totalSessions ?? 0;
+  const membershipExpiry = user?.membershipExpiry;
+  const membershipDaysLeft = membershipExpiry ? Math.max(0, getDaysLeft(membershipExpiry)) : null;
+  const membershipExpiryFmt = membershipExpiry ? formatExpiry(membershipExpiry) : null;
+
   const rows: { label: string; value: string | number | null }[] = [
     { label: "회원명", value: user?.name ?? null },
     { label: "키", value: height != null ? `${height} cm` : null },
@@ -143,7 +152,7 @@ export default function MyPageModal({ open, onClose }: MyPageModalProps) {
         onClick={onClose}
         aria-hidden
       />
-      <div className="relative w-full max-w-sm rounded-2xl bg-neutral-900 border border-neutral-800 p-6 shadow-xl">
+      <div className="relative w-full max-w-sm max-h-[85vh] overflow-y-auto rounded-2xl bg-neutral-900 border border-neutral-800 p-6 shadow-xl">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-bebas text-xl text-lime-400 tracking-wider">
             마이페이지
@@ -212,6 +221,16 @@ export default function MyPageModal({ open, onClose }: MyPageModalProps) {
           </div>
         ) : (
           <>
+            <div className="space-y-3 mb-6">
+              <PtTicketCard
+                remaining={ptRemaining}
+                total={ptTotal}
+                nextPtDate={user?.nextPtDate}
+                nextPtTime={user?.nextPtTime}
+                trainerName={user?.trainerName}
+              />
+              <GymTicketCard daysLeft={membershipDaysLeft} expiryFormatted={membershipExpiryFmt} />
+            </div>
             <div className="space-y-4">
               {rows.map(({ label, value }) => (
                 <div

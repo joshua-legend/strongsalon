@@ -33,8 +33,11 @@ function CompactInput({
   const display = value === 0 ? "" : String(value);
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-neutral-400 w-16 shrink-0">{label}</span>
-      <div className="flex-1 flex items-center gap-1.5 bg-neutral-900 rounded-lg border border-neutral-800 px-3 py-2 focus-within:border-lime-400/60 transition-colors">
+      <span className="text-xs w-16 shrink-0" style={{ color: "var(--text-sub)" }}>{label}</span>
+      <div
+        className="flex-1 flex items-center gap-1.5 rounded-lg px-3 py-2 transition-colors focus-within:border-[var(--border-focus)]"
+        style={{ backgroundColor: "var(--bg-body)", border: "1px solid var(--border-light)" }}
+      >
         <input
           type="number"
           inputMode="decimal"
@@ -48,9 +51,10 @@ function CompactInput({
             const num = Number(raw);
             onChange(isNaN(num) ? 0 : num);
           }}
-          className="flex-1 bg-transparent font-mono text-sm text-white focus:outline-none placeholder:text-neutral-700 min-w-0"
+          className="flex-1 bg-transparent font-mono text-sm focus:outline-none min-w-0"
+          style={{ color: "var(--text-main)" }}
         />
-        <span className="text-neutral-600 text-xs font-mono">{unit}</span>
+        <span className="text-xs font-mono" style={{ color: "var(--text-sub)" }}>{unit}</span>
       </div>
     </div>
   );
@@ -138,42 +142,49 @@ export default function InbodySetup({
         <button
           type="button"
           onClick={onBack}
-          className="text-neutral-500 hover:text-white transition-colors text-sm"
+          className="text-sm transition-colors hover:opacity-80"
+          style={{ color: "var(--text-sub)" }}
         >
           ← 뒤로
         </button>
-        <h2 className="font-bebas text-xl text-white tracking-wider">
+        <h2 className="font-bebas text-xl tracking-wider" style={{ color: "var(--text-main)" }}>
           인바디 설정
         </h2>
         <div className="w-12" />
       </div>
 
-      <p className="text-[11px] text-neutral-600 mb-5">
+      <p className="text-[11px] mb-5" style={{ color: "var(--text-sub)" }}>
         인바디 용지를 참고하면 정확합니다. 없으면 대략적으로 입력해도 됩니다.
       </p>
 
       {/* 현재 수치 */}
-      <div className="rounded-xl bg-neutral-950/60 border border-neutral-800/50 p-4 space-y-3 mb-4">
-        <div className="text-[10px] text-neutral-500 font-bold tracking-widest">현재 수치</div>
+      <div
+        className="rounded-xl p-4 space-y-3 mb-4"
+        style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}
+      >
+        <div className="text-[10px] font-bold tracking-widest" style={{ color: "var(--text-sub)" }}>현재 수치</div>
         <CompactInput label="체지방률" value={fatPercent} onChange={setFatPercent} unit="%" min={5} max={60} step={0.1} />
         <CompactInput label="골격근량" value={muscleMass} onChange={setMuscleMass} unit="kg" min={10} max={80} step={0.1} />
-        <div className="text-[10px] text-neutral-600 pl-[76px]">
+        <div className="text-[10px] pl-[76px]" style={{ color: "var(--text-sub)" }}>
           체중 {profile.weight}kg (프로필)
         </div>
       </div>
 
       {/* 목표 수치 */}
-      <div className="rounded-xl bg-neutral-950/60 border border-neutral-800/50 p-4 space-y-3 mb-5">
-        <div className="text-[10px] text-neutral-500 font-bold tracking-widest">4주 목표</div>
+      <div
+        className="rounded-xl p-4 space-y-3 mb-5"
+        style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}
+      >
+        <div className="text-[10px] font-bold tracking-widest" style={{ color: "var(--text-sub)" }}>4주 목표</div>
         <CompactInput label="체지방률" value={targetFatPercent} onChange={setTargetFatPercent} unit="%" min={5} max={60} step={0.5} />
         <CompactInput label="골격근량" value={targetMuscleMass} onChange={setTargetMuscleMass} unit="kg" min={10} max={80} step={0.1} />
         {isPrimary && (
-          <div className="text-[10px] text-neutral-500 pl-[76px]">
+          <div className="text-[10px] pl-[76px]" style={{ color: "var(--text-sub)" }}>
             주당 체지방률 {result.main.weeklyDelta}% · 골격근 {result.auto.muscleMass.weeklyDelta >= 0 ? "+" : ""}{result.auto.muscleMass.weeklyDelta}kg
           </div>
         )}
         {!targetFatValid && fatPercent > 0 && targetFatPercent > 0 && (
-          <div className="text-[10px] text-orange-400 pl-[76px]">
+          <div className="text-[10px] text-orange-500 pl-[76px]">
             목표 체지방률은 현재보다 낮아야 합니다
           </div>
         )}
@@ -183,7 +194,8 @@ export default function InbodySetup({
         type="button"
         onClick={handleComplete}
         disabled={!isValid}
-        className="w-full py-3.5 rounded-xl font-bold text-base bg-lime-400 text-black disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all"
+        className="w-full py-3.5 rounded-xl font-bold text-base disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all"
+        style={{ backgroundColor: "var(--accent-main)", color: "var(--accent-text)" }}
       >
         설정 완료
       </button>

@@ -191,6 +191,9 @@ function InbodySingleChart({
   configuredAt?: string | null;
   zoomLevel?: number;
 }) {
+  const ACTUAL_COLOR = "var(--chart-line-lime)";
+  const IDEAL_COLOR = "var(--text-sub)";
+  const TARGET_COLOR = "var(--chart-line-sky)";
   const invertGood = mainMetric === "weight" || mainMetric === "fatPercent";
   const {
     startValue,
@@ -347,7 +350,7 @@ function InbodySingleChart({
           }
         )}
 
-        {/* Ideal pace line (dashed) */}
+        {/* Ideal pace line (점선) */}
         <polyline
           points={Array.from(
             { length: useDayMode ? Math.floor(maxDays / 7) + 1 : maxWeek + 1 },
@@ -360,29 +363,30 @@ function InbodySingleChart({
             }
           ).join(" ")}
           fill="none"
-          stroke={lineColor}
+          stroke={IDEAL_COLOR}
           strokeWidth={isMain ? 1.5 : 1}
-          strokeDasharray={isMain ? "4 5" : "3 6"}
-          opacity={0.5}
+          strokeDasharray="6 4"
+          opacity={0.8}
         />
 
-        {/* Target line */}
+        {/* Target line (점선) */}
         <line
           x1={padLeft}
           y1={toY(targetValue)}
           x2={padLeft + chartW}
           y2={toY(targetValue)}
-          stroke={lineColor}
+          stroke={TARGET_COLOR}
           strokeWidth={2}
+          strokeDasharray="6 4"
           opacity={0.7}
         />
 
-        {/* 목표 + 수치 통합 배지 */}
+        {/* 목표 + 수치 통합 배지 - 왼쪽 배치로 현재 배지와 겹침 방지 */}
         {(() => {
           const label = `목표 ${targetValue}${unit}`;
           const badgeW = Math.max(100, label.length * 8);
           const badgeH = 22;
-          const badgeX = padLeft + chartW - badgeW - 8;
+          const badgeX = padLeft + 8;
           const badgeY = toY(targetValue) - badgeH / 2;
           const textX = badgeX + badgeW / 2;
           const textY = badgeY + badgeH / 2 + 4;
@@ -395,7 +399,7 @@ function InbodySingleChart({
                 height={badgeH}
                 rx={6}
                 fill="var(--chart-badge-bg)"
-                stroke={lineColor}
+                stroke={TARGET_COLOR}
                 strokeWidth={1}
                 opacity={0.95}
               />
@@ -405,7 +409,7 @@ function InbodySingleChart({
                 textAnchor="middle"
                 fontSize={10}
                 fontWeight="bold"
-                fill={lineColor}
+                fill={TARGET_COLOR}
               >
                 {label}
               </text>
@@ -421,7 +425,7 @@ function InbodySingleChart({
               ...pointsToRender.map((p) => `${toXOrDay(p.day)},${toY(p.value)}`),
             ].join(" ")}
             fill="none"
-            stroke={lineColor}
+            stroke={ACTUAL_COLOR}
             strokeWidth={isMain ? 2.5 : 2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -447,7 +451,14 @@ function InbodySingleChart({
           if (isCurrent) {
             const labelText = `${Number(p.value)}${unit}`;
             const boxW = 96;
-            const rectX = x - boxW / 2;
+            const targetBadgeLeft = padLeft + 8;
+            const targetBadgeW = Math.max(100, 12 * 8);
+            const targetBadgeRight = targetBadgeLeft + targetBadgeW;
+            const currentBadgeLeft = x - boxW / 2;
+            const overlapsTarget = currentBadgeLeft < targetBadgeRight + 8;
+            const rectX = overlapsTarget
+              ? Math.min(x + 12, padLeft + chartW - boxW - 4)
+              : x - boxW / 2;
             const rectY = showAbove ? y - 36 : y + 10;
             const labelY = rectY + boxH / 2 + 4;
             return (
@@ -456,7 +467,7 @@ function InbodySingleChart({
                   cx={x}
                   cy={y}
                   r={7}
-                  fill={lineColor}
+                  fill={ACTUAL_COLOR}
                   filter="url(#inbodyDotGlow2)"
                 />
                 <circle cx={x} cy={y} r={3} fill="var(--chart-badge-bg)" />
@@ -467,17 +478,17 @@ function InbodySingleChart({
                   height={boxH}
                   rx={6}
                   fill="var(--chart-badge-bg)"
-                  stroke={lineColor}
+                  stroke={ACTUAL_COLOR}
                   strokeWidth={1.5}
                   opacity={0.95}
                 />
                 <text
-                  x={x}
+                  x={rectX + boxW / 2}
                   y={labelY}
                   textAnchor="middle"
                   fontSize={10}
                   fontWeight="bold"
-                  fill={lineColor}
+                  fill={ACTUAL_COLOR}
                 >
                   {labelText}
                 </text>
@@ -490,7 +501,7 @@ function InbodySingleChart({
               cx={x}
               cy={y}
               r={4}
-              fill={lineColor}
+              fill={ACTUAL_COLOR}
               stroke="var(--chart-badge-bg)"
               strokeWidth={1}
             />

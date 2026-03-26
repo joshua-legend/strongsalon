@@ -1,4 +1,4 @@
-export type TabId = 'home' | 'stats' | 'workout' | 'performance' | 'exercise-info';
+export type TabId = 'home' | 'level' | 'record' | 'stats' | 'workout' | 'performance' | 'exercise-info';
 export type SubTabId = 'body' | 'strength' | 'cardio';
 
 /** 동물 티어 (와일드 피트니스) */

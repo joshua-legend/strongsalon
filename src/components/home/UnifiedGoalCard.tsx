@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useGoal } from "@/context/GoalContext";
 import { useInbody } from "@/context/InbodyContext";
 import type { CategoryId } from "@/types/categorySettings";
@@ -42,9 +43,6 @@ function mainTabToCategoryId(tab: MainTabId): CategoryId {
 
 /** 통일 색상: 테마별 CSS 변수 사용 (1번=초록, 2번=주황, 3번=파랑) */
 const UNIFIED_COLORS = { lime: "var(--chart-line-lime)", orange: "var(--chart-line-orange)", sky: "var(--chart-line-sky)" } as const;
-/** 탭 선택 시 배경/테두리 (다크/라이트 대응) */
-const CHART_TAB_BG = { lime: "var(--chart-tab-lime-bg)", orange: "var(--chart-tab-orange-bg)", sky: "var(--chart-tab-sky-bg)" } as const;
-const CHART_TAB_BORDER = { lime: "var(--chart-tab-lime-border)", orange: "var(--chart-tab-orange-border)", sky: "var(--chart-tab-sky-border)" } as const;
 
 const STRENGTH_SUB_TABS: { id: StrengthChartOption; label: string; color: "lime" | "orange" | "sky" }[] = [
   { id: "squat", label: "스쿼트", color: "lime" },
@@ -323,17 +321,15 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
                   setMainTab(tab.id);
                   setSubTab(tab.id === "inbody" ? "weight" : tab.id === "strength" ? "squat" : "run5k");
                 }}
-                className={`flex-1 py-1.5 px-4 rounded-full text-xs font-bold transition-all ${
-                  isSelected ? "shadow-[0_2px_8px_rgba(0,0,0,0.08)]" : "text-[var(--text-sub)]"
+                className={`flex-1 py-1.5 px-4 rounded-full text-[13px] font-bold transition-all shadow-sm ${
+                  isSelected ? "border" : "border-none text-[var(--text-sub)]"
                 }`}
                 style={
                   isSelected
                     ? {
-                        backgroundColor: CHART_TAB_BG[tab.color],
-                        color: UNIFIED_COLORS[tab.color],
-                        borderWidth: 1,
-                        borderStyle: "solid",
-                        borderColor: CHART_TAB_BORDER[tab.color],
+                        backgroundColor: "var(--bg-card-hover)",
+                        color: "var(--text-main)",
+                        borderColor: "var(--border-light)",
                       }
                     : undefined
                 }
@@ -354,12 +350,12 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
                   key={tab.id}
                   type="button"
                   onClick={() => setSubTab(tab.id)}
-                  className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
-                    isSelected ? "shadow-[0_2px_8px_rgba(0,0,0,0.08)]" : "text-[var(--text-sub)]"
+                  className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[11px] font-bold transition-all shadow-sm ${
+                    isSelected ? "border border-transparent" : "border-none text-[var(--text-sub)]"
                   }`}
                   style={
                     isSelected
-                      ? { backgroundColor: CHART_TAB_BG[tab.color], color: UNIFIED_COLORS[tab.color] }
+                      ? { backgroundColor: "var(--accent-bg)", color: "var(--accent-main)" }
                       : undefined
                   }
                 >
@@ -378,12 +374,12 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
                   key={tab.id}
                   type="button"
                   onClick={() => setSubTab(tab.id)}
-                  className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
-                    isSelected ? "shadow-[0_2px_8px_rgba(0,0,0,0.08)]" : "text-[var(--text-sub)]"
+                  className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[11px] font-bold transition-all shadow-sm ${
+                    isSelected ? "border border-transparent" : "border-none text-[var(--text-sub)]"
                   }`}
                   style={
                     isSelected
-                      ? { backgroundColor: CHART_TAB_BG[tab.color], color: UNIFIED_COLORS[tab.color] }
+                      ? { backgroundColor: "var(--accent-bg)", color: "var(--accent-main)" }
                       : undefined
                   }
                 >
@@ -402,12 +398,12 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
                   key={tab.id}
                   type="button"
                   onClick={() => setSubTab(tab.id)}
-                  className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[10px] font-bold transition-all ${
-                    isSelected ? "shadow-[0_2px_8px_rgba(0,0,0,0.08)]" : "text-[var(--text-sub)]"
+                  className={`flex-1 min-w-0 py-1.5 px-2 rounded-full text-[11px] font-bold transition-all shadow-sm ${
+                    isSelected ? "border border-transparent" : "border-none text-[var(--text-sub)]"
                   }`}
                   style={
                     isSelected
-                      ? { backgroundColor: CHART_TAB_BG[tab.color], color: UNIFIED_COLORS[tab.color] }
+                      ? { backgroundColor: "var(--accent-bg)", color: "var(--accent-main)" }
                       : undefined
                   }
                 >
@@ -419,13 +415,28 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
         )}
 
         {/* 3. 탭별 PaceChart, CycleCompleteCard 또는 CategoryNotConfigured */}
-        <div className="pt-2">
+        <div className="pt-2 overflow-hidden">
+          <AnimatePresence mode="wait">
           {!mounted ? (
-            <div className="py-12 px-4 text-center">
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className="py-12 px-4 text-center"
+            >
               <p className="text-sm text-[var(--text-sub)] mb-4">로딩 중...</p>
-            </div>
+            </motion.div>
           ) : isCycleComplete && catSetting?.goal ? (
-            <CycleCompleteCard
+            <motion.div
+              key={`${mainTab}-${subTab}-complete`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <CycleCompleteCard
               categoryId={categoryId}
               startValue={
                 mainTab !== "inbody" && chartData && "startValue" in chartData
@@ -484,8 +495,16 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
                 setShowSetupSheet(true);
               }}
             />
+            </motion.div>
           ) : !isMetricConfigured ? (
-            <CategoryNotConfigured
+            <motion.div
+              key={`${mainTab}-${subTab}-notconfigured`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
+              <CategoryNotConfigured
               categoryLabel={
                 mainTab === "inbody"
                   ? (INBODY_SUB_TABS_WITH_COLOR.find((t) => t.id === subTab)?.label ?? "인바디")
@@ -495,26 +514,27 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
               }
               onSetupClick={() => setShowSetupSheet(true)}
             />
+            </motion.div>
           ) : (
-            <>
+            <motion.div
+              key={`${mainTab}-${subTab}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+            >
               <div className="mb-2 flex items-center justify-between gap-3">
                 {(() => {
-                  const activeColor =
-                    mainTab === "inbody"
-                      ? INBODY_LINE_COLORS[subTab as InbodyChartOption]
-                      : mainTab === "strength"
-                        ? STRENGTH_LINE_COLORS[subTab as StrengthChartOption]
-                        : CARDIO_LINE_COLORS[subTab as CardioChartOption];
                   return (
                     <div className="flex items-center gap-4 text-[10px] text-[var(--text-sub)]">
                       <span className="flex items-center gap-1">
-                        <span className="w-5 h-0.5 rounded" style={{ backgroundColor: activeColor }} />
+                        <span className="w-5 h-0.5 rounded" style={{ backgroundColor: "var(--chart-line-lime)" }} />
                         실제기록
                       </span>
                       <span className="flex items-center gap-1">
                         <span
                           className="w-5 h-1 inline-block rounded border-t border-dashed shrink-0"
-                          style={{ borderTopColor: activeColor, borderTopWidth: 1.5, opacity: 0.6 }}
+                          style={{ borderTopColor: "var(--text-sub)", borderTopWidth: 1.5 }}
                         />
                         이상페이스
                       </span>
@@ -628,8 +648,9 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
                   목표 다시 설정하기
                 </button>
               </div>
-            </>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
 
         <CategoryResetConfirmModal

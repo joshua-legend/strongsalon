@@ -37,8 +37,11 @@ function CompactInput({
   const display = value === 0 ? "" : String(value);
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-neutral-400 w-20 shrink-0">{label}</span>
-      <div className="flex-1 flex items-center gap-1.5 bg-neutral-900 rounded-lg border border-neutral-800 px-3 py-2 focus-within:border-lime-400/60 transition-colors">
+      <span className="text-xs w-20 shrink-0" style={{ color: "var(--text-sub)" }}>{label}</span>
+      <div
+        className="flex-1 flex items-center gap-1.5 rounded-lg px-3 py-2 border border-[var(--border-light)] focus-within:border-[var(--border-focus)] transition-colors"
+        style={{ backgroundColor: "var(--bg-body)" }}
+      >
         <input
           type="number"
           inputMode="decimal"
@@ -55,9 +58,10 @@ function CompactInput({
             const num = Number(raw);
             onChange(isNaN(num) ? 0 : num);
           }}
-          className="flex-1 bg-transparent font-mono text-sm text-white focus:outline-none placeholder:text-neutral-700 min-w-0"
+          className="flex-1 bg-transparent font-mono text-sm focus:outline-none min-w-0"
+          style={{ color: "var(--text-main)" }}
         />
-        <span className="text-neutral-600 text-xs font-mono">{unit}</span>
+        <span className="text-xs font-mono" style={{ color: "var(--text-sub)" }}>{unit}</span>
       </div>
     </div>
   );
@@ -81,36 +85,44 @@ function LiftInput({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-neutral-400">{label}</span>
+        <span className="text-xs" style={{ color: "var(--text-sub)" }}>{label}</span>
         {oneRM > 0 && (
-          <span className="text-[10px] font-mono text-lime-400">
+          <span className="text-[10px] font-mono" style={{ color: "var(--accent-main)" }}>
             추정 1RM: {roundVal(oneRM)}kg
           </span>
         )}
       </div>
       <div className="flex items-center gap-2">
-        <div className="flex-1 flex items-center gap-1.5 bg-neutral-900 rounded-lg border border-neutral-800 px-3 py-2 focus-within:border-lime-400/60 transition-colors">
+        <div
+          className="flex-1 flex items-center gap-1.5 rounded-lg px-3 py-2 border border-[var(--border-light)] focus-within:border-[var(--border-focus)] transition-colors"
+          style={{ backgroundColor: "var(--bg-body)" }}
+        >
           <input
             type="number"
             inputMode="decimal"
             placeholder="중량"
             value={weight || ""}
             onChange={(e) => onWeightChange(Number(e.target.value) || 0)}
-            className="flex-1 bg-transparent font-mono text-sm text-white focus:outline-none placeholder:text-neutral-700 min-w-0"
+            className="flex-1 bg-transparent font-mono text-sm focus:outline-none min-w-0"
+            style={{ color: "var(--text-main)" }}
           />
-          <span className="text-neutral-600 text-xs font-mono">kg</span>
+          <span className="text-xs font-mono" style={{ color: "var(--text-sub)" }}>kg</span>
         </div>
-        <span className="text-neutral-700">×</span>
-        <div className="w-20 flex items-center gap-1.5 bg-neutral-900 rounded-lg border border-neutral-800 px-3 py-2 focus-within:border-lime-400/60 transition-colors">
+        <span style={{ color: "var(--text-sub)" }}>×</span>
+        <div
+          className="w-20 flex items-center gap-1.5 rounded-lg px-3 py-2 border border-[var(--border-light)] focus-within:border-[var(--border-focus)] transition-colors"
+          style={{ backgroundColor: "var(--bg-body)" }}
+        >
           <input
             type="number"
             inputMode="numeric"
             placeholder="횟수"
             value={reps || ""}
             onChange={(e) => onRepsChange(Number(e.target.value) || 0)}
-            className="flex-1 bg-transparent font-mono text-sm text-white focus:outline-none placeholder:text-neutral-700 min-w-0 text-center"
+            className="flex-1 bg-transparent font-mono text-sm focus:outline-none min-w-0 text-center"
+            style={{ color: "var(--text-main)" }}
           />
-          <span className="text-neutral-600 text-xs font-mono">회</span>
+          <span className="text-xs font-mono" style={{ color: "var(--text-sub)" }}>회</span>
         </div>
       </div>
     </div>
@@ -137,25 +149,29 @@ function ActivityInput({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs text-neutral-400">{label}</span>
+        <span className="text-xs" style={{ color: "var(--text-sub)" }}>{label}</span>
         {pace != null && pace > 0 && (
-          <span className="text-[10px] font-mono text-lime-400">
+          <span className="text-[10px] font-mono" style={{ color: "var(--accent-main)" }}>
             페이스: {formatPace(pace)}
           </span>
         )}
       </div>
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-neutral-500 text-sm shrink-0">2 km ×</span>
-        <div className="flex-1 min-w-0 flex items-center gap-1.5 bg-neutral-900 rounded-lg border border-neutral-800 px-3 py-2 focus-within:border-lime-400/60 transition-colors">
+        <span className="text-sm shrink-0" style={{ color: "var(--text-sub)" }}>2 km ×</span>
+        <div
+          className="flex-1 min-w-0 flex items-center gap-1.5 rounded-lg px-3 py-2 border border-[var(--border-light)] focus-within:border-[var(--border-focus)] transition-colors"
+          style={{ backgroundColor: "var(--bg-body)" }}
+        >
           <input
             type="number"
             inputMode="decimal"
             placeholder="시간"
             value={time || ""}
             onChange={(e) => onTimeChange(Number(e.target.value) || 0)}
-            className="flex-1 min-w-0 w-0 bg-transparent font-mono text-sm text-white focus:outline-none placeholder:text-neutral-700"
+            className="flex-1 min-w-0 w-0 bg-transparent font-mono text-sm focus:outline-none"
+            style={{ color: "var(--text-main)" }}
           />
-          <span className="text-neutral-600 text-xs font-mono shrink-0">분</span>
+          <span className="text-xs font-mono shrink-0" style={{ color: "var(--text-sub)" }}>분</span>
         </div>
       </div>
     </div>
@@ -362,30 +378,39 @@ export default function RecommendationSetupSheet({
           <button
             type="button"
             onClick={onClose}
-            className="text-neutral-500 hover:text-white transition-colors text-sm shrink-0"
+            className="text-sm transition-colors hover:opacity-80 shrink-0"
+            style={{ color: "var(--text-sub)" }}
           >
             ← 닫기
           </button>
-          <h2 className="font-bebas text-xl text-white tracking-wider truncate">
+          <h2 className="font-bebas text-xl tracking-wider truncate" style={{ color: "var(--text-main)" }}>
             추천을 위한 데이터 설정
           </h2>
           <button
             type="button"
             onClick={handleTestFill}
-            className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-colors border border-neutral-700"
+            className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border"
+            style={{
+              backgroundColor: "var(--bg-card)",
+              color: "var(--text-sub)",
+              borderColor: "var(--border-light)",
+            }}
           >
             테스트
           </button>
         </div>
 
-        <p className="text-[11px] text-neutral-600 mb-5">
+        <p className="text-[11px] mb-5" style={{ color: "var(--text-sub)" }}>
           인바디·스트렝스·체력 수치를 모두 입력해 주세요. 모든 항목이 채워져야 설정 완료할 수 있습니다.
         </p>
 
         {/* 인바디 */}
-        <div className="rounded-xl bg-neutral-950/60 border border-neutral-800/50 p-4 space-y-3 mb-4">
-          <div className="text-[10px] text-neutral-500 font-bold tracking-widest">
-            인바디 {!inbodyValid && <span className="text-amber-400">(필수)</span>}
+        <div
+          className="rounded-xl p-4 space-y-3 mb-4"
+          style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}
+        >
+          <div className="text-[10px] font-bold tracking-widest" style={{ color: "var(--text-sub)" }}>
+            인바디 {!inbodyValid && <span className="text-amber-500">(필수)</span>}
           </div>
           <CompactInput
             label="체중"
@@ -414,11 +439,14 @@ export default function RecommendationSetupSheet({
         </div>
 
         {/* 스트렝스 */}
-        <div className="rounded-xl bg-neutral-950/60 border border-neutral-800/50 p-4 space-y-4 mb-4">
-          <div className="text-[10px] text-neutral-500 font-bold tracking-widest">
-            스트렝스 (3대) {!strengthValid && <span className="text-amber-400">(필수)</span>}
+        <div
+          className="rounded-xl p-4 space-y-4 mb-4"
+          style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}
+        >
+          <div className="text-[10px] font-bold tracking-widest" style={{ color: "var(--text-sub)" }}>
+            스트렝스 (3대) {!strengthValid && <span className="text-amber-500">(필수)</span>}
           </div>
-          <p className="text-[10px] text-neutral-600">
+          <p className="text-[10px]" style={{ color: "var(--text-sub)" }}>
             최근 수행한 중량 × 횟수로 입력 (추정 1RM 자동 계산)
           </p>
           <LiftInput
@@ -446,18 +474,21 @@ export default function RecommendationSetupSheet({
             oneRM={deadlift1RM}
           />
           {total1RM > 0 && (
-            <div className="text-[10px] text-neutral-500 text-right">
-              토탈 추정 1RM: <span className="font-mono text-white">{total1RM}kg</span>
+            <div className="text-[10px] text-right" style={{ color: "var(--text-sub)" }}>
+              토탈 추정 1RM: <span className="font-mono" style={{ color: "var(--text-main)" }}>{total1RM}kg</span>
             </div>
           )}
         </div>
 
         {/* 체력 */}
-        <div className="rounded-xl bg-neutral-950/60 border border-neutral-800/50 p-4 space-y-4 mb-5">
-          <div className="text-[10px] text-neutral-500 font-bold tracking-widest">
-            체력 {!fitnessValid && <span className="text-amber-400">(1종목 이상 필수)</span>}
+        <div
+          className="rounded-xl p-4 space-y-4 mb-5"
+          style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}
+        >
+          <div className="text-[10px] font-bold tracking-widest" style={{ color: "var(--text-sub)" }}>
+            체력 {!fitnessValid && <span className="text-amber-500">(1종목 이상 필수)</span>}
           </div>
-          <p className="text-[10px] text-neutral-600">
+          <p className="text-[10px]" style={{ color: "var(--text-sub)" }}>
             2km 기준 시간(분)으로 입력 (페이스 자동 계산)
           </p>
           <ActivityInput
@@ -484,7 +515,8 @@ export default function RecommendationSetupSheet({
           type="button"
           onClick={handleComplete}
           disabled={!allValid}
-          className="w-full py-3.5 rounded-xl font-bold text-base bg-lime-400 text-black disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all"
+          className="w-full py-3.5 rounded-xl font-bold text-base disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all"
+          style={{ backgroundColor: "var(--accent-main)", color: "var(--accent-text)" }}
         >
           설정 완료
         </button>

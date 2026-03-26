@@ -36,6 +36,9 @@ export default function PaceChartDataLines({
   lineColor = "#a3e635",
   formatValue = (v) => String(v),
 }: PaceChartDataLinesProps) {
+  const ACTUAL_COLOR = "var(--chart-line-lime)";
+  const IDEAL_COLOR = "var(--text-sub)";
+  const TARGET_COLOR = "var(--chart-line-sky)";
   const useDayMode = dataPoints != null && toXDay != null && maxDays != null;
   const x0 = useDayMode ? toXDay(0) : toX(0);
   const xEnd = useDayMode ? toXDay(maxDays) : toX(maxWeek);
@@ -83,23 +86,24 @@ export default function PaceChartDataLines({
 
   return (
     <>
-      {/* Target line */}
+      {/* Target line (점선) */}
       <line
         x1={padLeft}
         y1={targetY}
         x2={padLeft + chartW}
         y2={targetY}
-        stroke={lineColor}
+        stroke={TARGET_COLOR}
         strokeWidth={2}
+        strokeDasharray="6 4"
         opacity={0.7}
       />
 
-      {/* 목표 + 수치 통합 배지 */}
+      {/* 목표 + 수치 통합 배지 - 왼쪽 배치로 현재 배지와 겹침 방지 */}
       {(() => {
         const label = `목표 ${formatValue(targetValue)}${unit}`;
         const badgeW = Math.max(100, label.length * 8);
         const badgeH = 22;
-        const badgeX = padLeft + chartW - badgeW - 8;
+        const badgeX = padLeft + 8;
         const badgeY = targetY - badgeH / 2;
         const textX = badgeX + badgeW / 2;
         const textY = badgeY + badgeH / 2 + 4;
@@ -112,7 +116,7 @@ export default function PaceChartDataLines({
               height={badgeH}
               rx={6}
               fill="var(--chart-badge-bg)"
-              stroke={lineColor}
+              stroke={TARGET_COLOR}
               strokeWidth={1}
               opacity={0.95}
             />
@@ -122,7 +126,7 @@ export default function PaceChartDataLines({
               textAnchor="middle"
               fontSize={10}
               fontWeight="bold"
-              fill={lineColor}
+              fill={TARGET_COLOR}
             >
               {label}
             </text>
@@ -130,15 +134,14 @@ export default function PaceChartDataLines({
         );
       })()}
 
-      {/* Ideal pace line (dashed, smooth curve) */}
+      {/* Ideal pace line (점선) */}
       <path
         d={idealPathD}
         fill="none"
-        stroke={lineColor}
+        stroke={IDEAL_COLOR}
         strokeWidth={2}
         strokeDasharray="6 4"
-        strokeOpacity={0.5}
-        opacity={0.9}
+        opacity={0.8}
       />
 
       {/* Actual recorded line (smooth curve) */}
@@ -146,7 +149,7 @@ export default function PaceChartDataLines({
         <path
           d={actualPathD}
           fill="none"
-          stroke={lineColor}
+          stroke={ACTUAL_COLOR}
           strokeWidth={2.5}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -163,15 +166,22 @@ export default function PaceChartDataLines({
         const passed = getPointPassed(item as ChartDataPoint & WeekRecord);
         const isCurrent = i === pointsToRender.length - 1;
         if (isCurrent) {
+          const badgeW = 50;
+          const targetBadgeLeft = padLeft + 8;
+          const targetBadgeRight = targetBadgeLeft + Math.max(100, 12 * 8);
+          const currentBadgeLeft = x - badgeW / 2;
+          const overlapsTarget = currentBadgeLeft < targetBadgeRight + 8;
+          const rectX = overlapsTarget ? Math.min(x + 12, padLeft + chartW - badgeW - 4) : x - badgeW / 2;
+          const textX = rectX + badgeW / 2;
           return (
             <g key={`dot-${i}`}>
-              <circle cx={x} cy={y} r={7} fill={lineColor} filter="url(#dotGlow)" />
+              <circle cx={x} cy={y} r={7} fill={ACTUAL_COLOR} filter="url(#dotGlow)" />
               <circle cx={x} cy={y} r={3} fill="var(--chart-badge-bg)" />
-              <rect x={x - 25} y={y - 28} width={50} height={20} rx={4}
-                fill="var(--chart-badge-bg)" stroke={lineColor} strokeWidth={1} />
+              <rect x={rectX} y={y - 28} width={badgeW} height={20} rx={4}
+                fill="var(--chart-badge-bg)" stroke={ACTUAL_COLOR} strokeWidth={1} />
               <polygon points={`${x - 4},${y - 8} ${x + 4},${y - 8} ${x},${y - 4}`}
-                fill="var(--chart-badge-bg)" stroke={lineColor} strokeWidth={1} />
-              <text x={x} y={y - 14} textAnchor="middle" fontSize={10} fontWeight="bold" fill={lineColor}>
+                fill="var(--chart-badge-bg)" stroke={ACTUAL_COLOR} strokeWidth={1} />
+              <text x={textX} y={y - 14} textAnchor="middle" fontSize={10} fontWeight="bold" fill={ACTUAL_COLOR}>
                 {formatValue(val)}{unit}
               </text>
             </g>
@@ -183,7 +193,7 @@ export default function PaceChartDataLines({
               <circle cx={x} cy={y} r={7} fill="none" stroke="#f97316" strokeWidth={1} opacity={0.3} />
             )}
             <circle cx={x} cy={y} r={4} fill="var(--chart-badge-bg)"
-              stroke={passed ? lineColor : "#f97316"} strokeWidth={2} />
+              stroke={passed ? ACTUAL_COLOR : "#f97316"} strokeWidth={2} />
           </g>
         );
       })}
@@ -206,12 +216,12 @@ export default function PaceChartDataLines({
               cy={ghostY}
               r={5}
               fill="none"
-              stroke={lineColor}
-              strokeOpacity={0.6}
+              stroke={IDEAL_COLOR}
+              strokeOpacity={0.8}
               strokeWidth={1.5}
               strokeDasharray="3 3"
             />
-            <text x={ghostX + 10} y={ghostY + 3} fontSize={9} fontWeight="bold" fill={lineColor} opacity={0.9}>
+            <text x={ghostX + 10} y={ghostY + 3} fontSize={9} fontWeight="bold" fill={IDEAL_COLOR} opacity={0.9}>
               이상 페이스
             </text>
           </g>

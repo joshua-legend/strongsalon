@@ -53,8 +53,11 @@ function CompactInput({
   const display = value === 0 ? "" : String(value);
   return (
     <div className="flex items-center gap-3 min-w-0">
-      <span className="text-xs text-neutral-400 w-16 shrink-0">{label}</span>
-      <div className="flex-1 min-w-0 flex items-center gap-1.5 bg-neutral-900 rounded-lg border border-neutral-800 px-3 py-2 focus-within:border-lime-400/60 transition-colors">
+      <span className="text-xs w-16 shrink-0" style={{ color: "var(--text-sub)" }}>{label}</span>
+      <div
+        className="flex-1 min-w-0 flex items-center gap-1.5 rounded-lg px-3 py-2 transition-colors focus-within:border-[var(--border-focus)]"
+        style={{ backgroundColor: "var(--bg-body)", border: "1px solid var(--border-light)" }}
+      >
         <input
           type="number"
           inputMode="decimal"
@@ -69,9 +72,10 @@ function CompactInput({
             const num = Number(raw);
             onChange(isNaN(num) ? 0 : num);
           }}
-          className="flex-1 bg-transparent font-mono text-sm text-white focus:outline-none placeholder:text-neutral-700 min-w-0"
+          className="flex-1 bg-transparent font-mono text-sm focus:outline-none min-w-0"
+          style={{ color: "var(--text-main)" }}
         />
-        <span className="text-neutral-600 text-xs font-mono">{unit}</span>
+        <span className="text-xs font-mono" style={{ color: "var(--text-sub)" }}>{unit}</span>
       </div>
     </div>
   );
@@ -92,39 +96,48 @@ function ActivityInput({
   onTimeChange: (v: number) => void;
   pace: number | null;
 }) {
+  const inputStyle = { backgroundColor: "var(--bg-body)", border: "1px solid var(--border-light)" };
   return (
     <div className="space-y-2 min-w-0">
       <div className="flex items-center justify-between gap-2 min-w-0">
-        <span className="text-xs text-neutral-400 min-w-0">{label}</span>
+        <span className="text-xs min-w-0" style={{ color: "var(--text-sub)" }}>{label}</span>
         {pace && pace > 0 && (
-          <span className="text-[10px] font-mono text-lime-400">
+          <span className="text-[10px] font-mono" style={{ color: "var(--accent-main)" }}>
             페이스: {formatPace(pace)}
           </span>
         )}
       </div>
       <div className="flex items-center gap-2 min-w-0">
-        <div className="flex-1 min-w-0 flex items-center gap-1.5 bg-neutral-900 rounded-lg border border-neutral-800 px-3 py-2 focus-within:border-lime-400/60 transition-colors">
+        <div
+          className="flex-1 min-w-0 flex items-center gap-1.5 rounded-lg px-3 py-2 transition-colors focus-within:border-[var(--border-focus)]"
+          style={inputStyle}
+        >
           <input
             type="number"
             inputMode="decimal"
             placeholder="거리"
             value={distance || ""}
             onChange={(e) => onDistanceChange(Number(e.target.value) || 0)}
-            className="flex-1 bg-transparent font-mono text-sm text-white focus:outline-none placeholder:text-neutral-700 min-w-0"
+            className="flex-1 bg-transparent font-mono text-sm focus:outline-none min-w-0"
+            style={{ color: "var(--text-main)" }}
           />
-          <span className="text-neutral-600 text-xs font-mono">km</span>
+          <span className="text-xs font-mono" style={{ color: "var(--text-sub)" }}>km</span>
         </div>
-        <span className="text-neutral-700 shrink-0">×</span>
-        <div className="flex-1 min-w-0 flex items-center gap-1.5 bg-neutral-900 rounded-lg border border-neutral-800 px-3 py-2 focus-within:border-lime-400/60 transition-colors">
+        <span className="shrink-0" style={{ color: "var(--text-sub)" }}>×</span>
+        <div
+          className="flex-1 min-w-0 flex items-center gap-1.5 rounded-lg px-3 py-2 transition-colors focus-within:border-[var(--border-focus)]"
+          style={inputStyle}
+        >
           <input
             type="number"
             inputMode="decimal"
             placeholder="시간"
             value={time || ""}
             onChange={(e) => onTimeChange(Number(e.target.value) || 0)}
-            className="flex-1 bg-transparent font-mono text-sm text-white focus:outline-none placeholder:text-neutral-700 min-w-0"
+            className="flex-1 bg-transparent font-mono text-sm focus:outline-none min-w-0"
+            style={{ color: "var(--text-main)" }}
           />
-          <span className="text-neutral-600 text-xs font-mono">분</span>
+          <span className="text-xs font-mono" style={{ color: "var(--text-sub)" }}>분</span>
         </div>
       </div>
     </div>
@@ -224,23 +237,27 @@ export default function FitnessSetup({
         <button
           type="button"
           onClick={onBack}
-          className="text-neutral-500 hover:text-white transition-colors text-sm"
+          className="text-sm transition-colors hover:opacity-80"
+          style={{ color: "var(--text-sub)" }}
         >
           ← 뒤로
         </button>
-        <h2 className="font-bebas text-xl text-white tracking-wider">
+        <h2 className="font-bebas text-xl tracking-wider" style={{ color: "var(--text-main)" }}>
           체력 설정
         </h2>
         <div className="w-12" />
       </div>
 
-      <p className="text-[11px] text-neutral-600 mb-5">
+      <p className="text-[11px] mb-5" style={{ color: "var(--text-sub)" }}>
         최근 수행한 거리 × 시간 기준으로 입력하세요.
       </p>
 
       {/* 현재 수치 */}
-      <div className="rounded-xl bg-neutral-950/60 border border-neutral-800/50 p-4 space-y-4 mb-4 min-w-0">
-        <div className="text-[10px] text-neutral-500 font-bold tracking-widest">현재 수치</div>
+      <div
+        className="rounded-xl p-4 space-y-4 mb-4 min-w-0"
+        style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}
+      >
+        <div className="text-[10px] font-bold tracking-widest" style={{ color: "var(--text-sub)" }}>현재 수치</div>
         {FITNESS_ACTIVITIES.map((act) => {
           const state = act.id === "running" ? running : act.id === "rowing" ? rowing : skierg;
           const setState = act.id === "running" ? setRunning : act.id === "rowing" ? setRowing : setSkierg;
@@ -258,15 +275,18 @@ export default function FitnessSetup({
           );
         })}
         {totalPace > 0 && (
-          <div className="text-[10px] text-neutral-500 text-right">
-            평균 페이스: <span className="font-mono text-white">{formatPace(totalPace)}</span>
+          <div className="text-[10px] text-right" style={{ color: "var(--text-sub)" }}>
+            평균 페이스: <span className="font-mono" style={{ color: "var(--text-main)" }}>{formatPace(totalPace)}</span>
           </div>
         )}
       </div>
 
       {/* 4주 목표 */}
-      <div className="rounded-xl bg-neutral-950/60 border border-neutral-800/50 p-4 space-y-3 mb-5 min-w-0">
-        <div className="text-[10px] text-neutral-500 font-bold tracking-widest">4주 목표 페이스</div>
+      <div
+        className="rounded-xl p-4 space-y-3 mb-5 min-w-0"
+        style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-light)" }}
+      >
+        <div className="text-[10px] font-bold tracking-widest" style={{ color: "var(--text-sub)" }}>4주 목표 페이스</div>
         <CompactInput
           label="런닝"
           value={effectiveTargetRun}
@@ -295,13 +315,13 @@ export default function FitnessSetup({
           step={0.05}
         />
         {effectiveTargetAvg > 0 && totalPace > 0 && (
-          <div className="text-[10px] text-neutral-500 pl-[76px]">
-            목표 평균 <span className="font-mono text-white">{formatPace(effectiveTargetAvg)}</span>
+          <div className="text-[10px] pl-[76px]" style={{ color: "var(--text-sub)" }}>
+            목표 평균 <span className="font-mono" style={{ color: "var(--text-main)" }}>{formatPace(effectiveTargetAvg)}</span>
             {" "}(주 {weeklyDelta.toFixed(2)}분/km)
           </div>
         )}
         {!targetValid && totalPace > 0 && (
-          <div className="text-[10px] text-orange-400 pl-[76px]">
+          <div className="text-[10px] text-orange-500 pl-[76px]">
             목표 페이스는 현재보다 빨라야 합니다 (낮은 값)
           </div>
         )}
@@ -311,7 +331,8 @@ export default function FitnessSetup({
         type="button"
         onClick={handleComplete}
         disabled={!isValid}
-        className="w-full py-3.5 rounded-xl font-bold text-base bg-lime-400 text-black disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all"
+        className="w-full py-3.5 rounded-xl font-bold text-base disabled:opacity-40 disabled:pointer-events-none hover:brightness-110 transition-all"
+        style={{ backgroundColor: "var(--accent-main)", color: "var(--accent-text)" }}
       >
         설정 완료
       </button>
