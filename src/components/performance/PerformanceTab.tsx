@@ -8,6 +8,10 @@ import TestResult from "./TestResult";
 import WildChallengeCards from "./WildChallengeCards";
 import { usePerformanceTab } from "./usePerformanceTab";
 
+/**
+ * @deprecated 챌린지 탭은 현재 비활성화 상태입니다.
+ * 네비게이션에서는 노출하지 않으며, 필요 시 재활성화 예정입니다.
+ */
 export default function PerformanceTab() {
   const {
     showTierModal, setShowTierModal,

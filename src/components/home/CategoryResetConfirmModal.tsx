@@ -29,25 +29,27 @@ export default function CategoryResetConfirmModal({
         onClick={onClose}
         aria-hidden
       />
-      <div className="relative z-[10000] w-full max-w-sm rounded-2xl bg-neutral-900 border border-neutral-700 p-6 shadow-xl">
-        <h3 className="font-bebas text-xl text-white tracking-wider mb-2">
+      <div className="relative z-[10000] w-full max-w-sm rounded-2xl border p-6 shadow-xl" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)" }}>
+        <h3 className="font-bebas text-xl text-[var(--text-main)] tracking-wider mb-2">
           {categoryLabel} 목표 다시 설정
         </h3>
-        <p className="text-sm text-neutral-400 mb-6">
+        <p className="text-sm text-[var(--text-sub)] mb-6">
           {categoryLabel} 목표를 다시 설정할까요? 현재 진행 기록은 히스토리로 보관되며, 새로운 4주 사이클이 시작됩니다.
         </p>
         <div className="flex gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-3 rounded-xl font-bold bg-neutral-800 text-white hover:bg-neutral-700 transition-colors border border-neutral-700"
+            className="flex-1 py-3 rounded-xl font-bold transition-colors border hover:bg-[var(--bg-card-hover)]"
+            style={{ backgroundColor: "var(--bg-body)", borderColor: "var(--border-light)", color: "var(--text-main)" }}
           >
             취소
           </button>
           <button
             type="button"
             onClick={handleConfirm}
-            className="flex-1 py-3 rounded-xl font-bold bg-lime-400 text-black hover:brightness-110 transition-all"
+            className="flex-1 py-3 rounded-xl font-bold hover:brightness-110 transition-all"
+            style={{ backgroundColor: "var(--accent-main)", color: "var(--accent-text)" }}
           >
             다시 설정
           </button>

@@ -231,7 +231,11 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {error && <p className="text-[12px] text-red-400">{error}</p>}
+          {error && (
+            <p className="text-[12px]" style={{ color: "var(--accent-danger)" }}>
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"

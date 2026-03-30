@@ -17,7 +17,7 @@ export default function MiniFeed() {
       <div className="flex items-center justify-between mb-3">
         <p className="card-label">📌 최근 활동</p>
         <button
-          onClick={() => setTab('performance')}
+          onClick={() => setTab('stats')}
           className="font-bebas text-[9px]"
           style={{ color: 'var(--orange)', letterSpacing: '0.5px' }}
         >

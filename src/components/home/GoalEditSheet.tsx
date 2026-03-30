@@ -59,20 +59,22 @@ export default function GoalEditSheet({ open, onClose, goals, onSave }: GoalEdit
   return (
     <>
       <div className="fixed inset-0 z-[900] bg-black/40" onClick={onClose} />
-      <div className="fixed left-0 right-0 bottom-0 z-[901] rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))] max-h-[80vh] overflow-auto bg-neutral-950 border-t border-neutral-800">
+      <div className="fixed left-0 right-0 bottom-0 z-[901] rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))] max-h-[80vh] overflow-auto border-t" style={{ backgroundColor: "var(--bg-body)", borderColor: "var(--border-light)" }}>
         <div className="flex items-center justify-between mb-4">
           <p className="card-label mb-0">목표 편집</p>
-          <button onClick={onClose} className="text-[14px] text-neutral-400">닫기</button>
+          <button onClick={onClose} className="text-[14px] text-[var(--text-sub)] hover:text-[var(--text-main)]">닫기</button>
         </div>
 
         <div className="flex flex-col gap-4">
           <div>
-            <p className="font-bebas text-[9px] mb-2 text-neutral-400">카테고리</p>
+            <p className="font-bebas text-[9px] mb-2 text-[var(--text-sub)]">카테고리</p>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((c) => (
                 <button key={c.value} onClick={() => setCategory(c.value)}
                   className={`px-3 py-1.5 rounded-lg text-[11px] ${
-                    category === c.value ? "bg-lime-400/20 text-lime-400 border border-lime-400/50" : "bg-neutral-900 text-neutral-400"
+                    category === c.value
+                      ? "bg-[var(--accent-bg)] text-[var(--accent-main)] border border-[var(--border-focus)]"
+                      : "bg-[var(--bg-card)] text-[var(--text-sub)] border border-transparent"
                   }`}>
                   {c.label}
                 </button>
@@ -82,31 +84,41 @@ export default function GoalEditSheet({ open, onClose, goals, onSave }: GoalEdit
 
           {category === "strength" && (
             <div>
-              <p className="font-bebas text-[9px] mb-2 text-neutral-400">종목</p>
+              <p className="font-bebas text-[9px] mb-2 text-[var(--text-sub)]">종목</p>
               <select value={exerciseKey} onChange={(e) => setExerciseKey(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg text-[12px] bg-neutral-900 border border-neutral-800 text-white">
+                className="w-full px-3 py-2 rounded-lg text-[12px] border"
+                style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)", color: "var(--text-main)" }}>
                 {EXERCISE_OPTIONS.map((e) => <option key={e.key} value={e.key}>{e.label}</option>)}
               </select>
             </div>
           )}
 
           <div>
-            <p className="font-bebas text-[9px] mb-2 text-neutral-400">목표 수치</p>
+            <p className="font-bebas text-[9px] mb-2 text-[var(--text-sub)]">목표 수치</p>
             <input type="number" value={targetValue} onChange={(e) => setTargetValue(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg text-[14px] font-bebas bg-neutral-900 border border-neutral-800 text-white"
+              className="w-full px-3 py-2 rounded-lg text-[14px] font-bebas border focus:outline-none"
+              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-light)", color: "var(--text-main)" }}
               placeholder="100" />
           </div>
 
           <div>
-            <p className="font-bebas text-[9px] mb-2 text-neutral-400">기한 (선택)</p>
+            <p className="font-bebas text-[9px] mb-2 text-[var(--text-sub)]">기한 (선택)</p>
             <div className="flex gap-2">
               <button onClick={() => setDeadlineMonths(null)}
-                className={`px-3 py-1.5 rounded-lg text-[11px] ${deadlineMonths === null ? "bg-lime-400/20 text-lime-400 border border-lime-400/50" : "bg-neutral-900 text-neutral-400"}`}>
+                className={`px-3 py-1.5 rounded-lg text-[11px] ${
+                  deadlineMonths === null
+                    ? "bg-[var(--accent-bg)] text-[var(--accent-main)] border border-[var(--border-focus)]"
+                    : "bg-[var(--bg-card)] text-[var(--text-sub)] border border-transparent"
+                }`}>
                 무기한
               </button>
               {DEADLINE_OPTIONS.map((d) => (
                 <button key={d.months} onClick={() => setDeadlineMonths(d.months)}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] ${deadlineMonths === d.months ? "bg-lime-400/20 text-lime-400 border border-lime-400/50" : "bg-neutral-900 text-neutral-400"}`}>
+                  className={`px-3 py-1.5 rounded-lg text-[11px] ${
+                    deadlineMonths === d.months
+                      ? "bg-[var(--accent-bg)] text-[var(--accent-main)] border border-[var(--border-focus)]"
+                      : "bg-[var(--bg-card)] text-[var(--text-sub)] border border-transparent"
+                  }`}>
                   {d.label}
                 </button>
               ))}
@@ -114,7 +126,8 @@ export default function GoalEditSheet({ open, onClose, goals, onSave }: GoalEdit
           </div>
 
           <button onClick={handleAdd}
-            className="w-full py-3 rounded-xl font-medium text-[14px] bg-lime-400 text-black">
+            className="w-full py-3 rounded-xl font-medium text-[14px]"
+            style={{ backgroundColor: "var(--accent-main)", color: "var(--accent-text)" }}>
             목표 추가
           </button>
         </div>

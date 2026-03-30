@@ -241,6 +241,30 @@ input {
   }
 }
 
+@keyframes workoutSlotRoll {
+  0%,
+  22% {
+    transform: translateY(0);
+  }
+  30%,
+  52% {
+    transform: translateY(-32px);
+  }
+  60%,
+  82% {
+    transform: translateY(-64px);
+  }
+  90%,
+  100% {
+    transform: translateY(-96px);
+  }
+}
+
+.animate-workout-slot {
+  animation: workoutSlotRoll 8.6s cubic-bezier(0.2, 0.75, 0.2, 1) infinite;
+  will-change: transform;
+}
+
 @keyframes premiumCardShine {
   0% {
     transform: translate3d(-160%, 0, 0) rotate(18deg);

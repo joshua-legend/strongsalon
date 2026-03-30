@@ -27,7 +27,7 @@ import {
   type InbodyMultiLineChartData,
 } from "@/utils/goalChartData";
 
-type MainTabId = "inbody" | "strength" | "cardio";
+export type MainTabId = "inbody" | "strength" | "cardio";
 
 const MAIN_TABS: { id: MainTabId; label: string; color: "lime" | "orange" | "sky" }[] = [
   { id: "inbody", label: "인바디", color: "lime" },
@@ -86,11 +86,25 @@ function getMainTabFromGoalId(goalId: string): MainTabId {
   return "inbody";
 }
 
-interface UnifiedGoalCardProps {
-  onOpenFullSetup?: () => void;
+function getDefaultSubTabByMainTab(
+  tab: MainTabId
+): StrengthChartOption | CardioChartOption | InbodyChartOption {
+  if (tab === "inbody") return "weight";
+  if (tab === "strength") return "squat";
+  return "run5k";
 }
 
-export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProps) {
+interface UnifiedGoalCardProps {
+  onOpenFullSetup?: () => void;
+  hideMainTabs?: boolean;
+  mainTabOverride?: MainTabId;
+}
+
+export default function UnifiedGoalCard({
+  onOpenFullSetup,
+  hideMainTabs = false,
+  mainTabOverride,
+}: UnifiedGoalCardProps) {
   const {
     goalSetting,
     activeQuest,
@@ -113,15 +127,14 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
     return () => window.removeEventListener("chartRefresh", handler);
   }, []);
 
-  const defaultMainTab: MainTabId = goalSetting
-    ? getMainTabFromGoalId(goalSetting.goalId)
-    : "inbody";
+  const defaultMainTab: MainTabId =
+    mainTabOverride ?? (goalSetting ? getMainTabFromGoalId(goalSetting.goalId) : "inbody");
 
   const [mainTab, setMainTab] = useState<MainTabId>(defaultMainTab);
   const [chartZoom, setChartZoom] = useState(1);
   const [subTab, setSubTab] = useState<
     StrengthChartOption | CardioChartOption | InbodyChartOption
-  >(defaultMainTab === "inbody" ? "weight" : defaultMainTab === "strength" ? "squat" : "run5k");
+  >(getDefaultSubTabByMainTab(defaultMainTab));
 
   const categoryId = mainTabToCategoryId(mainTab);
   const catSetting = categorySettings[categoryId];
@@ -310,35 +323,37 @@ export default function UnifiedGoalCard({ onOpenFullSetup }: UnifiedGoalCardProp
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[var(--accent-main)] opacity-5 blur-3xl rounded-full" />
       <div className="relative z-10 p-5 space-y-4">
         {/* 1. 메인 탭: 인바디 | 스트렝스 | 체력 */}
-        <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex">
-          {MAIN_TABS.map((tab) => {
-            const isSelected = mainTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => {
-                  setMainTab(tab.id);
-                  setSubTab(tab.id === "inbody" ? "weight" : tab.id === "strength" ? "squat" : "run5k");
-                }}
-                className={`flex-1 py-1.5 px-4 rounded-full text-[13px] font-bold transition-all shadow-sm ${
-                  isSelected ? "border" : "border-none text-[var(--text-sub)]"
-                }`}
-                style={
-                  isSelected
-                    ? {
-                        backgroundColor: "var(--bg-card-hover)",
-                        color: "var(--text-main)",
-                        borderColor: "var(--border-light)",
-                      }
-                    : undefined
-                }
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+        {!hideMainTabs ? (
+          <div className="rounded-full p-1 bg-[var(--bg-body)] border border-[var(--border-light)] flex">
+            {MAIN_TABS.map((tab) => {
+              const isSelected = mainTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setMainTab(tab.id);
+                    setSubTab(getDefaultSubTabByMainTab(tab.id));
+                  }}
+                  className={`flex-1 py-1.5 px-4 rounded-full text-[13px] font-bold transition-all shadow-sm ${
+                    isSelected ? "border" : "border-none text-[var(--text-sub)]"
+                  }`}
+                  style={
+                    isSelected
+                      ? {
+                          backgroundColor: "var(--bg-card-hover)",
+                          color: "var(--text-main)",
+                          borderColor: "var(--border-light)",
+                        }
+                      : undefined
+                  }
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
 
         {/* 2-1. 인바디/스트렝스/체력 하위 버튼 */}
         {mainTab === "inbody" && (

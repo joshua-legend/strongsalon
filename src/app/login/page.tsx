@@ -74,7 +74,7 @@ export default function LoginPage() {
             className="w-full h-12 rounded-xl px-4 bg-[var(--bg-card)] border border-[var(--border-light)] text-[var(--text-main)] placeholder:text-[var(--text-sub)] text-[14px] outline-none focus:border-[var(--border-focus)] transition-colors duration-300"
           />
           {error && (
-            <p className="text-[12px] text-red-400">{error}</p>
+            <p className="text-[12px]" style={{ color: "var(--accent-danger)" }}>{error}</p>
           )}
           <button
             type="submit"

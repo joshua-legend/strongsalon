@@ -1,9 +1,6 @@
 "use client";
 
 import CategorySetupSheet from "@/components/home/CategorySetupSheet";
-import GoalCompleteCard from "@/components/home/GoalCompleteCard";
-import QuestGoalTracker from "@/components/home/QuestGoalTracker";
-import QuestStartCard from "@/components/home/QuestStartCard";
 import RecommendationSetupSheet from "@/components/home/RecommendationSetupSheet";
 import { useApp } from "@/context/AppContext";
 import { useGoal } from "@/context/GoalContext";
@@ -20,20 +17,14 @@ export default function LevelTab() {
 
   const openFullSetup = () => setOpenRecommendationSetup(true);
 
-  const questSection = (() => {
-    if (isGoalReached) {
-      return <GoalCompleteCard onOpenFullSetup={openFullSetup} />;
-    }
-    if (goalSetting && !activeQuest) {
-      return <QuestStartCard onOpenFullSetup={openFullSetup} />;
-    }
-    return <QuestGoalTracker onOpenFullSetup={openFullSetup} />;
-  })();
-
   return (
     <div className="px-4 py-4 space-y-4">
-      {questSection}
-      <PremiumLevelDashboard />
+      <PremiumLevelDashboard
+        onOpenFullSetup={openFullSetup}
+        hasGoalSetting={Boolean(goalSetting)}
+        hasActiveQuest={Boolean(activeQuest)}
+        isGoalReached={isGoalReached}
+      />
 
       <CategorySetupSheet
         open={openStrengthSetup}

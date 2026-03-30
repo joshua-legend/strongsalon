@@ -7,158 +7,205 @@ import type { InbodyRecord } from "@/types/workout";
 interface InbodyInputSheetProps {
   open: boolean;
   onClose: () => void;
+  initialDate?: string;
+  initialRecord?: InbodyRecord;
 }
 
-export default function InbodyInputSheet({ open, onClose }: InbodyInputSheetProps) {
+function todayIsoDate(): string {
+  return new Date().toISOString().split("T")[0];
+}
+
+export default function InbodyInputSheet({
+  open,
+  onClose,
+  initialDate,
+  initialRecord,
+}: InbodyInputSheetProps) {
   const { addInbodyRecord } = useInbody();
-  const today = new Date().toISOString().split("T")[0];
-  const [date, setDate] = useState(today);
-  const [weight, setWeight] = useState("");
-  const [muscleMass, setMuscleMass] = useState("");
-  const [fatMass, setFatMass] = useState("");
-  const [fatPercent, setFatPercent] = useState("");
-  const [bmi, setBmi] = useState("");
-  const [bmr, setBmr] = useState("");
+
+  const [date, setDate] = useState(
+    () => initialDate ?? initialRecord?.date ?? todayIsoDate()
+  );
+  const [weight, setWeight] = useState(() =>
+    initialRecord?.weight ? String(initialRecord.weight) : ""
+  );
+  const [muscleMass, setMuscleMass] = useState(() =>
+    initialRecord?.muscleMass ? String(initialRecord.muscleMass) : ""
+  );
+  const [fatPercent, setFatPercent] = useState(() =>
+    initialRecord?.fatPercent ? String(initialRecord.fatPercent) : ""
+  );
 
   const handleSave = () => {
-    const w = parseFloat(weight);
-    const m = parseFloat(muscleMass);
-    const f = parseFloat(fatMass);
-    const fp = parseFloat(fatPercent);
-    if (isNaN(w) || w <= 0) return;
+    const parsedWeight = Number.parseFloat(weight);
+    const parsedMuscleMass = Number.parseFloat(muscleMass);
+    const parsedFatPercent = Number.parseFloat(fatPercent);
+
+    if (!Number.isFinite(parsedWeight) || parsedWeight <= 0) return;
+
+    const fatMass =
+      Number.isFinite(parsedFatPercent) && parsedFatPercent >= 0
+        ? Math.round(parsedWeight * (parsedFatPercent / 100) * 10) / 10
+        : initialRecord?.fatMass ?? 0;
 
     const record: InbodyRecord = {
       date,
-      weight: w,
-      muscleMass: isNaN(m) || m <= 0 ? 0 : m,
-      fatMass: isNaN(f) || f <= 0 ? 0 : f,
-      fatPercent: isNaN(fp) || fp < 0 ? 0 : fp,
+      weight: parsedWeight,
+      muscleMass:
+        Number.isFinite(parsedMuscleMass) && parsedMuscleMass > 0
+          ? parsedMuscleMass
+          : 0,
+      fatMass,
+      fatPercent:
+        Number.isFinite(parsedFatPercent) && parsedFatPercent >= 0
+          ? parsedFatPercent
+          : 0,
     };
-    if (bmi) {
-      const b = parseFloat(bmi);
-      if (!isNaN(b)) record.bmi = b;
+
+    if (typeof initialRecord?.bmi === "number") {
+      record.bmi = initialRecord.bmi;
     }
-    if (bmr) {
-      const b = parseFloat(bmr);
-      if (!isNaN(b)) record.bmr = b;
+
+    if (typeof initialRecord?.bmr === "number") {
+      record.bmr = initialRecord.bmr;
     }
 
     addInbodyRecord(record);
-
-    const applyToCheckIn = confirm("체크인에 이 수치를 반영할까요?");
-    if (applyToCheckIn) {
-      // TODO: recordWeek with weight if diet goal
-    }
-
-    setDate(today);
-    setWeight("");
-    setMuscleMass("");
-    setFatMass("");
-    setFatPercent("");
-    setBmi("");
-    setBmr("");
     onClose();
   };
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60"
+      onClick={onClose}
+    >
       <div
-        className="w-full max-w-md rounded-t-2xl bg-[var(--bg-card)] border border-[var(--border-light)] p-5 pb-8 max-h-[80vh] overflow-auto"
-        onClick={(e) => e.stopPropagation()}
+        className="max-h-[80vh] w-full max-w-md overflow-auto rounded-t-2xl border p-5 pb-8"
+        style={{
+          backgroundColor: "var(--bg-card)",
+          borderColor: "var(--border-light)",
+        }}
+        onClick={(event) => event.stopPropagation()}
       >
-        <h3 className="font-bebas text-lg text-[var(--text-main)] mb-4">인바디 입력</h3>
+        <h3
+          className="mb-4 font-bebas text-lg tracking-wide"
+          style={{ color: "var(--text-main)" }}
+        >
+          인바디 기록 입력
+        </h3>
+
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-[var(--text-sub)] block mb-1">날짜</label>
+            <label
+              className="mb-1 block text-xs"
+              style={{ color: "var(--text-sub)" }}
+            >
+              날짜
+            </label>
             <input
               type="date"
               value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
+              onChange={(event) => setDate(event.target.value)}
+              className="w-full rounded-xl border px-4 py-2"
+              style={{
+                backgroundColor: "var(--bg-body)",
+                borderColor: "var(--border-light)",
+                color: "var(--text-main)",
+              }}
             />
           </div>
+
           <div>
-            <label className="text-xs text-[var(--text-sub)] block mb-1">체중 (kg) *</label>
+            <label
+              className="mb-1 block text-xs"
+              style={{ color: "var(--text-sub)" }}
+            >
+              체중 (kg) *
+            </label>
             <input
               type="number"
               inputMode="decimal"
               value={weight}
-              onChange={(e) => setWeight(e.target.value)}
+              onChange={(event) => setWeight(event.target.value)}
               placeholder="70"
-              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
+              className="w-full rounded-xl border px-4 py-2"
+              style={{
+                backgroundColor: "var(--bg-body)",
+                borderColor: "var(--border-light)",
+                color: "var(--text-main)",
+              }}
             />
           </div>
+
           <div>
-            <label className="text-xs text-[var(--text-sub)] block mb-1">골격근량 (kg)</label>
+            <label
+              className="mb-1 block text-xs"
+              style={{ color: "var(--text-sub)" }}
+            >
+              골격근량 (kg)
+            </label>
             <input
               type="number"
               inputMode="decimal"
               value={muscleMass}
-              onChange={(e) => setMuscleMass(e.target.value)}
+              onChange={(event) => setMuscleMass(event.target.value)}
               placeholder="30"
-              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
+              className="w-full rounded-xl border px-4 py-2"
+              style={{
+                backgroundColor: "var(--bg-body)",
+                borderColor: "var(--border-light)",
+                color: "var(--text-main)",
+              }}
             />
           </div>
+
           <div>
-            <label className="text-xs text-neutral-500 block mb-1">체지방량 (kg)</label>
-            <input
-              type="number"
-              inputMode="decimal"
-              value={fatMass}
-              onChange={(e) => setFatMass(e.target.value)}
-              placeholder="15"
-              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-neutral-500 block mb-1">체지방률 (%)</label>
+            <label
+              className="mb-1 block text-xs"
+              style={{ color: "var(--text-sub)" }}
+            >
+              체지방률 (%)
+            </label>
             <input
               type="number"
               inputMode="decimal"
               value={fatPercent}
-              onChange={(e) => setFatPercent(e.target.value)}
+              onChange={(event) => setFatPercent(event.target.value)}
               placeholder="20"
-              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-neutral-500 block mb-1">BMI</label>
-            <input
-              type="number"
-              inputMode="decimal"
-              value={bmi}
-              onChange={(e) => setBmi(e.target.value)}
-              placeholder="22"
-              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-neutral-500 block mb-1">기초대사량 (kcal)</label>
-            <input
-              type="number"
-              inputMode="decimal"
-              value={bmr}
-              onChange={(e) => setBmr(e.target.value)}
-              placeholder="1600"
-              className="w-full px-4 py-2 rounded-xl bg-[var(--bg-body)] border border-[var(--border-light)] text-[var(--text-main)]"
+              className="w-full rounded-xl border px-4 py-2"
+              style={{
+                backgroundColor: "var(--bg-body)",
+                borderColor: "var(--border-light)",
+                color: "var(--text-main)",
+              }}
             />
           </div>
         </div>
-        <div className="flex gap-2 mt-6">
+
+        <div className="mt-6 flex gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-3 rounded-xl font-bold bg-neutral-800 text-white"
+            className="flex-1 rounded-xl border py-3 text-sm font-semibold transition-colors"
+            style={{
+              borderColor: "var(--border-light)",
+              color: "var(--text-sub)",
+              backgroundColor: "var(--bg-body)",
+            }}
           >
             취소
           </button>
           <button
             type="button"
             onClick={handleSave}
-            disabled={!weight || parseFloat(weight) <= 0}
-            className="flex-1 py-3 rounded-xl font-bold bg-lime-400 text-black disabled:opacity-40"
+            disabled={!weight || Number.parseFloat(weight) <= 0}
+            className="flex-1 rounded-xl py-3 text-sm font-bold transition-all disabled:opacity-40"
+            style={{
+              backgroundColor: "var(--accent-main)",
+              color: "var(--accent-text)",
+            }}
           >
             저장
           </button>

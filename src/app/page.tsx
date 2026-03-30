@@ -12,7 +12,6 @@ import HomeTab from "@/components/home/HomeTab";
 import LevelTab from "@/components/level/LevelTab";
 import RecordTab from "@/components/record/RecordTab";
 import StatsTab from "@/components/stats/StatsTab";
-import PerformanceTab from "@/components/performance/PerformanceTab";
 import ExerciseInfoTab from "@/components/exercise-info/ExerciseInfoTab";
 import WorkoutTabContent from "@/components/workout/WorkoutTabContent";
 
@@ -71,9 +70,6 @@ function TabContent() {
       </div>
       <div style={{ display: activeTab === "stats" ? "block" : "none" }}>
         <StatsTab />
-      </div>
-      <div style={{ display: activeTab === "performance" ? "block" : "none" }}>
-        <PerformanceTab />
       </div>
       <div
         style={{ display: activeTab === "exercise-info" ? "block" : "none" }}

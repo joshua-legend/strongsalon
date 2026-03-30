@@ -38,4 +38,5 @@ export const attendance: AttendanceRecord[] = [
   { date: '2026-2-23', type: 'self' },
   { date: '2026-2-24', type: 'pt' },
   { date: '2026-2-25', type: 'self' },
+  { date: '2026-3-27', type: 'pt' },
 ];

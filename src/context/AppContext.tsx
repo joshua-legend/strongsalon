@@ -46,6 +46,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
       if (action.tab === 'workout') {
         return { ...state, activeTab: 'workout', theme: 'workout' };
       }
+      // @deprecated 챌린지 탭(performance)은 임시 비활성화 상태
+      if (action.tab === 'performance') {
+        return { ...state, activeTab: 'home', theme: 'default' };
+      }
       return { ...state, activeTab: action.tab, theme: 'default' };
     case 'SET_SUBTAB':
       return { ...state, subTab: action.subTab };

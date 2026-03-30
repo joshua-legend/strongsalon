@@ -10,6 +10,7 @@ import { GoalProvider } from "@/context/GoalContext";
 import { AttendanceProvider } from "@/context/AttendanceContext";
 import { InbodyProvider } from "@/context/InbodyContext";
 import { WorkoutRecordProvider } from "@/context/WorkoutRecordContext";
+import { LevelThemeProvider } from "@/context/LevelThemeContext";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -19,13 +20,15 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <AppProvider>
             <UserProvider>
               <ProfileProvider>
-                <GoalProvider>
-                  <AttendanceProvider>
-                    <WorkoutRecordProvider>
-                      <InbodyProvider>{children}</InbodyProvider>
-                    </WorkoutRecordProvider>
-                  </AttendanceProvider>
-                </GoalProvider>
+                <LevelThemeProvider>
+                  <GoalProvider>
+                    <AttendanceProvider>
+                      <WorkoutRecordProvider>
+                        <InbodyProvider>{children}</InbodyProvider>
+                      </WorkoutRecordProvider>
+                    </AttendanceProvider>
+                  </GoalProvider>
+                </LevelThemeProvider>
               </ProfileProvider>
             </UserProvider>
           </AppProvider>

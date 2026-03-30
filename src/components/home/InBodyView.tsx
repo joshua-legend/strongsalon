@@ -132,7 +132,11 @@ export default function InBodyView() {
         )}
       </div>
 
-      <InbodyInputSheet open={showInput} onClose={() => setShowInput(false)} />
+      <InbodyInputSheet
+        key={showInput ? "inbody-input-open" : "inbody-input-closed"}
+        open={showInput}
+        onClose={() => setShowInput(false)}
+      />
     </div>
   );
 }
@@ -158,4 +162,3 @@ function ChangeItem({
     </span>
   );
 }
-
