@@ -6,11 +6,11 @@ import { Activity, ChevronDown } from "lucide-react";
 import type { WorkoutCondition } from "@/types";
 
 const CONDITION_OPTIONS: { value: WorkoutCondition; emoji: string; main: string; sub: string }[] = [
-  { value: "최악", emoji: "😫", main: "레스트", sub: "오프데이" },
-  { value: "나쁨", emoji: "😕", main: "리커버리", sub: "가벼운 무게" },
-  { value: "좋음", emoji: "😊", main: "워킹", sub: "메인 세트" },
-  { value: "최고", emoji: "💪", main: "오버로드", sub: "프로그레스" },
-  { value: "불타", emoji: "🔥", main: "피크", sub: "PR 시도" },
+  { value: "최악", emoji: "😫", main: "매우 낮음", sub: "회복 위주" },
+  { value: "나쁨", emoji: "😕", main: "낮음", sub: "가볍게 진행" },
+  { value: "좋음", emoji: "😊", main: "보통", sub: "기본 강도" },
+  { value: "최고", emoji: "💪", main: "좋음", sub: "집중 강도" },
+  { value: "불타", emoji: "🔥", main: "매우 좋음", sub: "고강도 가능" },
 ];
 
 interface ConditionSelectCardProps {

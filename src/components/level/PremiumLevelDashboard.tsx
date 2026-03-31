@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
   Dumbbell,
@@ -9,50 +10,34 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import UnifiedGoalCard from "@/components/home/UnifiedGoalCard";
-import {
-  usePremiumLevelDashboardModel,
-  usePremiumLevelDashboardTotals,
-} from "@/hooks/usePremiumLevelDashboardModel";
+import { usePremiumLevelDashboardModel } from "@/hooks/usePremiumLevelDashboardModel";
 import {
   MEMBERSHIP_TIERS,
-  type MembershipTier,
+  getTierFromScore,
+  getTierTheme,
 } from "@/config/membershipTierTheme";
 import { useLevelTheme } from "@/context/LevelThemeContext";
+import { useGoal } from "@/context/GoalContext";
+import { useProfile } from "@/context/ProfileContext";
+import LevelNonagonCard from "./LevelNonagonCard";
 
 type StatTab = "strength" | "stamina" | "inbody";
 
 interface PremiumLevelDashboardProps {
   onOpenFullSetup?: () => void;
-  hasGoalSetting: boolean;
-  hasActiveQuest: boolean;
-  isGoalReached: boolean;
 }
 
 interface StatSummaryModel {
   id: StatTab;
   label: string;
   icon: LucideIcon;
-  grade: string;
+  rank: string;
+  percentile: number;
   points: number;
   metricReady: boolean;
 }
 
-interface TrackingNotice {
-  tone: "success" | "warning" | "info";
-  label: string;
-  message: string;
-  ctaLabel?: string;
-}
-
 const BRAND_NAME = "STRONG SALON";
-
-const TIER_POINT_BONUS: Record<MembershipTier, number> = {
-  standard: -850,
-  advanced: -350,
-  pro: 150,
-  elite: 520,
-  strong: 0,
-};
 
 const STAT_ICONS: Record<StatTab, LucideIcon> = {
   strength: Dumbbell,
@@ -60,116 +45,210 @@ const STAT_ICONS: Record<StatTab, LucideIcon> = {
   inbody: Activity,
 };
 
-function getGrade(points: number) {
-  if (points >= 9600) return "MASTER";
-  if (points >= 9200) return "ELITE";
-  if (points >= 8600) return "PRO";
-  if (points >= 7900) return "ADVANCED";
-  return "STANDARD";
+const STAT_LABELS: Record<StatTab, string> = {
+  strength: "Strength",
+  stamina: "Cardio",
+  inbody: "Inbody",
+};
+
+const STAT_NOTE_LABELS: Record<StatTab, string> = {
+  strength: "스트렝스",
+  stamina: "카디오",
+  inbody: "인바디",
+};
+
+const STAT_DISPLAY_ORDER: StatTab[] = ["inbody", "stamina", "strength"];
+
+const CAREER_PERCENTILE_ANCHORS = [
+  { score: 0, percentile: 100 },
+  { score: 20, percentile: 90 },
+  { score: 35, percentile: 75 },
+  { score: 50, percentile: 50 },
+  { score: 65, percentile: 25 },
+  { score: 80, percentile: 10 },
+  { score: 90, percentile: 3 },
+  { score: 100, percentile: 1 },
+] as const;
+
+function getStatGrade(points: number) {
+  if (points >= 9700) return "S";
+  if (points >= 9300) return "A";
+  if (points >= 8900) return "B";
+  if (points >= 8400) return "C";
+  if (points >= 7900) return "D";
+  return "F";
 }
 
-function getTrackingNotice({
-  hasGoalSetting,
-  hasActiveQuest,
-  isGoalReached,
-}: Pick<PremiumLevelDashboardProps, "hasGoalSetting" | "hasActiveQuest" | "isGoalReached">): TrackingNotice {
-  if (!hasGoalSetting) {
-    return {
-      tone: "warning",
-      label: "SETUP",
-      message:
-        "\uBAA9\uD45C \uC124\uC815\uC774 \uC5C6\uC5B4\uC694. \uCD94\uCC9C \uC124\uC815\uC73C\uB85C \uC2DC\uC791\uD574\uBCF4\uC138\uC694.",
-      ctaLabel: "\uCD94\uCC9C \uC124\uC815",
-    };
-  }
-  if (isGoalReached) {
-    return {
-      tone: "success",
-      label: "COMPLETE",
-      message:
-        "\uBAA9\uD45C \uC0AC\uC774\uD074\uC744 \uC644\uB8CC\uD588\uC5B4\uC694. \uB2E4\uC74C \uBAA9\uD45C \uC124\uC815\uC73C\uB85C \uC774\uC5B4\uAC00\uC138\uC694.",
-      ctaLabel: "\uB2E4\uC74C \uBAA9\uD45C",
-    };
-  }
-  if (!hasActiveQuest) {
-    return {
-      tone: "info",
-      label: "READY",
-      message:
-        "\uBAA9\uD45C\uB294 \uC900\uBE44\uB410\uC2B5\uB2C8\uB2E4. \uC544\uB798 \uD2B8\uB798\uCEE4\uC5D0\uC11C \uCCAB \uAE30\uB85D\uC744 \uC785\uB825\uD574\uBCF4\uC138\uC694.",
-    };
-  }
-  return {
-    tone: "info",
-    label: "TRACKING",
-    message:
-      "\uC9C4\uD589 \uC911 \uBAA9\uD45C\uB97C \uC544\uB798 \uD2B8\uB798\uCEE4\uC5D0\uC11C \uACC4\uC18D \uCD94\uC801\uD558\uC138\uC694.",
-  };
+function getTopPercent(points: number) {
+  if (points >= 9700) return 1;
+  if (points >= 9500) return 2;
+  if (points >= 9300) return 4;
+  if (points >= 9100) return 7;
+  if (points >= 8900) return 10;
+  if (points >= 8700) return 14;
+  if (points >= 8500) return 18;
+  if (points >= 8300) return 24;
+  if (points >= 8100) return 30;
+  if (points >= 7900) return 38;
+  return 52;
 }
 
-function noticeToneStyle(tone: TrackingNotice["tone"], tierColor: string) {
-  if (tone === "success") {
-    return {
-      backgroundColor: "rgba(34, 197, 94, 0.12)",
-      borderColor: "rgba(34, 197, 94, 0.35)",
-      labelColor: "#22c55e",
-    };
+function getCareerScore(points: number) {
+  return Math.max(0, Math.min(100, Math.round((points - 7000) / 30)));
+}
+
+function getCareerPercentile(score: number) {
+  const rounded = Math.max(0, Math.min(100, Math.round(score)));
+
+  for (let index = 0; index < CAREER_PERCENTILE_ANCHORS.length - 1; index += 1) {
+    const current = CAREER_PERCENTILE_ANCHORS[index];
+    const next = CAREER_PERCENTILE_ANCHORS[index + 1];
+
+    if (rounded <= next.score) {
+      const ratio =
+        next.score === current.score
+          ? 0
+          : (rounded - current.score) / (next.score - current.score);
+      const interpolated =
+        current.percentile + (next.percentile - current.percentile) * ratio;
+      return Math.max(1, Math.min(100, Math.round(interpolated)));
+    }
   }
-  if (tone === "warning") {
-    return {
-      backgroundColor: "rgba(249, 115, 22, 0.12)",
-      borderColor: "rgba(249, 115, 22, 0.34)",
-      labelColor: "#f97316",
-    };
-  }
-  return {
-    backgroundColor: `${tierColor}1A`,
-    borderColor: `${tierColor}59`,
-    labelColor: tierColor,
-  };
+
+  return 1;
+}
+
+function getGenderPercentileLabel(gender?: string | null) {
+  if (gender === "male") return "동연령 남성";
+  if (gender === "female") return "동연령 여성";
+  return "동연령 기준";
 }
 
 export default function PremiumLevelDashboard({
   onOpenFullSetup,
-  hasGoalSetting,
-  hasActiveQuest,
-  isGoalReached,
 }: PremiumLevelDashboardProps) {
-  const { selectedTier, setSelectedTier, activeTier } = useLevelTheme();
-  const [selectedStatTab, setSelectedStatTab] = useState<StatTab>("strength");
+  const { setSelectedTier } = useLevelTheme();
+  const { categorySettings } = useGoal();
+  const { profile } = useProfile();
+  const [selectedStatTab, setSelectedStatTab] = useState<StatTab>("inbody");
+  const [cardSlideIndex, setCardSlideIndex] = useState(0);
+  const [cardTouchStartX, setCardTouchStartX] = useState<number | null>(null);
   const pillars = usePremiumLevelDashboardModel();
-  const { rankLabel } = usePremiumLevelDashboardTotals(pillars);
-
-  const pointBonus = TIER_POINT_BONUS[selectedTier];
 
   const statSummaries: StatSummaryModel[] = useMemo(
     () =>
       pillars.map((pillar) => {
-        const points = pillar.pillarPoints + pointBonus;
+        const points = Math.max(7000, Math.min(9999, pillar.pillarPoints));
         return {
           id: pillar.id,
-          label: pillar.label,
+          label: STAT_LABELS[pillar.id],
           icon: STAT_ICONS[pillar.id],
           points,
-          grade: pillar.metricReady ? getGrade(points) : "SETUP",
+          rank: pillar.metricReady ? getStatGrade(points) : "F",
+          percentile: pillar.metricReady ? getTopPercent(points) : 99,
           metricReady: pillar.metricReady,
         };
       }),
-    [pillars, pointBonus]
+    [pillars]
   );
 
-  const membershipTotalScore = useMemo(
-    () => statSummaries.reduce((sum, stat) => sum + stat.points, 0),
+  const orderedStatSummaries = useMemo(
+    () =>
+      STAT_DISPLAY_ORDER.map((id) => statSummaries.find((stat) => stat.id === id)).filter(
+        (stat): stat is StatSummaryModel => Boolean(stat)
+      ),
     [statSummaries]
   );
 
-  const notice = getTrackingNotice({
-    hasGoalSetting,
-    hasActiveQuest,
-    isGoalReached,
-  });
-  const noticeStyle = noticeToneStyle(notice.tone, activeTier.color);
+  const measuredStatSummaries = useMemo(
+    () => orderedStatSummaries.filter((stat) => stat.metricReady),
+    [orderedStatSummaries]
+  );
+
+  const measuredAveragePoints = useMemo(
+    () =>
+      measuredStatSummaries.length > 0
+        ? measuredStatSummaries.reduce((sum, stat) => sum + stat.points, 0) /
+          measuredStatSummaries.length
+        : 7000,
+    [measuredStatSummaries]
+  );
+
+  const overallCareerScore = useMemo(
+    () => getCareerScore(measuredAveragePoints),
+    [measuredAveragePoints]
+  );
+
+  const careerTier = useMemo(
+    () => getTierFromScore(overallCareerScore),
+    [overallCareerScore]
+  );
+
+  const activeTier = useMemo(
+    () => getTierTheme(careerTier.id),
+    [careerTier.id]
+  );
+
+  const membershipTopPercent = useMemo(
+    () => getCareerPercentile(overallCareerScore),
+    [overallCareerScore]
+  );
+
+  const nextCareerTier = useMemo(() => {
+    const currentIndex = MEMBERSHIP_TIERS.findIndex((tier) => tier.id === careerTier.id);
+    return currentIndex >= 0 ? MEMBERSHIP_TIERS[currentIndex + 1] ?? null : null;
+  }, [careerTier.id]);
+
+  const pointsToNextTier = nextCareerTier
+    ? Math.max(0, nextCareerTier.scoreMin - overallCareerScore)
+    : 0;
+
+  const percentileLabel = `${getGenderPercentileLabel(profile?.gender ?? null)} 상위 ${membershipTopPercent}%`;
+
+  const missingDomains = useMemo(
+    () =>
+      orderedStatSummaries
+        .filter((stat) => !stat.metricReady)
+        .map((stat) => STAT_NOTE_LABELS[stat.id]),
+    [orderedStatSummaries]
+  );
+
+  const missingDomainNote =
+    missingDomains.length > 0
+      ? `※ ${missingDomains.join(", ")} 미측정으로 측정된 도메인만으로 산출되었습니다. 전 항목 측정 시 점수가 달라질 수 있습니다.`
+      : null;
+
+  useEffect(() => {
+    setSelectedTier(careerTier.id);
+  }, [careerTier.id, setSelectedTier]);
+
+  const balanceMapData = useMemo(() => {
+    const inbody = categorySettings?.inbody?.startValues ?? {};
+    const cardio = categorySettings?.fitness?.startValues ?? {};
+    const strength = categorySettings?.strength?.startValues ?? {};
+    if (selectedStatTab === "inbody") {
+      const fatPercent = Number(inbody.fatPercent ?? 0);
+      return {
+        label: "Body Fat",
+        value: fatPercent > 0 ? `${fatPercent.toFixed(1)}%` : "-",
+      };
+    }
+    if (selectedStatTab === "stamina") {
+      const running = Number(cardio.running ?? 0);
+      return {
+        label: "Run Pace",
+        value: running > 0 ? `${running.toFixed(2)} min/km` : "-",
+      };
+    }
+    const squat = Number(strength.squat ?? 0);
+    return {
+      label: "Squat 1RM",
+      value: squat > 0 ? `${Math.round(squat)} kg` : "-",
+    };
+  }, [categorySettings, selectedStatTab]);
+
   const trackerMainTab = selectedStatTab === "stamina" ? "cardio" : selectedStatTab;
+
   const trackerThemeVars = useMemo(
     () =>
       ({
@@ -202,106 +281,182 @@ export default function PremiumLevelDashboard({
     "--dynamic-theme-bg": activeTier.softBg,
   } as CSSProperties;
 
+  const handleCardTouchStart = (clientX: number) => {
+    setCardTouchStartX(clientX);
+  };
+
+  const handleCardTouchEnd = (clientX: number) => {
+    if (cardTouchStartX === null) return;
+    const delta = clientX - cardTouchStartX;
+    if (delta <= -40) {
+      setCardSlideIndex(1);
+    } else if (delta >= 40) {
+      setCardSlideIndex(0);
+    }
+    setCardTouchStartX(null);
+  };
+
   return (
     <div id="tab-level" className="block flex-1 space-y-6 px-5 py-6" style={rootVars}>
       <div id="view-card" className="block space-y-4">
-        <div className="custom-scrollbar flex gap-1.5 overflow-x-auto pb-2">
-          {MEMBERSHIP_TIERS.map((tier) => {
-            const isActive = selectedTier === tier.id;
-            return (
+        <div className="space-y-2">
+          <div className="flex items-center justify-end gap-1">
+            {(["레벨", "밸런스 맵"] as const).map((label, idx) => (
               <button
-                key={tier.id}
-                id={`btn-tier-${tier.id}`}
+                key={`card-slide-${label}`}
                 type="button"
-                onClick={() => setSelectedTier(tier.id)}
-                className={`shrink-0 rounded-lg border px-3 py-1.5 text-[10px] font-bold transition-all ${
-                  isActive ? "shadow-sm" : ""
-                }`}
+                onClick={() => setCardSlideIndex(idx)}
+                className="px-2.5 py-1 rounded-md border text-[10px] font-semibold transition-colors"
                 style={{
-                  backgroundColor: isActive ? "var(--bg-card)" : "transparent",
-                  color: isActive ? "var(--text-main)" : "var(--text-sub)",
-                  borderColor: isActive ? "var(--border-light)" : "transparent",
+                  borderColor:
+                    cardSlideIndex === idx ? `${activeTier.color}66` : "var(--border-light)",
+                  color: cardSlideIndex === idx ? activeTier.color : "var(--text-sub)",
+                  backgroundColor:
+                    cardSlideIndex === idx ? `${activeTier.softBg}` : "var(--bg-card)",
                 }}
               >
-                {tier.label}
+                {label}
               </button>
-            );
-          })}
-        </div>
-
-        <div
-          id="membership-card"
-          className="card-shine relative overflow-hidden rounded-[1.25rem] border p-6 shadow-2xl transition-all duration-700"
-          style={{
-            background: activeTier.gradient,
-            borderColor: activeTier.borderColor,
-          }}
-        >
-          <div className="iron-texture pointer-events-none absolute inset-0 opacity-[0.05]" />
-
-          <div className="relative z-10 flex items-start justify-between">
-            <span
-              id="card-brand"
-              className="text-[10px] font-bold uppercase tracking-[0.2em] drop-shadow-sm transition-colors duration-700"
-              style={{ color: activeTier.color }}
-            >
-              {BRAND_NAME}
-            </span>
-            <Fingerprint
-              id="card-icon"
-              className="h-5 w-5 transition-colors duration-700"
-              style={{ color: activeTier.color }}
-            />
+            ))}
           </div>
 
-          <div className="relative z-10 mb-7 mt-8">
-            <h3
-              id="card-tier-name"
-              className="font-serif text-[32px] italic font-bold tracking-wide transition-colors duration-700"
-              style={{ color: activeTier.color }}
-            >
-              {activeTier.cardName}
-            </h3>
-          </div>
+          <div
+            className="overflow-hidden rounded-[1.25rem]"
+            onTouchStart={(e) => handleCardTouchStart(e.changedTouches[0].clientX)}
+            onTouchEnd={(e) => handleCardTouchEnd(e.changedTouches[0].clientX)}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {cardSlideIndex === 0 ? (
+                <motion.div
+                  key="membership-slide"
+                  initial={{ x: -28, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: 28, opacity: 0 }}
+                  transition={{ duration: 0.26, ease: "easeOut" }}
+                >
+                  <div
+                    id="membership-card"
+                    className="card-shine relative overflow-hidden rounded-[1.25rem] border p-6 shadow-2xl transition-all duration-700"
+                    style={{
+                      background: activeTier.gradient,
+                      borderColor: activeTier.borderColor,
+                    }}
+                  >
+                    <div className="iron-texture pointer-events-none absolute inset-0 opacity-[0.05]" />
 
-          <div className="relative z-10 flex items-end justify-between">
-            <div className="flex flex-col">
-              <span
-                id="card-score-label"
-                className="mb-0.5 text-[8px] uppercase tracking-widest transition-colors duration-700"
-                style={{ color: `${activeTier.color}B3` }}
-              >
-                Total Score
-              </span>
-              <span
-                id="card-score"
-                className="font-bebas text-[30px] leading-none tracking-[0.08em] transition-colors duration-700"
-                style={{ color: "#fef08a" }}
-              >
-                {membershipTotalScore.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex flex-col text-right">
-              <span
-                id="card-rank-label"
-                className="mb-0.5 text-[8px] uppercase tracking-widest transition-colors duration-700"
-                style={{ color: `${activeTier.color}B3` }}
-              >
-                Overall Rank
-              </span>
-              <span
-                id="card-rank"
-                className="font-bebas text-[24px] leading-none tracking-[0.08em] transition-colors duration-700"
-                style={{ color: activeTier.color }}
-              >
-                {rankLabel}
-              </span>
-            </div>
+                    <div className="relative z-10 flex items-start justify-between">
+                      <span
+                        id="card-brand"
+                        className="text-[10px] font-bold uppercase tracking-[0.2em] drop-shadow-sm transition-colors duration-700"
+                        style={{ color: activeTier.color }}
+                      >
+                        {BRAND_NAME}
+                      </span>
+                      <Fingerprint
+                        id="card-icon"
+                        className="h-5 w-5 transition-colors duration-700"
+                        style={{ color: activeTier.color }}
+                      />
+                    </div>
+
+                    <div className="relative z-10 mb-7 mt-8">
+                      <p
+                        className="mb-2 text-[11px] font-semibold tracking-[0.08em]"
+                        style={{ color: `${activeTier.color}D9` }}
+                      >
+                        {careerTier.displayLabel}
+                      </p>
+                      <h3
+                        id="card-tier-name"
+                        className="font-serif text-[32px] italic font-bold tracking-wide transition-colors duration-700"
+                        style={{ color: activeTier.color }}
+                      >
+                        {careerTier.cardName}
+                      </h3>
+                    </div>
+
+                    <div className="relative z-10 flex items-end justify-between gap-4">
+                      <div className="flex flex-col">
+                        <span
+                          id="card-score-label"
+                          className="mb-0.5 text-[8px] uppercase tracking-widest transition-colors duration-700"
+                          style={{ color: `${activeTier.color}B3` }}
+                        >
+                          Total Score
+                        </span>
+                        <span
+                          id="card-score"
+                          className="text-[22px] font-black leading-none transition-colors duration-700"
+                          style={{ color: "#ffffff" }}
+                        >
+                          종합 {overallCareerScore}점
+                        </span>
+                      </div>
+                      <div className="flex flex-col text-right">
+                        <span
+                          id="card-rank-label"
+                          className="mb-0.5 text-[8px] uppercase tracking-widest transition-colors duration-700"
+                          style={{ color: `${activeTier.color}B3` }}
+                        >
+                          Percentile
+                        </span>
+                        <span
+                          id="card-rank"
+                          className="text-[15px] font-bold leading-tight transition-colors duration-700"
+                          style={{ color: activeTier.color }}
+                        >
+                          {percentileLabel}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className="mt-3 space-y-2 rounded-[1.1rem] border px-4 py-3"
+                    style={{
+                      backgroundColor: "var(--bg-card)",
+                      borderColor: `${activeTier.color}2E`,
+                    }}
+                  >
+                    {nextCareerTier ? (
+                      <p className="text-[12px] font-semibold" style={{ color: "var(--text-main)" }}>
+                        다음 등급 {nextCareerTier.displayLabel}까지 +{pointsToNextTier}점 필요
+                      </p>
+                    ) : (
+                      <p className="text-[12px] font-semibold" style={{ color: "var(--text-main)" }}>
+                        최고 등급에 도달했습니다.
+                      </p>
+                    )}
+                    <p className="text-[11px] leading-5" style={{ color: "var(--text-sub)" }}>
+                      {careerTier.comment}
+                    </p>
+                    {missingDomainNote ? (
+                      <p className="text-[10px] leading-5" style={{ color: activeTier.color }}>
+                        {missingDomainNote}
+                      </p>
+                    ) : null}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="balance-slide"
+                  initial={{ x: 28, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -28, opacity: 0 }}
+                  transition={{ duration: 0.26, ease: "easeOut" }}
+                >
+                  <LevelNonagonCard
+                    categorySettings={categorySettings}
+                    accentColor={activeTier.color}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
         <div className="relative z-10 mt-4 grid w-full grid-cols-3 gap-2">
-          {statSummaries.map((stat) => {
+          {orderedStatSummaries.map((stat) => {
             const Icon = stat.icon;
             const isSelected = selectedStatTab === stat.id;
             const accentColor = isSelected
@@ -309,6 +464,7 @@ export default function PremiumLevelDashboard({
                 ? activeTier.color
                 : "var(--text-main)"
               : "var(--text-sub)";
+
             return (
               <button
                 key={stat.id}
@@ -342,15 +498,14 @@ export default function PremiumLevelDashboard({
                             : "none",
                       }}
                     >
-                      {stat.grade}
+                      {stat.rank}
                     </span>
                   </div>
                 </div>
                 <div className="w-full border-t pt-2.5" style={{ borderColor: "var(--border-light)" }}>
-                  <span className="font-mono text-[11px] font-bold" style={{ color: accentColor }}>
-                    {stat.points.toLocaleString()}
-                    <span className="ml-0.5 text-[9px] font-normal">pts</span>
-                  </span>
+                  <p className="font-mono text-[11px] font-bold" style={{ color: accentColor }}>
+                    Top {stat.percentile}%
+                  </p>
                 </div>
               </button>
             );
@@ -360,42 +515,30 @@ export default function PremiumLevelDashboard({
 
       <section id="tracking-section" className="space-y-3 pt-2">
         <div
-          className="rounded-2xl border p-3 transition-colors duration-300"
+          className="rounded-2xl border px-4 py-3 transition-colors duration-300"
           style={{
             backgroundColor: "var(--bg-card)",
             borderColor: "var(--border-light)",
           }}
         >
-          <div
-            className="flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5"
-            style={{
-              backgroundColor: noticeStyle.backgroundColor,
-              borderColor: noticeStyle.borderColor,
-            }}
+          <p
+            className="text-[10px] font-bold tracking-[0.12em]"
+            style={{ color: activeTier.color }}
           >
-            <div className="min-w-0">
-              <p
-                className="font-bebas text-[12px] tracking-[0.09em]"
-                style={{ color: noticeStyle.labelColor }}
-              >
-                {notice.label}
+            BALANCE MAP DATA
+          </p>
+          <div className="mt-1 flex items-end justify-between gap-3">
+            <div>
+              <p className="text-[12px] font-semibold" style={{ color: "var(--text-main)" }}>
+                {balanceMapData.label}
               </p>
-              <p className="mt-0.5 text-xs leading-5 text-[var(--text-main)]">{notice.message}</p>
+              <p className="text-[10px] mt-0.5" style={{ color: "var(--text-sub)" }}>
+                from {STAT_LABELS[selectedStatTab]}
+              </p>
             </div>
-            {onOpenFullSetup && notice.ctaLabel ? (
-              <button
-                type="button"
-                onClick={onOpenFullSetup}
-                className="shrink-0 rounded-lg border px-3 py-1.5 text-[11px] font-semibold transition-colors hover:text-[var(--text-main)]"
-                style={{
-                  color: "var(--text-sub)",
-                  borderColor: "var(--border-light)",
-                  backgroundColor: "var(--bg-card)",
-                }}
-              >
-                {notice.ctaLabel}
-              </button>
-            ) : null}
+            <p className="font-bebas text-[24px] leading-none" style={{ color: activeTier.color }}>
+              {balanceMapData.value}
+            </p>
           </div>
         </div>
 

@@ -1,6 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import {
+  CircleAlert,
   Award,
   BarChart2,
   BookOpen,
@@ -9,8 +11,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { useGoal } from "@/context/GoalContext";
 import { useTheme } from "@/context/ThemeContext";
 import type { TabId } from "@/types";
+import { isLevelSetupComplete as getIsLevelSetupComplete } from "@/utils/levelSetup";
 
 const tabs: { id: TabId; label: string; Icon: LucideIcon }[] = [
   { id: "home", label: "\uC6B4\uB3D9", Icon: Dumbbell },
@@ -23,6 +27,11 @@ const tabs: { id: TabId; label: string; Icon: LucideIcon }[] = [
 export default function BottomNav() {
   const { activeTab, theme, setTab } = useApp();
   const { theme: colorTheme } = useTheme();
+  const { categorySettings } = useGoal();
+  const isLevelSetupComplete = useMemo(
+    () => getIsLevelSetupComplete(categorySettings),
+    [categorySettings]
+  );
 
   return (
     <nav
@@ -40,6 +49,7 @@ export default function BottomNav() {
           tab.id === "home"
             ? activeTab === tab.id || theme === "workout"
             : activeTab === tab.id;
+        const showLevelSetupBadge = tab.id === "level" && !isLevelSetupComplete;
 
         return (
           <button
@@ -52,7 +62,22 @@ export default function BottomNav() {
                 : "text-[var(--text-sub)] hover:text-[var(--text-main)]"
             }`}
           >
-            <tab.Icon className="h-6 w-6" />
+            <div className="relative">
+              <tab.Icon className="h-6 w-6" />
+              {showLevelSetupBadge && (
+                <span
+                  className="absolute -top-1 -right-1 h-4 min-w-4 rounded-full border flex items-center justify-center px-[2px]"
+                  style={{
+                    borderColor: "var(--accent-main)",
+                    backgroundColor: "var(--accent-bg)",
+                    color: "var(--accent-main)",
+                  }}
+                  title="레벨 데이터 설정 필요"
+                >
+                  <CircleAlert className="h-2.5 w-2.5" />
+                </span>
+              )}
+            </div>
             <span className="text-[11px] font-semibold tracking-wide">{tab.label}</span>
           </button>
         );
